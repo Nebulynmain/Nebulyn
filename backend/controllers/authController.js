@@ -9,7 +9,7 @@ export const register = async(req, res)=>{
             return res.status(400).send({success: false, message: 'All fields are required'});
         }
         if(password !== confirmPassword){
-            return res.status(400).send({success: false, message: "Wrong confirm password"});
+            return res.status(400).send({success: false, message: "Wrong password"});
         }
         const existingUser = await User.findOne({email});
         if(existingUser){
@@ -40,7 +40,7 @@ export const login = async(req, res)=>{
             return res.status(400).send({success: false, message: "Incorrect password"});
         }
         const token = jwt.sign({_id: user._id}, process.env.JWT_SECRET, {expiresIn: '1D'});
-        let newUser = {id: user._id, userName: user.userName, email: user.email}
+        let newUser = {_id: user._id, userName: user.userName, email: user.email}
 
         return res.status(200).cookie("token", token, {maxAge: 1*24*60*60*1000, httponly: true, sameSite: 'strict'}).send({
             success: true,
@@ -60,5 +60,41 @@ export const logout = async(req, res)=>{
         })
     } catch (error) {
         console.log("Error in logout", error);
+    }
+}
+
+export const updateProfile = async(req, res)=>{
+    try {
+        const id = req.id;
+        const updatedUser = await User.findByIdAndUpdate(id, req.body, {new: true, runValidators: true});
+
+        return res.status(200).send({success: true, message: "Profile updated successfully", user: updatedUser});
+    } catch (error) {
+        console.log("Error in updating profile", error);    
+    }
+}
+
+export const updateEmailPassword = async(req, res)=>{
+    try {
+        const id = req.id;
+        const user = await User.findById(id);
+
+        if(req.body.email){
+            user.email = req.body.email;
+        }
+        if (req.body.oldPassword && req.body.newPassword) {
+            const isMatch = await bcrypt.compare(req.body.oldPassword, user.password);
+            if (!isMatch) {
+                return res.status(400).send({ success: false, message: "Old password is incorrect" });
+            }
+
+            const hashedPassword = await bcrypt.hash(req.body.newPassword, 10);
+            user.password = hashedPassword;
+        }
+
+        await user.save();
+        return res.status(200).send({success: true, message: 'Profile updated successfully'});
+    } catch (error) {
+        console.log("Error in updating profile", error);    
     }
 }
