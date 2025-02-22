@@ -1,9 +1,20 @@
 import React from "react";
+import Navbar from "./Navbar";
+import Hero from "./Hero";
+import Footer from "./Footer";
+import Category from "./Category";
+import Top from "./Top";
+import Job from "./Job";
 
 const Home = () => {
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <h1 className="text-4xl font-extrabold text-blue-600">Hello World</h1>
+    <div>
+      <Navbar />
+      <Hero />
+      <Category />
+      <Top />
+      <Job />
+      <Footer />
     </div>
   );
 };
