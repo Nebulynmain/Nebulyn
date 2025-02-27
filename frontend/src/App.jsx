@@ -11,6 +11,7 @@ import Companies from "./components/AdminDashboard/Companies";
 import Profile from "./components/AdminDashboard/Profile";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import Help from "./components/AdminDashboard/Help";
+import Description from "./components/AdminDashboard/Description";
 
 function App() {
   const googleClientId =
@@ -31,6 +32,7 @@ function App() {
           <Route path="/companies" element={<Companies />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/help" element={<Help />} />
+          <Route path="/description" element={<Description />} />
         </Routes>
       </Router>
     </GoogleOAuthProvider>

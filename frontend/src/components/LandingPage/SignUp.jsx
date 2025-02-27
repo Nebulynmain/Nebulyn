@@ -10,7 +10,7 @@ const SignUp = () => {
   return (
     <div>
       <Navbar />
-      <div className="p-10 ml-22">
+      <div className="p-5 ml-22">
         <h2 className="text-4xl font-bold text-gray-900">Sign Up</h2>
         <p className="text-[#3B8BEB] mt-4 text-xl">
           Welcome! Select the below Sign up methods.
