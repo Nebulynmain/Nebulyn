@@ -440,7 +440,7 @@ const Dashboard = () => {
                       <div className="flex items-center space-x-4">
                         <div className="w-12 h-12">{app.icon}</div>
                         <div>
-                          <h3 className="font-medium text-lg font-extrabold text-gray-800">
+                          <h3 className="text-lg font-extrabold text-gray-800">
                             {app.position}
                           </h3>
                           <p className="text-gray-500 text-sm">

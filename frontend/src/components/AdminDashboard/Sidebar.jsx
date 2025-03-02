@@ -126,7 +126,7 @@ const Sidebar = () => {
       </nav>
 
       {/* Profile Section */}
-      <div className="absolute bottom-6 left-4 flex items-center space-x-3 relative z-10">
+      <div className="absolute bottom-6 left-4 flex items-center space-x-3 z-10">
         <img
           src="https://via.placeholder.com/40"
           alt="Profile"
