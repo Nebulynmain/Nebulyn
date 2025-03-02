@@ -186,7 +186,7 @@ const Dashboard = () => {
         <div className="flex-grow transition-all">
           <div className="flex-grow overflow-y-auto">
             <Header />
-            <div className="p-4">
+            <div className="">
               {/*Part 1*/}
               <div className="flex justify-between items-center py-6 px-9">
                 <div>

@@ -55,7 +55,7 @@ const Sidebar = () => {
             <Link
               to="/jobs"
               className={`flex items-center px-4 py-3 rounded-lg relative ${
-                isActive("/jobs")
+                isActive("/jobs") || isActive("/description") // <-- Yeh check add kiya
                   ? "bg-[#E8F0FE] text-[#3B8BEB] font-medium before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:h-8 before:w-1.5 before:bg-[#3B8BEB] before:rounded-full"
                   : "text-gray-600 hover:bg-gray-100"
               }`}
@@ -63,6 +63,7 @@ const Sidebar = () => {
               <Search size={20} className="mr-3" /> Find Jobs
             </Link>
           </li>
+
           <li>
             <Link
               to="/companies"

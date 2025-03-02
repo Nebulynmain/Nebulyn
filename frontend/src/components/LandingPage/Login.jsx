@@ -105,108 +105,79 @@ const Login = () => {
   return (
     <div className="h-screen w-screen overflow-hidden">
       <Navbar />
-      <div className="p-6 ml-22">
+      <div className="p-3 ml-22">
         <h2 className="text-4xl font-bold text-gray-900">
           Login to your Account
         </h2>
-        <p className="text-[#3B8BEB] mt-4 text-xl">
+        <p className="text-[#3B8BEB] mt-2 text-xl">
           Welcome back! Select the below login methods.
         </p>
       </div>
-      <div className="flex items-center justify-center h-full -mt-32">
+      <div className="flex items-center justify-center">
         <div
-          className="bg-white p-10 rounded-3xl w-full max-w-4xl flex h-[700px] shadow-2xl"
+          className="bg-white p-10 rounded-3xl w-full max-w-4xl flex h-[550px] shadow-2xl mt-3"
           style={{ boxShadow: "0px 10px 20px #C4DBF6" }}
         >
           {/* Left Side (Login Form) */}
-          <div className="w-[70%] pr-8 flex flex-col justify-center -ml-2">
-            <label className="block text-xl font-medium text-black-700">
+          <div className="w-[60%] pr-6 flex flex-col justify-center -ml-2">
+            <label className="block text-lg font-medium text-black-700">
               Email ID / Username
             </label>
             <input
               type="text"
               placeholder="Enter email id / username"
-              className="w-full px-6 py-4 mt-3 border border-[#8590AA] rounded-lg focus:ring-2 focus:ring-blue-400 text-lg"
+              className="w-full px-4 py-3 mt-2 border border-[#8590AA] rounded-md focus:ring-2 focus:ring-blue-400 text-base"
             />
 
-            <label className="block text-xl font-medium text-black-700 mt-6">
+            <label className="block text-lg font-medium text-black-700 mt-4">
               Password
             </label>
             <div className="relative">
               <input
                 type={passwordVisible ? "text" : "password"}
                 placeholder="Enter password"
-                className="w-full px-6 py-4 mt-3 border border-[#8590AA] rounded-lg focus:ring-2 focus:ring-blue-400 text-lg"
+                className="w-full px-4 py-3 mt-2 border border-[#8590AA] rounded-md focus:ring-2 focus:ring-blue-400 text-base"
               />
               <button
                 type="button"
                 onClick={() => setPasswordVisible(!passwordVisible)}
-                className="absolute inset-y-0 right-5 top-3 text-lg text-black-600"
+                className="absolute inset-y-0 right-4 top-2 text-base text-black-600"
               >
                 {passwordVisible ? "Hide" : "Show"}
               </button>
             </div>
 
-            <div className="flex items-center justify-between mt-5">
-              <label className="flex items-center text-lg text-blue-600">
-                <input type="checkbox" className="mr-3" /> Remember me
+            <div className="flex items-center justify-between mt-4">
+              <label className="flex items-center text-base text-blue-600">
+                <input type="checkbox" className="mr-2" /> Remember me
               </label>
-              <a href="#" className="text-lg text-black-600 underline">
+              <a href="#" className="text-base text-black-600 underline">
                 Forgot Password?
               </a>
             </div>
 
-            <button className="w-full bg-green-500 text-white py-4 mt-6 rounded-lg text-xl font-medium hover:bg-green-600">
+            <button className="w-full bg-green-500 text-white py-3 mt-4 rounded-md text-lg font-medium hover:bg-green-600">
               Login
             </button>
 
-            <div className="flex items-center my-6 mt-10">
+            <div className="flex items-center my-5">
               <hr className="flex-grow border-t border-gray-300" />
-              <span className="px-4 text-blue-500 text-lg">or login with</span>
+              <span className="px-3 text-blue-500 text-base">
+                or login with
+              </span>
               <hr className="flex-grow border-t border-gray-300" />
             </div>
 
-            <div className="flex justify-center space-x-6">
-              {/* Google Login */}
-              <div className="flex justify-center space-x-6">
-                {/* Google Login */}
-                <button
-                  className="p-4 rounded-lg shadow-lg bg-white cursor-pointer"
-                  onClick={() => googleLogin()}
-                >
-                  <FaGoogle size={28} color="#DB4437" />
-                </button>
-              </div>
-
-              {/* Facebook Login */}
-              {/* Facebook Login */}
-              <button
-                className="p-4 rounded-lg shadow-lg bg-white cursor-pointer"
-                onClick={facebookLogin}
-              >
-                <FaFacebook size={28} color="#1877F2" />
+            <div className="flex justify-center space-x-4">
+              <button className="p-3 rounded-md shadow-md bg-white cursor-pointer">
+                <FaGoogle size={22} color="#DB4437" />
               </button>
-
-              {/* LinkedIn Login */}
-              {/* <LinkedIn
-                    clientId={linkedInClientId}
-                    onFailure={(error) =>
-                      console.error("LinkedIn Error", error)
-                    }
-                    onSuccess={handleLinkedInSuccess}
-                    redirectUri="http://localhost:3000/linkedin"
-                    renderElement={({ onClick }) => (
-                      <button
-                        className="p-4 rounded-lg shadow-lg bg-white"
-                        onClick={onClick}
-                      >
-                        <FaLinkedin size={28} color="#0077B5" />
-                      </button>
-                    )}
-                  /> */}
+              <button className="p-3 rounded-md shadow-md bg-white cursor-pointer">
+                <FaFacebook size={22} color="#1877F2" />
+              </button>
             </div>
 
-            <p className="text-center text-lg mt-6">
+            <p className="text-center text-base mt-4">
               Don't have an account?{" "}
               <Link
                 to="/signup"
@@ -218,7 +189,7 @@ const Login = () => {
           </div>
 
           {/* Right Side (Image Placeholder) */}
-          <div className="w-[50%] bg-gray-200 rounded-lg h-[90%] mt-6"></div>
+          <div className="w-[40%] bg-gray-200 rounded-lg h-[90%] mt-4"></div>
         </div>
       </div>
     </div>
