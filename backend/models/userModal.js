@@ -89,6 +89,9 @@ const userSchema = new mongoose.Schema({
                 type: String,
                 trim: true,
             },
+            duration: {
+                type: String,
+            }
         }
     ],
     instagramLink: {
