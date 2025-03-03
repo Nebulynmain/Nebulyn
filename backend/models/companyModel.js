@@ -15,8 +15,10 @@ const companySchema = new mongoose.Schema({
     industry: {
         type: String,
     },
-
-    companyProfile: {
+    foundedOn: {
+        type: Date,
+    },
+    description: {
         type: String,
         required: true,
     },
