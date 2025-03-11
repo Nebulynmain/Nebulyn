@@ -373,7 +373,7 @@ const Jobs = () => {
                   {currentJobs.map((job, index) => (
                     <div
                       key={index}
-                      className="bg-white p-4 shadow-md border rounded-sm flex justify-between items-center border border-gray-200 "
+                      className="bg-white p-4 shadow-md rounded-sm flex justify-between items-center border border-gray-200 "
                     >
                       <div className="flex items-center gap-4">
                         <img
