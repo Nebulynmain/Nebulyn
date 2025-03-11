@@ -4,10 +4,10 @@ import { createCompany, deleteCompany, getAllCompanies, getCompanyById, updateCo
 
 const router = express.Router();
 
-router.get("/getCompany", isAuthenticated, getAllCompanies);
-router.get("/getCompany/:id", isAuthenticated, getCompanyById);
-router.post("/createCompany", isAuthenticated, createCompany);
-router.post("/updateCompany/:id", isAuthenticated, updateCompany);
-router.delete("/deleteCompany/:id", isAuthenticated, deleteCompany);
+router.get("/get-company", isAuthenticated, getAllCompanies);
+router.get("/get-company/:id", isAuthenticated, getCompanyById);
+router.post("/create-company", isAuthenticated, createCompany);
+router.post("/update-company/:id", isAuthenticated, updateCompany);
+router.delete("/delete-company/:id", isAuthenticated, deleteCompany);
 
 export default router;

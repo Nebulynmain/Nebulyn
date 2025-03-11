@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema({
     fullName: {
-        type:String,
+        type: String,
         required: true,
         trim: true,
     },
@@ -40,11 +40,11 @@ const userSchema = new mongoose.Schema({
     },
     accountType: {
         type: String,
-        enum: ['Job-seeker','Employer'],
+        enum: ['Job-seeker', 'Employer'],
     },
     skills: [{
         type: String,
-        trim : true,
+        trim: true,
     }],
     portfolios: [String],
     education: [
@@ -62,9 +62,13 @@ const userSchema = new mongoose.Schema({
                 trim: true,
             },
             duration: {
-                type: String,
-                trim: true,
-            }
+                startDate: {
+                    type: Date,
+                },
+                endDate: {
+                    type: Date,
+                },
+            },
         }
     ],
     experience: [
@@ -79,7 +83,7 @@ const userSchema = new mongoose.Schema({
             },
             roleType: {
                 type: String,
-                enum: ['Full-time', 'Intern'],
+                enum: ['Full-time', 'Part-time', 'Internship', 'Remote', 'Contract'],
             },
             location: {
                 type: String,
@@ -90,8 +94,13 @@ const userSchema = new mongoose.Schema({
                 trim: true,
             },
             duration: {
-                type: String,
-            }
+                startDate: {
+                    type: Date,
+                },
+                endDate: {
+                    type: Date,
+                },
+            },
         }
     ],
     instagramLink: {
@@ -110,7 +119,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         trim: true,
     }],
-}, {timestamps: true});
+}, { timestamps: true });
 
 const User = mongoose.model('User', userSchema);
 export default User;
