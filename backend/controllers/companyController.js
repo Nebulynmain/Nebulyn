@@ -20,6 +20,21 @@ export const createCompany = async (req, res) => {
     }
 };
 
+export const getCompanyByUser = async (req, res) => {
+    try {
+        const id = req.id;
+        const company = await Company.find({ createdBy: id });
+        if(company.length === 0){
+            return res.status(404).json({ ok: false, message: "Company not found" });
+        }
+
+        return res.status(200).json({ ok: true, data: company });
+    } catch (error) {
+        console.log("Error in getCompanyByUser:", error);
+        res.status(500).json({ ok: false, message: error.message });
+    }
+}
+
 export const getAllCompanies = async (req, res) => {
     try {
         const companies = await Company.find();
