@@ -74,12 +74,10 @@ const companySchema = new mongoose.Schema({
     benefits: [{
         title: {
             type: String,
-            required: true,
             trim: true,
         },
         description: {
             type: String,
-            required: true,
             trim: true,
         }       
     }]

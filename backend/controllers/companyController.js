@@ -11,14 +11,34 @@ export const createCompany = async (req, res) => {
                 data: null 
             });
         }
-        const newCompany = new Company({...req.body, createdBy: req.id, });
+
+        // Check if the company already exists
+        const existingCompany = await Company.findOne({ companyName });
+        if (existingCompany) {
+            return res.status(400).json({ 
+                ok: false, 
+                message: "Company already registered", 
+                data: null 
+            });
+        }
+
+        const newCompany = new Company({ ...req.body, createdBy: req.id });
         await newCompany.save();
-        res.status(201).json({ ok: true, message: "Company created successfully", data: newCompany });
+
+        res.status(201).json({ 
+            ok: true, 
+            message: "Company created successfully", 
+            data: newCompany 
+        });
     } catch (error) {
-        console.log("Error in createCompany:", error);
-        res.status(400).json({ ok: false, message: error.message });
+        console.error("Error in createCompany:", error);
+        res.status(500).json({ 
+            ok: false, 
+            message: "Internal server error" 
+        });
     }
 };
+
 
 export const getCompanyByUser = async (req, res) => {
     try {
