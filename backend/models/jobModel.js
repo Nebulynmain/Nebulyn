@@ -6,9 +6,9 @@ const jobSchema = new mongoose.Schema({
         ref: 'Company',
         required: true,
     },
-    applicants: [{
+    applications: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+        ref: 'Application',
     }],
     jobTitle: {
         type: String,

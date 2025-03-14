@@ -2,22 +2,33 @@ import Job from "../models/jobModel.js";
 
 export const createJob = async (req, res) => {
     try {
-        const { title, description, company, location, employmentType, salary, requirements } = req.body;
+        const { company, jobTitle, jobDescription, jobType, salary } = req.body;
 
-        if (!title || !description || !company || !location || !employmentType || !salary || !requirements) {
+        if (!company || !jobTitle || !jobDescription || !jobType || salary === undefined) {
             return res.status(400).json({ 
                 ok: false, 
                 message: "All required fields must be filled", 
                 data: null 
             });
         }
+
         const newJob = new Job(req.body);
         await newJob.save();
-        res.status(201).json({ ok: true, message: "Job created successfully", data: newJob });
+
+        res.status(201).json({ 
+            ok: true, 
+            message: "Job created successfully", 
+            data: newJob 
+        });
+
     } catch (error) {
-        res.status(400).json({ ok: false, message: error.message });
+        res.status(400).json({ 
+            ok: false, 
+            message: error.message 
+        });
     }
 };
+
 
 export const getAllJobs = async (req, res) => {
     try {
@@ -32,7 +43,7 @@ export const getJobById = async (req, res) => {
     try {
         const job = await Job.findById(req.params.id)
             .populate("company")
-            .populate("applicants");
+            .populate("applications");
 
         if (!job) return res.status(404).json({ ok: false, message: "Job not found" });
 
@@ -66,23 +77,6 @@ export const deleteJob = async (req, res) => {
     }
 };
 
-export const applyForJob = async (req, res) => {
-    try {
-        const job = await Job.findById(req.params.id);
-        if (!job) return res.status(404).json({ ok: false, message: "Job not found" });
-
-        if (job.applicants.includes(req.id)) {
-            return res.status(400).json({ ok: false, message: "You have already applied for this job" });
-        }
-
-        job.applicants.push(req.id);
-        await job.save();
-
-        res.status(200).json({ ok: true, message: "Successfully applied for the job", data: job });
-    } catch (error) {
-        res.status(500).json({ ok: false, message: error.message });
-    }
-};
 
 export const getJobsByCompany = async (req, res) => {
     try {

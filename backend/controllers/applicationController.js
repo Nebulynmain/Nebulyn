@@ -3,10 +3,10 @@ import Job from "../models/jobModel.js";
 import User from "../models/userModal.js";
 
 
-
 export const createApplication = async (req, res) => {
     try {
-        const { job, applicant } = req.body;
+        const { job} = req.body;
+        const applicant = req.id;
 
         const jobExists = await Job.findById(job);
         const userExists = await User.findById(applicant);
@@ -19,12 +19,35 @@ export const createApplication = async (req, res) => {
             return res.status(400).json({ ok: false, message: "You have already applied for this job", data: null });
         }
 
-        const application = await Application.create({ job, applicant });
+        const application = new Application({ job, applicant });
+        await application.save();
+        jobExists.applications.push(application._id);
+        await jobExists.save();
         res.status(201).json({ ok: true, message: "Application submitted successfully", data: application });
     } catch (error) {
         res.status(500).json({ ok: false, message: "Server Error", data: error.message });
     }
 };
+
+
+export const getApplicationsByUser = async (req, res) => {
+    try {
+        const userId  = req.id;
+
+        const applications = await Application.find({ applicant: userId })
+            .populate("job")
+            .populate("applicant");
+
+        if (!applications.length) {
+            return res.status(404).json({ ok: false, message: "No applications found for this user." });
+        }
+
+        res.status(200).json({ ok: true, data: applications });
+    } catch (error) {
+        res.status(500).json({ ok: false, message: error.message });
+    }
+};
+
 
 
 export const getApplications = async (req, res) => {
@@ -49,25 +72,25 @@ export const getApplicationById = async (req, res) => {
     }
 };
 
-export const updateApplicationStatus = async (req, res) => {
+
+export const updateApplication = async (req, res) => {
     try {
-        const { status } = req.body;
-        const validStatuses = ["In Review", "Shortlisted", "Interview", "Hired", "Rejected"];
+        const application = await Application.findByIdAndUpdate(
+            req.params.id, 
+            req.body, 
+            { new: true, runValidators: true } 
+        );
 
-        if (!validStatuses.includes(status)) {
-            return res.status(400).json({ ok: false, message: "Invalid status value", data: null });
-        }
-
-        const application = await Application.findByIdAndUpdate(req.params.id, { status }, { new: true });
         if (!application) {
             return res.status(404).json({ ok: false, message: "Application not found", data: null });
         }
 
-        res.status(200).json({ ok: true, message: "Application status updated successfully", data: application });
+        res.status(200).json({ ok: true, message: "Application updated successfully", data: application });
     } catch (error) {
         res.status(500).json({ ok: false, message: "Server Error", data: error.message });
     }
 };
+
 
 
 export const deleteApplication = async (req, res) => {

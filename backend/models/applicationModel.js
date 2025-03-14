@@ -16,6 +16,9 @@ const applicationSchema = new mongoose.Schema({
         enum: ["In Review", "Shortlisted", "Interview", "Hired", "Rejected"],
         default: "In Review"
     },
+    score: {
+        type: Number,
+    },
     appliedAt: {
         type: Date,
         default: Date.now()
