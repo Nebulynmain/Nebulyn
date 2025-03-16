@@ -1,0 +1,1670 @@
+import React, { useState, useRef } from "react";
+import Sidebar from "./Sidebar";
+import Header from "./Header";
+
+const CompanySettings = () => {
+  const [activeTab, setActiveTab] = useState("overview");
+
+  const [image, setImage] = useState("https://via.placeholder.com/96");
+
+  const [imagePreview, setImagePreview] = useState(null); // For displaying image preview
+
+  const handleImageChange = (event) => {
+    const file = event.target.files[0];
+
+    if (file) {
+      // Validate file type (Only allow images)
+      const allowedTypes = [
+        "image/jpeg",
+        "image/png",
+        "image/gif",
+        "image/svg+xml",
+      ];
+      if (!allowedTypes.includes(file.type)) {
+        alert(
+          "Invalid file type! Please upload a JPG, PNG, GIF, or SVG image."
+        );
+        return;
+      }
+
+      // Validate file size (Max 1MB)
+      const maxSize = 1 * 1024 * 1024; // 1MB
+      if (file.size > maxSize) {
+        alert("File size too large! Please upload an image less than 1MB.");
+        return;
+      }
+
+      // Set preview for UI
+      setImagePreview(URL.createObjectURL(file));
+
+      // Store file in formData for submission
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        profileImage: file,
+      }));
+    }
+  };
+
+  // For handling new location input
+  const [newLocation, setNewLocation] = useState("");
+  // For handling new tech stack input
+  const [newTech, setNewTech] = useState("");
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+
+  // Function to add a new location tag
+  const handleAddLocation = (e) => {
+    if (e.key === "Enter" && newLocation.trim() !== "") {
+      e.preventDefault();
+      setFormData({
+        ...formData,
+        location: [...formData.location, newLocation.trim()],
+      });
+      setNewLocation("");
+    }
+  };
+
+  // Function to add a new tech stack tag
+  const handleAddTech = (e) => {
+    if (e.key === "Enter" && newTech.trim() !== "") {
+      e.preventDefault();
+      setFormData({
+        ...formData,
+        techStack: [...formData.techStack, newTech.trim()],
+      });
+      setNewTech("");
+    }
+  };
+
+  // First, let's define the tag components
+  const LocationTag = ({ label, onRemove }) => (
+    <span className="bg-blue-100 text-blue-700 rounded-full px-3 py-1 m-1 flex items-center text-sm">
+      {label}
+      <button
+        onClick={onRemove}
+        className="ml-2 text-gray-500 hover:text-gray-700"
+      >
+        <svg
+          className="w-4 h-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M6 18L18 6M6 6l12 12"
+          ></path>
+        </svg>
+      </button>
+    </span>
+  );
+
+  const TechTag = ({ label, onRemove }) => (
+    <span className="bg-blue-100 text-blue-700 rounded-full px-3 py-1 m-1 flex items-center text-sm">
+      {label}
+      <button
+        onClick={onRemove}
+        className="ml-2 text-blue-500 hover:text-blue-700"
+      >
+        <svg
+          className="w-4 h-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d="M6 18L18 6M6 6l12 12"
+          ></path>
+        </svg>
+      </button>
+    </span>
+  );
+
+  // References
+  const textareaRef = useRef(null);
+
+  // Complete form data state
+  const [formData, setFormData] = useState({
+    // Company details
+    companyName: "Nomad",
+    website: "Https://www.nomad.com",
+    location: ["England", "Japan", "Australia"],
+    employee: "1 - 50",
+    dateFoundedDay: "31",
+    dateFoundedMonth: "July",
+    dateFoundedYear: "2021",
+    techStack: ["HTML 5", "CSS 3", "Javascript"],
+    profileImage: null,
+    description:
+      "Nomad is part of the Information Technology Industry. We believe travellers want to experience real life and meet local people. Nomad has 30 total employees across all of its locations and generates $1.50 million in sales.",
+    accountType: "business",
+  });
+
+  // Calculated character count
+  const [charCount, setCharCount] = useState(formData.description.length);
+  const maxChars = 500;
+
+  // State for text editing
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [showLinkDialog, setShowLinkDialog] = useState(false);
+  const [linkUrl, setLinkUrl] = useState("");
+  const [linkText, setLinkText] = useState("");
+
+  // Get selection positions
+  const getSelectionPositions = () => {
+    if (textareaRef.current) {
+      return {
+        start: textareaRef.current.selectionStart,
+        end: textareaRef.current.selectionEnd,
+      };
+    }
+    return { start: 0, end: 0 };
+  };
+
+  // Insert text at cursor position
+  const insertTextAtPosition = (insertText, selectionStart, selectionEnd) => {
+    const currentDescription = formData.description;
+    const newText =
+      currentDescription.substring(0, selectionStart) +
+      insertText +
+      currentDescription.substring(selectionEnd);
+
+    if (newText.length <= maxChars) {
+      setFormData({
+        ...formData,
+        description: newText,
+      });
+      setCharCount(newText.length);
+
+      // Set cursor position after insertion
+      setTimeout(() => {
+        if (textareaRef.current) {
+          textareaRef.current.focus();
+          const newPosition = selectionStart + insertText.length;
+          textareaRef.current.setSelectionRange(newPosition, newPosition);
+        }
+      }, 0);
+    }
+  };
+
+  // Handle description changes and update character count
+  const handleDescriptionChange = (e) => {
+    const newText = e.target.value;
+    if (newText.length <= maxChars) {
+      setFormData({
+        ...formData,
+        description: newText,
+      });
+      setCharCount(newText.length);
+    }
+  };
+
+  // Handle account type selection
+  const handleAccountTypeChange = (type) => {
+    setFormData({
+      ...formData,
+      accountType: type,
+    });
+  };
+
+  // Text formatting functions
+  const applyBold = () => {
+    const { start, end } = getSelectionPositions();
+    if (start !== end) {
+      const selectedText = formData.description.substring(start, end);
+      insertTextAtPosition(`**${selectedText}**`, start, end);
+    } else {
+      insertTextAtPosition("**bold text**", start, end);
+    }
+  };
+
+  const applyItalic = () => {
+    const { start, end } = getSelectionPositions();
+    if (start !== end) {
+      const selectedText = formData.description.substring(start, end);
+      insertTextAtPosition(`*${selectedText}*`, start, end);
+    } else {
+      insertTextAtPosition("*italic text*", start, end);
+    }
+  };
+
+  const applyNumberedList = () => {
+    const { start } = getSelectionPositions();
+    // Find the start of the current line
+    let lineStart = start;
+    while (lineStart > 0 && formData.description[lineStart - 1] !== "\n") {
+      lineStart--;
+    }
+
+    insertTextAtPosition("1. ", lineStart, lineStart);
+  };
+
+  const applyBulletList = () => {
+    const { start } = getSelectionPositions();
+    // Find the start of the current line
+    let lineStart = start;
+    while (lineStart > 0 && formData.description[lineStart - 1] !== "\n") {
+      lineStart--;
+    }
+
+    insertTextAtPosition("• ", lineStart, lineStart);
+  };
+
+  // Handle emoji insertion
+  const insertEmoji = (emoji) => {
+    const { start, end } = getSelectionPositions();
+    insertTextAtPosition(emoji, start, end);
+    setShowEmojiPicker(false);
+  };
+
+  // Handle link insertion
+  const insertLink = () => {
+    if (linkUrl) {
+      const textToInsert = linkText
+        ? `[${linkText}](${linkUrl})`
+        : `[${linkUrl}](${linkUrl})`;
+
+      const { start, end } = getSelectionPositions();
+      insertTextAtPosition(textToInsert, start, end);
+
+      // Reset form
+      setLinkUrl("");
+      setLinkText("");
+      setShowLinkDialog(false);
+    }
+  };
+
+  // Function to save profile (from provided code)
+  const handleSaveProfile = () => {
+    console.log("Profile Data Saved:", formData);
+    alert("Profile saved successfully!");
+  };
+
+  // Simple emoji picker
+  const emojis = ["😀", "😊", "👍", "🎉", "❤️", "🔥", "✅", "🚀", "💡", "📊"];
+
+  const [socialLinks, setSocialLinks] = useState({
+    instagram: "https://www.instagram.com/nomad/",
+    twitter: "https://twitter.com/nomad/",
+    facebook: "https://web.facebook.com/nomad/",
+    linkedin: "",
+    youtube: "",
+  });
+
+  const handleUpdate = (e) => {
+    const { name, value } = e.target;
+    setSocialLinks({
+      ...socialLinks,
+      [name]: value,
+    });
+  };
+
+  const handleSaveChanges = () => {
+    console.log("Saving social links:", socialLinks);
+    // Add API call to save data
+  };
+
+  // Initialize with sample team members
+  const [teamMembers, setTeamMembers] = useState([
+    {
+      id: 1,
+      name: "Célestin Gardinier",
+      role: "CEO & Co-Founder",
+      image: "/api/placeholder/90/90",
+      socials: {
+        instagram: "https://www.instagram.com/celestin/",
+        linkedin: "https://linkedin.com/in/celestin/",
+      },
+    },
+    {
+      id: 2,
+      name: "Reynaud Colbert",
+      role: "Co-Founder",
+      image: "/api/placeholder/90/90",
+      socials: {
+        instagram: "https://www.instagram.com/reynaud/",
+        linkedin: "https://linkedin.com/in/reynaud/",
+      },
+    },
+    {
+      id: 3,
+      name: "Arienne Lyon",
+      role: "Managing Director",
+      image: "/api/placeholder/90/90",
+      socials: {
+        instagram: "https://www.instagram.com/arienne/",
+        linkedin: "https://linkedin.com/in/arienne/",
+      },
+    },
+    {
+      id: 4,
+      name: "Bernard Alexander",
+      role: "Managing Director",
+      image: "/api/placeholder/90/90",
+      socials: {
+        instagram: "https://www.instagram.com/bernard/",
+        linkedin: "https://linkedin.com/in/bernard/",
+      },
+    },
+    {
+      id: 5,
+      name: "Christine Jhonson",
+      role: "Managing Director",
+      image: "/api/placeholder/90/90",
+      socials: {
+        instagram: "https://www.instagram.com/christine/",
+        linkedin: "https://linkedin.com/in/christine/",
+      },
+    },
+    {
+      id: 6,
+      name: "Aaron Morgan",
+      role: "Managing Director",
+      image: "/api/placeholder/90/90",
+      socials: {
+        instagram: "https://www.instagram.com/aaron/",
+        linkedin: "https://linkedin.com/in/aaron/",
+      },
+    },
+  ]);
+
+  // State for new member form
+  const [newMember, setNewMember] = useState({
+    name: "",
+    role: "",
+    socials: {
+      instagram: "",
+      linkedin: "",
+    },
+  });
+
+  // State for member editing
+  const [selectedMember, setSelectedMember] = useState(null);
+
+  // State for view mode (grid or list)
+  const [viewMode, setViewMode] = useState("grid");
+
+  // State for showing add member modal
+  const [showAddModal, setShowAddModal] = useState(false);
+
+  // Handle new member form changes
+  const handleNewMemberChange = (e) => {
+    const { name, value } = e.target;
+    if (name === "instagram" || name === "linkedin") {
+      setNewMember({
+        ...newMember,
+        socials: {
+          ...newMember.socials,
+          [name]: value,
+        },
+      });
+    } else {
+      setNewMember({
+        ...newMember,
+        [name]: value,
+      });
+    }
+  };
+
+  // Add new member
+  const handleAddMember = () => {
+    if (!newMember.name || !newMember.role) {
+      alert("Please fill in name and role fields");
+      return;
+    }
+
+    const newId = Math.max(...teamMembers.map((m) => m.id), 0) + 1;
+
+    setTeamMembers([
+      ...teamMembers,
+      {
+        ...newMember,
+        id: newId,
+        image: "/api/placeholder/90/90",
+      },
+    ]);
+
+    setNewMember({
+      name: "",
+      role: "",
+      socials: {
+        instagram: "",
+        linkedin: "",
+      },
+    });
+
+    setShowAddModal(false);
+  };
+
+  // Remove a member
+  const handleRemoveMember = (id) => {
+    if (confirm("Are you sure you want to remove this member?")) {
+      setTeamMembers(teamMembers.filter((member) => member.id !== id));
+    }
+  };
+
+  // Select a member for editing
+  const handleSelectMember = (member) => {
+    setSelectedMember(member);
+    setNewMember({
+      name: member.name,
+      role: member.role,
+      socials: { ...member.socials },
+    });
+    setShowAddModal(true);
+  };
+
+  // Update existing member
+  const handleUpdateMember = () => {
+    if (!selectedMember) return;
+
+    setTeamMembers(
+      teamMembers.map((member) =>
+        member.id === selectedMember.id
+          ? {
+              ...member,
+              name: newMember.name,
+              role: newMember.role,
+              socials: newMember.socials,
+            }
+          : member
+      )
+    );
+
+    setSelectedMember(null);
+    setNewMember({
+      name: "",
+      role: "",
+      socials: {
+        instagram: "",
+        linkedin: "",
+      },
+    });
+
+    setShowAddModal(false);
+  };
+
+  return (
+    <div className="flex flex-col min-h-screen">
+      <div className="flex flex-row flex-grow">
+        <div className="h-screen sticky top-0">
+          <Sidebar />
+        </div>
+        <div className="flex-grow transition-all">
+          <Header />
+          <div className="p-6">
+            <div className="border-b border-gray-300 flex space-x-8 text-lg w-full">
+              <button
+                className={`pb-3 border-b-4 px-6 ${
+                  activeTab === "overview"
+                    ? "border-blue-500 font-semibold text-blue-600"
+                    : "border-transparent text-gray-500"
+                }`}
+                onClick={() => setActiveTab("overview")}
+              >
+                Overview
+              </button>
+              <button
+                className={`pb-3 border-b-4 px-6 ${
+                  activeTab === "sociallinks"
+                    ? "border-blue-500 font-semibold text-blue-600"
+                    : "border-transparent text-gray-500"
+                }`}
+                onClick={() => setActiveTab("sociallinks")}
+              >
+                Social Links
+              </button>
+              <button
+                className={`pb-3 border-b-4 px-6 ${
+                  activeTab === "team"
+                    ? "border-blue-500 font-semibold text-blue-600"
+                    : "border-transparent text-gray-500"
+                }`}
+                onClick={() => setActiveTab("team")}
+              >
+                Team
+              </button>
+            </div>
+            <div className=" p-4">
+              {activeTab === "overview" && (
+                <div>
+                  <div className="border-b border-gray-300">
+                    <h2 className="text-2xl font-bold">Basic Information</h2>
+                    <p className="text-gray-500 text-xl mt-2 mb-5">
+                      This is your company information that you can update
+                      anytime.
+                    </p>
+                  </div>
+                  {/* Profile Photo Section */}
+                  <div className="flex space-x-10 border-b border-gray-300 mt-5">
+                    <div className="flex flex-col items-start text-3xl w-2/4">
+                      <h2 className="text-2xl font-bold">Profile Photo</h2>
+                      <p className="text-gray-500 text-xl mt-2">
+                        This image will be shown publicly <br /> as your company
+                        logo
+                      </p>
+                    </div>
+                    <div className="flex space-x-10 items-center w-2/4 -ml-50">
+                      <div className="w-45 h-28 rounded-full overflow-hidden border-4 border-gray-300">
+                        {imagePreview ? (
+                          <img
+                            src={imagePreview}
+                            alt="Profile"
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-500">
+                            No Image
+                          </div>
+                        )}
+                      </div>
+                      <label className="w-140 h-40 border-4 border-dashed border-blue-400 flex flex-col justify-center text-center p-12 rounded-lg cursor-pointer text-xl bg-[#F8F8FD] mb-5 ml-20">
+                        <span className="text-blue-500 font-semibold">
+                          Click to replace
+                        </span>
+                        <p className="text-gray-400 mt-2">or drag and drop</p>
+                        <p className="text-gray-400">
+                          SVG, PNG, JPG or GIF (max. 400 x 400px)
+                        </p>
+                        <input
+                          type="file"
+                          className="hidden"
+                          accept="image/*"
+                          onChange={handleImageChange}
+                        />
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* Company Details Section */}
+                  <div className="flex items-start space-x-10 border-b border-gray-300 mt-5">
+                    <div className="w-2/4">
+                      <h2 className="text-2xl font-bold">Company Details</h2>
+                      <p className="text-gray-500 text-xl mt-2 mb-5">
+                        Introduce your company core <br /> info quickly to users
+                        by fill up <br />
+                        company details
+                      </p>
+                    </div>
+                    <div className="w-2/3 space-y-6">
+                      <div>
+                        <label className="block text-gray-700 mb-1">
+                          Company Name
+                        </label>
+                        <input
+                          type="text"
+                          name="companyName"
+                          value={formData.companyName}
+                          onChange={handleChange}
+                          className="w-full p-3 border border-gray-300 rounded-lg"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-gray-700 mb-1">
+                          Website
+                        </label>
+                        <input
+                          type="text"
+                          name="website"
+                          value={formData.website}
+                          onChange={handleChange}
+                          className="w-full p-3 border border-gray-300 rounded-lg"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-gray-700 mb-1">
+                          Location
+                        </label>
+                        <div className="relative">
+                          <div className="p-3 border border-gray-300 rounded-lg flex flex-wrap items-center min-h-12">
+                            {formData.location.map((loc, index) => (
+                              <LocationTag
+                                key={index}
+                                label={loc}
+                                onRemove={() => {
+                                  const newLocs = [...formData.location];
+                                  newLocs.splice(index, 1);
+                                  setFormData({
+                                    ...formData,
+                                    location: newLocs,
+                                  });
+                                }}
+                              />
+                            ))}
+                            <input
+                              type="text"
+                              className="flex-1 outline-none min-w-16"
+                              placeholder="Add location..."
+                              value={newLocation}
+                              onChange={(e) => setNewLocation(e.target.value)}
+                              onKeyDown={handleAddLocation}
+                            />
+                          </div>
+                          <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                            <svg
+                              className="w-4 h-4 text-gray-500"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M19 9l-7 7-7-7"
+                              ></path>
+                            </svg>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex gap-6">
+                        <div className="w-1/2">
+                          <label className="block text-gray-700 mb-1">
+                            Employee
+                          </label>
+                          <div className="relative">
+                            <select
+                              name="employee"
+                              value={formData.employee}
+                              onChange={handleChange}
+                              className="w-full p-3 border border-gray-300 rounded-lg appearance-none"
+                            >
+                              <option value="1 - 50">1 - 50</option>
+                              <option value="51 - 200">51 - 200</option>
+                              <option value="201 - 500">201 - 500</option>
+                              <option value="500+">500+</option>
+                            </select>
+                            <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                              <svg
+                                className="w-4 h-4 text-gray-500"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth="2"
+                                  d="M19 9l-7 7-7-7"
+                                ></path>
+                              </svg>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="w-1/2">
+                          <label className="block text-gray-700 mb-1">
+                            Industry
+                          </label>
+                          <div className="relative">
+                            <select
+                              name="industry"
+                              value={formData.industry}
+                              onChange={handleChange}
+                              className="w-full p-3 border border-gray-300 rounded-lg appearance-none"
+                            >
+                              <option value="Technology">Technology</option>
+                              <option value="Finance">Finance</option>
+                              <option value="Healthcare">Healthcare</option>
+                              <option value="Education">Education</option>
+                            </select>
+                            <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                              <svg
+                                className="w-4 h-4 text-gray-500"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth="2"
+                                  d="M19 9l-7 7-7-7"
+                                ></path>
+                              </svg>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-gray-700 mb-1">
+                          Date Founded
+                        </label>
+                        <div className="flex gap-4">
+                          <div className="w-1/3 relative">
+                            <select
+                              name="dateFoundedDay"
+                              value={formData.dateFoundedDay}
+                              onChange={handleChange}
+                              className="w-full p-3 border border-gray-300 rounded-lg appearance-none"
+                            >
+                              {Array.from({ length: 31 }, (_, i) => i + 1).map(
+                                (day) => (
+                                  <option key={day} value={day}>
+                                    {day}
+                                  </option>
+                                )
+                              )}
+                            </select>
+                            <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                              <svg
+                                className="w-4 h-4 text-gray-500"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth="2"
+                                  d="M19 9l-7 7-7-7"
+                                ></path>
+                              </svg>
+                            </div>
+                          </div>
+                          <div className="w-1/3 relative">
+                            <select
+                              name="dateFoundedMonth"
+                              value={formData.dateFoundedMonth}
+                              onChange={handleChange}
+                              className="w-full p-3 border border-gray-300 rounded-lg appearance-none"
+                            >
+                              {[
+                                "January",
+                                "February",
+                                "March",
+                                "April",
+                                "May",
+                                "June",
+                                "July",
+                                "August",
+                                "September",
+                                "October",
+                                "November",
+                                "December",
+                              ].map((month) => (
+                                <option key={month} value={month}>
+                                  {month}
+                                </option>
+                              ))}
+                            </select>
+                            <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                              <svg
+                                className="w-4 h-4 text-gray-500"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth="2"
+                                  d="M19 9l-7 7-7-7"
+                                ></path>
+                              </svg>
+                            </div>
+                          </div>
+                          <div className="w-1/3 relative">
+                            <select
+                              name="dateFoundedYear"
+                              value={formData.dateFoundedYear}
+                              onChange={handleChange}
+                              className="w-full p-3 border border-gray-300 rounded-lg appearance-none"
+                            >
+                              {Array.from(
+                                { length: 50 },
+                                (_, i) => 2025 - i
+                              ).map((year) => (
+                                <option key={year} value={year}>
+                                  {year}
+                                </option>
+                              ))}
+                            </select>
+                            <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                              <svg
+                                className="w-4 h-4 text-gray-500"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth="2"
+                                  d="M19 9l-7 7-7-7"
+                                ></path>
+                              </svg>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="mb-5">
+                        <label className="block text-gray-700 mb-1">
+                          Tech Stack
+                        </label>
+                        <div className="relative">
+                          <div className="p-3 border border-gray-300 rounded-lg flex flex-wrap items-center min-h-12">
+                            {formData.techStack.map((tech, index) => (
+                              <TechTag
+                                key={index}
+                                label={tech}
+                                onRemove={() => {
+                                  const newTechs = [...formData.techStack];
+                                  newTechs.splice(index, 1);
+                                  setFormData({
+                                    ...formData,
+                                    techStack: newTechs,
+                                  });
+                                }}
+                              />
+                            ))}
+                            <input
+                              type="text"
+                              className="flex-1 outline-none min-w-16"
+                              placeholder="Add technology..."
+                              value={newTech}
+                              onChange={(e) => setNewTech(e.target.value)}
+                              onKeyDown={handleAddTech}
+                            />
+                          </div>
+                          <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                            <svg
+                              className="w-4 h-4 text-gray-500"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M19 9l-7 7-7-7"
+                              ></path>
+                            </svg>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Company Section */}
+                  <div className="flex space-x-10 items-start border-b border-gray-300 pb-6 mt-6">
+                    <div className="flex flex-col items-start w-1/3">
+                      <h2 className="text-2xl font-bold text-gray-800">
+                        About Company
+                      </h2>
+                      <p className="text-gray-500 text-base mt-2 text-xl">
+                        Brief description for your
+                        <br /> company. URLs are hyperlinked.
+                      </p>
+                    </div>
+                    <div className="flex flex-col w-[60%] ml-30">
+                      <h2 className="text-xl font-bold text-gray-800 mb-2">
+                        Description
+                      </h2>
+                      <div className="border border-gray-300 rounded-lg p-2 bg-white">
+                        <textarea
+                          ref={textareaRef}
+                          value={formData.description}
+                          onChange={handleDescriptionChange}
+                          className="w-full p-3 min-h-36 outline-none resize-none text-base"
+                          placeholder="Enter company description..."
+                        />
+                        <div className="border-t border-gray-200 pt-3 px-3 flex items-center justify-between">
+                          <div className="flex space-x-4 relative">
+                            {/* Emoji Picker Button */}
+                            <button
+                              type="button"
+                              className={`text-gray-500 hover:text-gray-700 ${
+                                showEmojiPicker ? "text-blue-500" : ""
+                              }`}
+                              onClick={() => {
+                                setShowLinkDialog(false); // Close link dialog if open
+                                setShowEmojiPicker(!showEmojiPicker);
+                              }}
+                            >
+                              😊
+                            </button>
+
+                            {/* Emoji Picker Modal - Positioned better */}
+                            {showEmojiPicker && (
+                              <div className="absolute top-10 left-0 bg-white shadow-md rounded-lg p-3 z-10 border border-gray-200 min-w-48">
+                                <div className="grid grid-cols-4 gap-2">
+                                  {emojis.map((emoji, index) => (
+                                    <button
+                                      key={index}
+                                      type="button"
+                                      className="text-xl hover:bg-gray-100 w-8 h-8 flex items-center justify-center rounded"
+                                      onClick={() => {
+                                        insertEmoji(emoji);
+                                        setShowEmojiPicker(false); // Auto close after selection
+                                      }}
+                                    >
+                                      {emoji}
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Formatting Buttons */}
+                            <button
+                              type="button"
+                              className="text-gray-700 font-bold"
+                              onClick={() => {
+                                setShowEmojiPicker(false);
+                                setShowLinkDialog(false);
+                                applyBold();
+                              }}
+                            >
+                              B
+                            </button>
+                            <button
+                              type="button"
+                              className="text-gray-700 italic"
+                              onClick={() => {
+                                setShowEmojiPicker(false);
+                                setShowLinkDialog(false);
+                                applyItalic();
+                              }}
+                            >
+                              I
+                            </button>
+                            <button
+                              type="button"
+                              className="text-gray-700"
+                              onClick={() => {
+                                setShowEmojiPicker(false);
+                                setShowLinkDialog(false);
+                                applyNumberedList();
+                              }}
+                            >
+                              🔢
+                            </button>
+                            <button
+                              type="button"
+                              className="text-gray-700"
+                              onClick={() => {
+                                setShowEmojiPicker(false);
+                                setShowLinkDialog(false);
+                                applyBulletList();
+                              }}
+                            >
+                              •
+                            </button>
+
+                            {/* Link Button */}
+                            <button
+                              type="button"
+                              className={`text-gray-500 hover:text-gray-700 ${
+                                showLinkDialog ? "text-blue-500" : ""
+                              }`}
+                              onClick={() => {
+                                setShowEmojiPicker(false); // Close emoji picker if open
+                                setShowLinkDialog(!showLinkDialog);
+                              }}
+                            >
+                              🔗
+                            </button>
+
+                            {/* Link Dialog - Better positioned */}
+                            {showLinkDialog && (
+                              <div className="absolute top-10 right-0 bg-white shadow-md rounded-lg p-3 z-10 border border-gray-200 w-64">
+                                <input
+                                  type="text"
+                                  placeholder="Enter link URL"
+                                  className="border p-2 rounded w-full mb-2"
+                                  value={linkUrl}
+                                  onChange={(e) => setLinkUrl(e.target.value)}
+                                />
+                                <input
+                                  type="text"
+                                  placeholder="Enter link text (optional)"
+                                  className="border p-2 rounded w-full mb-2"
+                                  value={linkText}
+                                  onChange={(e) => setLinkText(e.target.value)}
+                                />
+                                <button
+                                  className="bg-blue-500 text-white px-3 py-1 rounded"
+                                  onClick={() => {
+                                    insertLink();
+                                    setShowLinkDialog(false); // Auto close after insertion
+                                  }}
+                                >
+                                  Insert Link
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            {charCount} / {maxChars}
+                          </div>
+                        </div>
+                      </div>
+                      <h2 className="text-md text-gray-400 mb-2">
+                        Maximum 500 character
+                      </h2>
+                    </div>
+                  </div>
+
+                  {/* Save Profile Button */}
+                  <div className="flex justify-end mt-6">
+                    <button
+                      onClick={handleSaveProfile}
+                      className="bg-[#3B8BEB] text-white font-semibold px-6 py-3 rounded-sm shadow-md hover:bg-blue-600 transition"
+                    >
+                      Save Changes
+                    </button>
+                  </div>
+                </div>
+              )}
+              {activeTab === "sociallinks" && (
+                <div>
+                  {/* Social Link */}
+                  <div className="flex items-start space-x-10 border-b border-gray-300">
+                    <div className="w-2/4">
+                      <h2 className="text-2xl font-bold">Basic Information</h2>
+                      <p className="text-gray-500 text-xl mt-2 mb-5">
+                        Add elsewhere link to your <br /> company profile. You
+                        can add <br />
+                        only username without full https <br />
+                        links.
+                      </p>
+                    </div>
+                    <div className="w-2/3 space-y-6 mb-7">
+                      <div>
+                        <label className="block text-gray-700 mb-1">
+                          Instagram
+                        </label>
+                        <input
+                          type="text"
+                          name="instagram"
+                          value={
+                            formData.instagram ||
+                            "https://www.instagram.com/nomad/"
+                          }
+                          onChange={handleUpdate}
+                          className="w-full p-3 border border-gray-300 rounded-lg"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-gray-700 mb-1">
+                          Twitter
+                        </label>
+                        <input
+                          type="text"
+                          name="twitter"
+                          value={
+                            formData.twitter || "https://twitter.com/nomad/"
+                          }
+                          onChange={handleUpdate}
+                          className="w-full p-3 border border-gray-300 rounded-lg"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-gray-700 mb-1">
+                          Facebook
+                        </label>
+                        <input
+                          type="text"
+                          name="facebook"
+                          value={
+                            formData.facebook ||
+                            "https://web.facebook.com/nomad/"
+                          }
+                          onChange={handleUpdate}
+                          className="w-full p-3 border border-gray-300 rounded-lg"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-gray-700 mb-1">
+                          LinkedIn
+                        </label>
+                        <input
+                          type="text"
+                          name="linkedin"
+                          value={formData.linkedin || ""}
+                          onChange={handleUpdate}
+                          placeholder="Enter your LinkedIn address"
+                          className="w-full p-3 border border-gray-300 rounded-lg"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-gray-700 mb-1">
+                          Youtube
+                        </label>
+                        <input
+                          type="text"
+                          name="youtube"
+                          value={formData.youtube || ""}
+                          onChange={handleUpdate}
+                          placeholder="Enter your youtube address"
+                          className="w-full p-3 border border-gray-300 rounded-lg"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end mb-5 mt-5">
+                    <button
+                      onClick={handleSaveChanges}
+                      className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-6 rounded"
+                    >
+                      Save Changes
+                    </button>
+                  </div>
+                </div>
+              )}
+              {activeTab === "team" && (
+                <div>
+                  {/* Team */}
+                  <div className="flex items-start space-x-10">
+                    <div className="w-2/4">
+                      <h2 className="text-2xl font-bold">Basic Information</h2>
+                      <p className="text-gray-500 text-xl mt-2 mb-5">
+                        Add team members of your <br /> company
+                      </p>
+                    </div>
+                    <div className="w-11/12 space-y-6 mb-7">
+                      {/* Header section */}
+                      <div className="flex justify-between items-center mb-6">
+                        <h1 className="text-xl font-semibold">
+                          {teamMembers.length} Members
+                        </h1>
+                        <div className="flex space-x-4">
+                          <button
+                            onClick={() => setShowAddModal(true)}
+                            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md flex items-center"
+                          >
+                            <span className="mr-2">+</span>
+                            Add Members
+                          </button>
+                          <div className="flex">
+                            <button
+                              onClick={() => setViewMode("grid")}
+                              className={`p-2 rounded-l-md border ${
+                                viewMode === "grid"
+                                  ? "bg-blue-100 border-blue-200"
+                                  : "bg-gray-100 border-gray-200"
+                              }`}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="20"
+                                height="20"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              >
+                                <rect x="3" y="3" width="7" height="7" />
+                                <rect x="14" y="3" width="7" height="7" />
+                                <rect x="14" y="14" width="7" height="7" />
+                                <rect x="3" y="14" width="7" height="7" />
+                              </svg>
+                            </button>
+                            <button
+                              onClick={() => setViewMode("list")}
+                              className={`p-2 rounded-r-md border-t border-b border-r ${
+                                viewMode === "list"
+                                  ? "bg-blue-100 border-blue-200"
+                                  : "bg-gray-100 border-gray-200"
+                              }`}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="20"
+                                height="20"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              >
+                                <line x1="8" y1="6" x2="21" y2="6" />
+                                <line x1="8" y1="12" x2="21" y2="12" />
+                                <line x1="8" y1="18" x2="21" y2="18" />
+                                <line x1="3" y1="6" x2="3.01" y2="6" />
+                                <line x1="3" y1="12" x2="3.01" y2="12" />
+                                <line x1="3" y1="18" x2="3.01" y2="18" />
+                              </svg>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Members Grid/List View */}
+                      {viewMode === "grid" ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                          {teamMembers.map((member) => (
+                            <div
+                              key={member.id}
+                              className="border border-gray-200 rounded-lg p-6 flex flex-col items-center relative group"
+                            >
+                              <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button
+                                  onClick={() => handleSelectMember(member)}
+                                  className="p-1 text-gray-500 hover:text-blue-500 mr-1"
+                                >
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="16"
+                                    height="16"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                  >
+                                    <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+                                  </svg>
+                                </button>
+                                <button
+                                  onClick={() => handleRemoveMember(member.id)}
+                                  className="p-1 text-gray-500 hover:text-red-500"
+                                >
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="16"
+                                    height="16"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                  >
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                  </svg>
+                                </button>
+                              </div>
+                              <img
+                                src={member.image}
+                                alt={member.name}
+                                className="w-24 h-24 rounded-full object-cover mb-4"
+                              />
+                              <h3 className="font-semibold text-lg">
+                                {member.name}
+                              </h3>
+                              <p className="text-gray-500 mb-4">
+                                {member.role}
+                              </p>
+                              <div className="flex space-x-3">
+                                {member.socials.instagram && (
+                                  <a
+                                    href={member.socials.instagram}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-gray-400 hover:text-gray-600"
+                                  >
+                                    <svg
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      width="20"
+                                      height="20"
+                                      viewBox="0 0 24 24"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      strokeWidth="2"
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                    >
+                                      <rect
+                                        x="2"
+                                        y="2"
+                                        width="20"
+                                        height="20"
+                                        rx="5"
+                                        ry="5"
+                                      ></rect>
+                                      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                                      <line
+                                        x1="17.5"
+                                        y1="6.5"
+                                        x2="17.51"
+                                        y2="6.5"
+                                      ></line>
+                                    </svg>
+                                  </a>
+                                )}
+                                {member.socials.linkedin && (
+                                  <a
+                                    href={member.socials.linkedin}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-gray-400 hover:text-gray-600"
+                                  >
+                                    <svg
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      width="20"
+                                      height="20"
+                                      viewBox="0 0 24 24"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      strokeWidth="2"
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                    >
+                                      <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+                                      <rect
+                                        x="2"
+                                        y="9"
+                                        width="4"
+                                        height="12"
+                                      ></rect>
+                                      <circle cx="4" cy="4" r="2"></circle>
+                                    </svg>
+                                  </a>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="border border-gray-200 rounded-lg">
+                          {teamMembers.map((member, index) => (
+                            <div
+                              key={member.id}
+                              className={`p-4 flex items-center justify-between ${
+                                index !== teamMembers.length - 1
+                                  ? "border-b border-gray-200"
+                                  : ""
+                              }`}
+                            >
+                              <div className="flex items-center">
+                                <img
+                                  src={member.image}
+                                  alt={member.name}
+                                  className="w-12 h-12 rounded-full object-cover mr-4"
+                                />
+                                <div>
+                                  <h3 className="font-semibold">
+                                    {member.name}
+                                  </h3>
+                                  <p className="text-gray-500 text-sm">
+                                    {member.role}
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="flex items-center">
+                                <div className="flex space-x-3 mr-6">
+                                  {member.socials.instagram && (
+                                    <a
+                                      href={member.socials.instagram}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="text-gray-400 hover:text-gray-600"
+                                    >
+                                      <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="18"
+                                        height="18"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                      >
+                                        <rect
+                                          x="2"
+                                          y="2"
+                                          width="20"
+                                          height="20"
+                                          rx="5"
+                                          ry="5"
+                                        ></rect>
+                                        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                                        <line
+                                          x1="17.5"
+                                          y1="6.5"
+                                          x2="17.51"
+                                          y2="6.5"
+                                        ></line>
+                                      </svg>
+                                    </a>
+                                  )}
+                                  {member.socials.linkedin && (
+                                    <a
+                                      href={member.socials.linkedin}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="text-gray-400 hover:text-gray-600"
+                                    >
+                                      <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="18"
+                                        height="18"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                      >
+                                        <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+                                        <rect
+                                          x="2"
+                                          y="9"
+                                          width="4"
+                                          height="12"
+                                        ></rect>
+                                        <circle cx="4" cy="4" r="2"></circle>
+                                      </svg>
+                                    </a>
+                                  )}
+                                </div>
+                                <div className="flex">
+                                  <button
+                                    onClick={() => handleSelectMember(member)}
+                                    className="p-1 text-gray-500 hover:text-blue-500 mr-1"
+                                  >
+                                    <svg
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      width="16"
+                                      height="16"
+                                      viewBox="0 0 24 24"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      strokeWidth="2"
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                    >
+                                      <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+                                    </svg>
+                                  </button>
+                                  <button
+                                    onClick={() =>
+                                      handleRemoveMember(member.id)
+                                    }
+                                    className="p-1 text-gray-500 hover:text-red-500"
+                                  >
+                                    <svg
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      width="16"
+                                      height="16"
+                                      viewBox="0 0 24 24"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      strokeWidth="2"
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                    >
+                                      <polyline points="3 6 5 6 21 6"></polyline>
+                                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                    </svg>
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      {/* Add/Edit Member Modal */}
+                      {showAddModal && (
+                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+                            <div className="flex justify-between items-center mb-4">
+                              <h3 className="text-lg font-semibold">
+                                {selectedMember
+                                  ? "Edit Member"
+                                  : "Add New Member"}
+                              </h3>
+                              <button
+                                onClick={() => {
+                                  setShowAddModal(false);
+                                  setSelectedMember(null);
+                                  setNewMember({
+                                    name: "",
+                                    role: "",
+                                    socials: {
+                                      instagram: "",
+                                      linkedin: "",
+                                    },
+                                  });
+                                }}
+                                className="text-gray-500 hover:text-gray-700"
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="20"
+                                  height="20"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                >
+                                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                                </svg>
+                              </button>
+                            </div>
+                            <div className="space-y-4">
+                              <div>
+                                <label className="block text-gray-700 mb-1">
+                                  Name
+                                </label>
+                                <input
+                                  type="text"
+                                  name="name"
+                                  value={newMember.name}
+                                  onChange={handleNewMemberChange}
+                                  className="w-full p-3 border border-gray-300 rounded-lg"
+                                  placeholder="Enter member name"
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-gray-700 mb-1">
+                                  Role
+                                </label>
+                                <input
+                                  type="text"
+                                  name="role"
+                                  value={newMember.role}
+                                  onChange={handleNewMemberChange}
+                                  className="w-full p-3 border border-gray-300 rounded-lg"
+                                  placeholder="Enter member role"
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-gray-700 mb-1">
+                                  Instagram
+                                </label>
+                                <input
+                                  type="text"
+                                  name="instagram"
+                                  value={newMember.socials.instagram}
+                                  onChange={handleNewMemberChange}
+                                  className="w-full p-3 border border-gray-300 rounded-lg"
+                                  placeholder="https://instagram.com/username"
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-gray-700 mb-1">
+                                  LinkedIn
+                                </label>
+                                <input
+                                  type="text"
+                                  name="linkedin"
+                                  value={newMember.socials.linkedin}
+                                  onChange={handleNewMemberChange}
+                                  className="w-full p-3 border border-gray-300 rounded-lg"
+                                  placeholder="https://linkedin.com/in/username"
+                                />
+                              </div>
+                              <div className="flex justify-end pt-4">
+                                <button
+                                  onClick={() => {
+                                    setShowAddModal(false);
+                                    setSelectedMember(null);
+                                  }}
+                                  className="px-4 py-2 border border-gray-300 rounded-md mr-2 hover:bg-gray-100"
+                                >
+                                  Cancel
+                                </button>
+                                <button
+                                  onClick={
+                                    selectedMember
+                                      ? handleUpdateMember
+                                      : handleAddMember
+                                  }
+                                  className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                                >
+                                  {selectedMember ? "Update" : "Add"}
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end mb-5">
+                    <button
+                      onClick={handleSaveChanges}
+                      className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-6 rounded"
+                    >
+                      Save Changes
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default CompanySettings;

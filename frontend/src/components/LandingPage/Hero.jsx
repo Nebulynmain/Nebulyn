@@ -28,7 +28,7 @@ const Hero = () => {
               className="w-full outline-none text-lg"
             />
           </div>
-          <button className="bg-[#007AFF] text-white px-10 py-3 rounded-lg font-medium text-lg">
+          <button className="bg-[#007AFF] text-white px-10 py-3 rounded-lg font-medium text-lg cursor-pointer">
             Find Job
           </button>
         </div>
