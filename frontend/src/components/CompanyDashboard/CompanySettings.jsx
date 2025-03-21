@@ -558,7 +558,7 @@ const CompanySettings = () => {
                       </p>
                     </div>
                     <div className="flex space-x-10 items-center w-2/4 -ml-50">
-                      <div className="w-34 h-30 rounded-full overflow-hidden border-4 border-gray-300">
+                      <div className="w-40 h-28 rounded-full overflow-hidden border-4 border-gray-300">
                         {imagePreview ? (
                           <img
                             src={imagePreview}
