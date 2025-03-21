@@ -4,6 +4,7 @@ import {
   ChevronRightIcon,
   PlusIcon,
   CheckIcon,
+  X as XIcon,
 } from "lucide-react";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
@@ -26,6 +27,72 @@ const Schedule = () => {
     { id: 4, name: "My Task", color: "yellow", checked: false },
     { id: 5, name: "Reminders", color: "red", checked: false },
   ]);
+
+  // Add new state for category modal
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+  const [newCategory, setNewCategory] = useState({
+    name: "",
+    color: "blue",
+  });
+
+  // Add new state for modal and form
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newEvent, setNewEvent] = useState({
+    title: "",
+    startDate: "",
+    startTime: "09:00",
+    endTime: "10:00",
+    categoryId: 1,
+  });
+
+  // Available colors for categories
+  const availableColors = [
+    { name: "Blue", value: "blue" },
+    { name: "Green", value: "green" },
+    { name: "Purple", value: "purple" },
+    { name: "Yellow", value: "yellow" },
+    { name: "Red", value: "red" },
+  ];
+
+  // Handle category form input changes
+  const handleCategoryInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewCategory((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  // Handle category form submission
+  const handleCategorySubmit = (e) => {
+    e.preventDefault();
+
+    const newCategoryObj = {
+      id: categories.length + 1,
+      name: newCategory.name,
+      color: newCategory.color,
+      checked: true,
+    };
+
+    // Add new category to categories array
+    setCategories([...categories, newCategoryObj]);
+
+    // Reset form and close modal
+    setNewCategory({
+      name: "",
+      color: "blue",
+    });
+    setIsCategoryModalOpen(false);
+  };
+
+  // Handle form input changes
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewEvent((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
   // Get days in the selected month
   const getDaysInMonth = (year, month) => {
@@ -140,73 +207,108 @@ const Schedule = () => {
   );
 
   // Generate events with actual date objects
-  const generateEvents = () => {
-    return [
-      {
-        id: 1,
-        title: "Interview session with Kathryn Murphy",
-        time: "02:00 - 05:00 AM",
-        day: 24,
-        month: selectedMonth,
-        year: selectedYear,
-        category: "Interview Schedule",
-        categoryId: 1,
-        startHour: 2,
-        endHour: 5,
-        participants: 2,
-      },
-      {
-        id: 2,
-        title: "Interview session",
-        time: "08:00 - 09:00 AM",
-        day: 24,
-        month: selectedMonth,
-        year: selectedYear,
-        category: "Interview Schedule",
-        categoryId: 1,
-        startHour: 8,
-        endHour: 9,
-      },
-      {
-        id: 3,
-        title: "Meeting with staff",
-        time: "09:00 - 10:00 AM",
-        day: 26,
-        month: selectedMonth,
-        year: selectedYear,
-        category: "Internal Meeting",
-        categoryId: 2,
-        startHour: 9,
-        endHour: 10,
-      },
-      {
-        id: 4,
-        title: "Team Planning",
-        time: "02:00 - 03:00 PM",
-        day: 25,
-        month: selectedMonth,
-        year: selectedYear,
-        category: "Team Schedule",
-        categoryId: 3,
-        startHour: 14,
-        endHour: 15,
-      },
-      {
-        id: 5,
-        title: "Review Task",
-        time: "11:00 - 12:00 AM",
-        day: 23,
-        month: selectedMonth,
-        year: selectedYear,
-        category: "My Task",
-        categoryId: 4,
-        startHour: 11,
-        endHour: 12,
-      },
-    ];
-  };
+  const [events, setEvents] = useState([
+    {
+      id: 1,
+      title: "Interview session with Kathryn Murphy",
+      time: "02:00 - 05:00 AM",
+      day: 24,
+      month: 10,
+      year: 2021,
+      category: "Interview Schedule",
+      categoryId: 1,
+      startHour: 2,
+      endHour: 5,
+      participants: 2,
+    },
+    {
+      id: 2,
+      title: "Interview session",
+      time: "08:00 - 09:00 AM",
+      day: 24,
+      month: 10,
+      year: 2021,
+      category: "Interview Schedule",
+      categoryId: 1,
+      startHour: 8,
+      endHour: 9,
+    },
+    {
+      id: 3,
+      title: "Meeting with staff",
+      time: "09:00 - 10:00 AM",
+      day: 26,
+      month: 10,
+      year: 2021,
+      category: "Internal Meeting",
+      categoryId: 2,
+      startHour: 9,
+      endHour: 10,
+    },
+    {
+      id: 4,
+      title: "Team Planning",
+      time: "02:00 - 03:00 PM",
+      day: 25,
+      month: 10,
+      year: 2021,
+      category: "Team Schedule",
+      categoryId: 3,
+      startHour: 14,
+      endHour: 15,
+    },
+    {
+      id: 5,
+      title: "Review Task",
+      time: "11:00 - 12:00 AM",
+      day: 23,
+      month: 10,
+      year: 2021,
+      category: "My Task",
+      categoryId: 4,
+      startHour: 11,
+      endHour: 12,
+    },
+  ]);
 
-  const events = generateEvents();
+  // Handle form submission
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    // Convert times to hours for event creation
+    const startHour = parseInt(newEvent.startTime.split(":")[0]);
+    const endHour = parseInt(newEvent.endTime.split(":")[0]);
+
+    const [year, month, day] = newEvent.startDate.split("-");
+
+    const newEventObj = {
+      id: events.length + 1,
+      title: newEvent.title,
+      time: `${newEvent.startTime} - ${newEvent.endTime}`,
+      day: parseInt(day),
+      month: parseInt(month) - 1,
+      year: parseInt(year),
+      category: categories.find(
+        (cat) => cat.id === parseInt(newEvent.categoryId)
+      )?.name,
+      categoryId: parseInt(newEvent.categoryId),
+      startHour,
+      endHour,
+    };
+
+    // Add new event to events array
+    setEvents([...events, newEventObj]);
+
+    // Reset form and close modal
+    setNewEvent({
+      title: "",
+      startDate: "",
+      startTime: "09:00",
+      endTime: "10:00",
+      categoryId: 1,
+    });
+    setIsModalOpen(false);
+  };
 
   // Toggle category visibility
   const toggleCategory = (id) => {
@@ -600,10 +702,11 @@ const Schedule = () => {
       </div>
     );
   };
+
   return (
     <div className="flex flex-col min-h-screen">
       <div className="flex flex-row flex-grow">
-        <div className="h-screen sticky top-0 ">
+        <div className="h-screen sticky top-0">
           <Sidebar />
         </div>
         <div className="flex-grow transition-all">
@@ -687,7 +790,10 @@ const Schedule = () => {
                 <div className="w-64 border-r border-gray-200 overflow-y-auto">
                   {/* Create Event Button */}
                   <div className="p-4">
-                    <button className="w-full py-3 border border-gray-300 rounded-md flex items-center justify-center text-blue-500 font-medium">
+                    <button
+                      onClick={() => setIsModalOpen(true)}
+                      className="w-full py-3 border border-gray-300 rounded-md flex items-center justify-center text-blue-500 font-medium"
+                    >
                       <PlusIcon className="w-4 h-4 mr-2" />
                       Create Event
                     </button>
@@ -728,17 +834,18 @@ const Schedule = () => {
                         >
                           <button
                             className={`w-6 h-6 rounded-full text-xs flex items-center justify-center
-                      ${
-                        day.month !== "current"
-                          ? "text-gray-400"
-                          : "text-gray-700"
-                      }
-                      ${
-                        day.day === selectedDate && day.month === "current"
-                          ? "bg-blue-500 text-white"
-                          : ""
-                      }
-                    `}
+                              ${
+                                day.month !== "current"
+                                  ? "text-gray-400"
+                                  : "text-gray-700"
+                              }
+                              ${
+                                day.day === selectedDate &&
+                                day.month === "current"
+                                  ? "bg-blue-500 text-white"
+                                  : ""
+                              }
+                            `}
                             onClick={() => handleDaySelect(day.day, day.month)}
                           >
                             {day.day}
@@ -752,7 +859,10 @@ const Schedule = () => {
                   <div className="p-4 border-t border-gray-200">
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="font-medium">Categories</h3>
-                      <button className="text-blue-500 flex items-center">
+                      <button
+                        className="text-blue-500 flex items-center"
+                        onClick={() => setIsCategoryModalOpen(true)}
+                      >
                         <PlusIcon className="w-4 h-4 mr-1" />
                         Add Category
                       </button>
@@ -790,10 +900,195 @@ const Schedule = () => {
                   </div>
                 </div>
 
-                {/* Main Calendar View - Changes based on activeView */}
+                {/* Main Calendar View */}
                 {activeView === "day" && renderDayView()}
                 {activeView === "week" && renderWeekView()}
                 {activeView === "month" && renderMonthView()}
+
+                {/* Create Event Modal */}
+                {isModalOpen && (
+                  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg p-6 w-full max-w-md">
+                      <div className="flex justify-between items-center mb-4">
+                        <h2 className="text-xl font-semibold">
+                          Create New Event
+                        </h2>
+                        <button
+                          onClick={() => setIsModalOpen(false)}
+                          className="text-gray-500 hover:text-gray-700"
+                        >
+                          <XIcon className="w-5 h-5" />
+                        </button>
+                      </div>
+
+                      <form onSubmit={handleSubmit}>
+                        <div className="space-y-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Event Title
+                            </label>
+                            <input
+                              type="text"
+                              name="title"
+                              value={newEvent.title}
+                              onChange={handleInputChange}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                              required
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Date
+                            </label>
+                            <input
+                              type="date"
+                              name="startDate"
+                              value={newEvent.startDate}
+                              onChange={handleInputChange}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                              required
+                            />
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Start Time
+                              </label>
+                              <input
+                                type="time"
+                                name="startTime"
+                                value={newEvent.startTime}
+                                onChange={handleInputChange}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                required
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                End Time
+                              </label>
+                              <input
+                                type="time"
+                                name="endTime"
+                                value={newEvent.endTime}
+                                onChange={handleInputChange}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                required
+                              />
+                            </div>
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Category
+                            </label>
+                            <select
+                              name="categoryId"
+                              value={newEvent.categoryId}
+                              onChange={handleInputChange}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            >
+                              {categories.map((category) => (
+                                <option key={category.id} value={category.id}>
+                                  {category.name}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+
+                        <div className="mt-6 flex justify-end space-x-3">
+                          <button
+                            type="button"
+                            onClick={() => setIsModalOpen(false)}
+                            className="px-4 py-2 text-sm text-gray-700 hover:text-gray-900"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="submit"
+                            className="px-4 py-2 text-sm text-white bg-blue-500 rounded-md hover:bg-blue-600"
+                          >
+                            Create Event
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                )}
+
+                {/* Create Category Modal */}
+                {isCategoryModalOpen && (
+                  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg p-6 w-full max-w-md">
+                      <div className="flex justify-between items-center mb-4">
+                        <h2 className="text-xl font-semibold">
+                          Create New Category
+                        </h2>
+                        <button
+                          onClick={() => setIsCategoryModalOpen(false)}
+                          className="text-gray-500 hover:text-gray-700"
+                        >
+                          <XIcon className="w-5 h-5" />
+                        </button>
+                      </div>
+
+                      <form onSubmit={handleCategorySubmit}>
+                        <div className="space-y-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Category Name
+                            </label>
+                            <input
+                              type="text"
+                              name="name"
+                              value={newCategory.name}
+                              onChange={handleCategoryInputChange}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                              required
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Color
+                            </label>
+                            <select
+                              name="color"
+                              value={newCategory.color}
+                              onChange={handleCategoryInputChange}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            >
+                              {availableColors.map((color) => (
+                                <option key={color.value} value={color.value}>
+                                  {color.name}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+
+                        <div className="mt-6 flex justify-end space-x-3">
+                          <button
+                            type="button"
+                            onClick={() => setIsCategoryModalOpen(false)}
+                            className="px-4 py-2 text-sm text-gray-700 hover:text-gray-900"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="submit"
+                            className="px-4 py-2 text-sm text-white bg-blue-500 rounded-md hover:bg-blue-600"
+                          >
+                            Create Category
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>

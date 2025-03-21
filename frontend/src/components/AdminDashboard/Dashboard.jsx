@@ -10,17 +10,6 @@ const data = [
   { name: "Interviewed", value: 40, color: "#E2E8F0" }, // Gray color
 ];
 
-const events = [
-  { time: "10:00 AM", name: "", role: "", image: "" },
-  {
-    time: "10:30 AM",
-    name: "Joe Bartmann",
-    role: "HR Manager at Divvy",
-    image: "https://via.placeholder.com/32",
-  },
-  { time: "11:00 AM", name: "", role: "", image: "" },
-];
-
 const applications = [
   {
     id: 1,
@@ -124,59 +113,66 @@ const applications = [
   },
 ];
 
-const getMinutesFromStart = (time) => {
-  const [hour, minute] = time.match(/\d+/g).map(Number);
-  const isPM = time.includes("PM");
-  return (isPM && hour !== 12 ? hour + 12 : hour) * 60 + minute;
-};
-
-const timeSlots = events.map((event, index) => {
-  const startTime = "10:00 AM";
-  const minutesFromStart =
-    getMinutesFromStart(event.time) - getMinutesFromStart(startTime);
-
-  const slotHeight = 60; // Fix height per slot
-  const top = minutesFromStart * (slotHeight / 30);
-
-  return (
-    <div
-      key={index}
-      className="absolute left-0 w-full"
-      style={{ top: `${top}px`, minHeight: `${slotHeight}px` }}
-    >
-      <div className="flex items-center gap-4 p-3">
-        {" "}
-        {/* p-3 instead of p-4 to reduce extra spacing */}
-        <span className="text-gray-700 font-semibold w-16 text-sm">
-          {event.time}
-        </span>
-        {event.name ? (
-          <div className="flex-1 mx-2 p-3 bg-blue-50 rounded-lg flex items-center shadow-lg border border-blue-200">
-            <div className="w-10 h-10 rounded-full overflow-hidden shadow-md border border-gray-300 flex items-center justify-center">
-              <img
-                src={event.image}
-                alt={event.name}
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <div className="ml-4 flex flex-col justify-center">
-              {" "}
-              {/* Center align text */}
-              <p className="font-semibold text-gray-900 text-sm leading-tight">
-                {event.name}
-              </p>
-              <p className="text-xs text-gray-600">{event.role}</p>
-            </div>
-          </div>
-        ) : (
-          <div className="flex-1 mx-2 border-b border-gray-300"></div>
-        )}
-      </div>
-    </div>
-  );
-});
-
 const Dashboard = () => {
+  const interviewsByDate = {
+    "25 November": [
+      { time: "10:00 AM", name: "", role: "", image: "" },
+      { time: "10:30 AM", name: "", role: "", image: "" },
+      {
+        time: "11:00 AM",
+        name: "Lisa Garcia",
+        role: "Senior Developer",
+        image: "/api/placeholder/32/32",
+      },
+    ],
+    "26 November": [
+      { time: "10:00 AM", name: "", role: "", image: "" },
+      {
+        time: "10:30 AM",
+        name: "Joe Bartmann",
+        role: "HR Manager at Divvy",
+        image: "https://via.placeholder.com/32",
+      },
+      { time: "11:00 AM", name: "", role: "", image: "" },
+    ],
+    "27 November": [
+      {
+        time: "10:00 AM",
+        name: "Michael Chen",
+        role: "Product Manager",
+        image: "/api/placeholder/32/32",
+      },
+      { time: "10:30 AM", name: "", role: "", image: "" },
+      { time: "11:00 AM", name: "", role: "", image: "" },
+    ],
+  };
+
+  // State for current date
+  const [currentDate, setCurrentDate] = useState("26 November");
+
+  // Get available dates in array format
+  const availableDates = Object.keys(interviewsByDate);
+
+  // Get current date index
+  const currentDateIndex = availableDates.indexOf(currentDate);
+
+  // Navigate to previous date
+  const goToPrevDate = () => {
+    if (currentDateIndex > 0) {
+      setCurrentDate(availableDates[currentDateIndex - 1]);
+    }
+  };
+
+  // Navigate to next date
+  const goToNextDate = () => {
+    if (currentDateIndex < availableDates.length - 1) {
+      setCurrentDate(availableDates[currentDateIndex + 1]);
+    }
+  };
+
+  // Get events for current date
+  const events = interviewsByDate[currentDate] || [];
+
   return (
     <div className="flex flex-col min-h-screen">
       <div className="flex flex-row flex-grow">
@@ -313,7 +309,7 @@ const Dashboard = () => {
                 {/* Job Applied */}
                 <div
                   className="bg-white rounded-lg shadow-md p-6 flex flex-col border border-gray-200"
-                  style={{ width: "380px", height: "310px" }}
+                  style={{ width: "380px", height: "320px" }}
                 >
                   <h3 className="text-black-900 text-xl font-bold mb-4">
                     Jobs Applied Status
@@ -375,21 +371,26 @@ const Dashboard = () => {
                   </div>
                 </div>
 
-                <div className="bg-white rounded-sm shadow-lg w-96 border border-gray-200 relative h-[310px] p-2 overflow-hidden">
+                <div className="bg-white rounded-lg shadow-lg w-96 overflow-hidden">
                   {/* Header Section */}
-                  <div className="p-4 border-b border-gray-300 rounded-t-2xl">
+                  <div className="p-4 border-b border-gray-200">
                     <h3 className="font-bold text-gray-800 text-xl">
                       Upcoming Interviews
                     </h3>
                   </div>
 
                   {/* Date Section */}
-                  <div className="p-4 font-medium text-gray-700 border-b border-gray-300 flex justify-between items-center bg-white">
+                  <div className="p-4 font-medium text-gray-700 border-b border-gray-200 flex justify-between items-center">
                     <span className="text-xl font-semibold">
-                      Today, 26 November
+                      {currentDateIndex === 1 ? "Today, " : ""}
+                      {currentDate}
                     </span>
                     <div className="flex gap-2">
-                      <button className="p-2 hover:bg-gray-200 rounded-full transition">
+                      <button
+                        className="p-1 text-gray-500 hover:text-gray-700"
+                        onClick={goToPrevDate}
+                        disabled={currentDateIndex === 0}
+                      >
                         <svg
                           width="20"
                           height="20"
@@ -401,7 +402,13 @@ const Dashboard = () => {
                           <polyline points="15 18 9 12 15 6" />
                         </svg>
                       </button>
-                      <button className="p-2 hover:bg-gray-200 rounded-full transition">
+                      <button
+                        className="p-1 text-gray-500 hover:text-gray-700"
+                        onClick={goToNextDate}
+                        disabled={
+                          currentDateIndex === availableDates.length - 1
+                        }
+                      >
                         <svg
                           width="20"
                           height="20"
@@ -417,7 +424,42 @@ const Dashboard = () => {
                   </div>
 
                   {/* Time Slots */}
-                  <div className="relative w-full h-full ">{timeSlots}</div>
+                  <div className="p-4 space-y-3">
+                    {events.map((event, index) => (
+                      <div
+                        key={index}
+                        className="border-b border-gray-200 flex items-start gap-3 mt-3"
+                      >
+                        {/* Time label */}
+                        <div className="text-gray-600 font-medium w-24 self-center">
+                          {event.time}
+                        </div>
+
+                        {/* Interview details if available */}
+                        {event.name ? (
+                          <div className="flex-1 p-2 bg-blue-50 rounded-lg border border-blue-100 flex items-center mb-3">
+                            <img
+                              src={event.image}
+                              alt="Profile"
+                              className="w-8 h-8 rounded-full bg-blue-200 mr-3"
+                            />
+                            <div>
+                              <div className="font-semibold text-gray-800">
+                                {event.name}
+                              </div>
+                              {event.role && (
+                                <div className="text-sm text-gray-500">
+                                  {event.role}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex-1 border-t border-gray-200 my-2"></div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
 

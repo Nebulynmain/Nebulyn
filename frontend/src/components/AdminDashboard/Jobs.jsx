@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
 import {
@@ -11,7 +11,8 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
-const jobs = [
+// Expanded job data for better demonstration
+const initialJobs = [
   {
     title: "Social Media Assistant",
     company: "Nomad",
@@ -21,6 +22,8 @@ const jobs = [
     applied: 5,
     capacity: 10,
     logo: "https://via.placeholder.com/40",
+    salary: "$1200 - $1500",
+    level: "Entry Level",
   },
   {
     title: "Brand Designer",
@@ -31,10 +34,61 @@ const jobs = [
     applied: 2,
     capacity: 10,
     logo: "https://via.placeholder.com/40",
+    salary: "$2000 - $2500",
+    level: "Mid Level",
+  },
+  {
+    title: "UI Designer",
+    company: "Google",
+    location: "Delhi, India",
+    jobType: "Remote",
+    categories: ["Design", "Technology"],
+    applied: 8,
+    capacity: 15,
+    logo: "https://via.placeholder.com/40",
+    salary: "$1500 - $2000",
+    level: "Mid Level",
+  },
+  {
+    title: "Marketing Manager",
+    company: "Amazon",
+    location: "Mumbai, India",
+    jobType: "Full-Time",
+    categories: ["Marketing", "Business"],
+    applied: 12,
+    capacity: 20,
+    logo: "https://via.placeholder.com/40",
+    salary: "$3000 or above",
+    level: "Senior Level",
+  },
+  {
+    title: "UX Researcher",
+    company: "Microsoft",
+    location: "Bangalore, India",
+    jobType: "Internship",
+    categories: ["Design", "Technology"],
+    applied: 3,
+    capacity: 5,
+    logo: "https://via.placeholder.com/40",
+    salary: "$700 - $1000",
+    level: "Entry Level",
+  },
+  {
+    title: "Android Developer",
+    company: "Netflix",
+    location: "Chennai, India",
+    jobType: "Contract",
+    categories: ["Engineering", "Technology"],
+    applied: 7,
+    capacity: 10,
+    logo: "https://via.placeholder.com/40",
+    salary: "$1500 - $2000",
+    level: "Mid Level",
   },
 ];
 
 const Jobs = () => {
+  const [searchTerm, setSearchTerm] = useState("");
   const [location, setLocation] = useState("Delhi, India");
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const locations = [
@@ -42,57 +96,188 @@ const Jobs = () => {
     "Mumbai, India",
     "Bangalore, India",
     "Chennai, India",
+    "Paris, France",
+    "San Francisco, USA",
   ];
   const popularJobs = ["UI Designer", "UX Researcher", "Android", "Admin"];
   const [isOpen, setIsOpen] = useState(true);
   const jobTypes = [
-    { type: "Full-time", count: 3 },
-    { type: "Part-Time", count: 5 },
-    { type: "Remote", count: 2 },
-    { type: "Internship", count: 24 },
-    { type: "Contract", count: 3 },
+    { type: "Full-Time", count: 2 },
+    { type: "Part-Time", count: 1 },
+    { type: "Remote", count: 1 },
+    { type: "Internship", count: 1 },
+    { type: "Contract", count: 1 },
   ];
   const [categoriesOpen, setCategoriesOpen] = useState(true);
   const [jobLevelOpen, setJobLevelOpen] = useState(true);
   const [salaryOpen, setSalaryOpen] = useState(true);
 
   const categories = [
-    { name: "Design", count: 24 },
-    { name: "Sales", count: 3 },
-    { name: "Marketing", count: 3 },
-    { name: "Business", count: 3 },
-    { name: "Human Resource", count: 6 },
-    { name: "Finance", count: 4 },
-    { name: "Engineering", count: 4 },
-    { name: "Technology", count: 5 },
+    { name: "Design", count: 4 },
+    { name: "Sales", count: 0 },
+    { name: "Marketing", count: 2 },
+    { name: "Business", count: 1 },
+    { name: "Human Resource", count: 0 },
+    { name: "Finance", count: 0 },
+    { name: "Engineering", count: 1 },
+    { name: "Technology", count: 3 },
   ];
 
   const jobLevels = [
-    { name: "Entry Level", count: 57 },
+    { name: "Entry Level", count: 2 },
     { name: "Mid Level", count: 3 },
-    { name: "Senior Level", count: 5 },
-    { name: "Director", count: 12 },
-    { name: "VP or Above", count: 8 },
+    { name: "Senior Level", count: 1 },
+    { name: "Director", count: 0 },
+    { name: "VP or Above", count: 0 },
   ];
 
   const salaryRanges = [
-    { label: "$700 - $1000", count: 4 },
-    { label: "$100 - $1500", count: 6 },
-    { label: "$1500 - $2000", count: 10 },
-    { label: "$3000 or above", count: 4 },
+    { label: "$700 - $1000", count: 1 },
+    { label: "$1200 - $1500", count: 1 },
+    { label: "$1500 - $2000", count: 2 },
+    { label: "$2000 - $2500", count: 1 },
+    { label: "$3000 or above", count: 1 },
   ];
 
   const [view, setView] = useState("list");
   const [sortBy, setSortBy] = useState("Relevance");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const jobsPerPage = 10;
+  const jobsPerPage = 5;
   const sortOptions = ["Relevance", "Newest", "Most Applied"];
+
+  // Filter states
+  const [selectedJobTypes, setSelectedJobTypes] = useState([]);
+  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [selectedJobLevels, setSelectedJobLevels] = useState([]);
+  const [selectedSalaryRanges, setSelectedSalaryRanges] = useState([]);
+
+  // Filtered jobs state
+  const [filteredJobs, setFilteredJobs] = useState(initialJobs);
+
+  // Apply all filters
+  useEffect(() => {
+    let result = initialJobs;
+
+    // Apply search term filter
+    if (searchTerm) {
+      result = result.filter(
+        (job) =>
+          job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          job.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          job.categories.some((cat) =>
+            cat.toLowerCase().includes(searchTerm.toLowerCase())
+          )
+      );
+    }
+
+    // Apply location filter
+    if (location) {
+      result = result.filter((job) => job.location === location);
+    }
+
+    // Apply job type filter
+    if (selectedJobTypes.length > 0) {
+      result = result.filter((job) => selectedJobTypes.includes(job.jobType));
+    }
+
+    // Apply categories filter
+    if (selectedCategories.length > 0) {
+      result = result.filter((job) =>
+        job.categories.some((category) => selectedCategories.includes(category))
+      );
+    }
+
+    // Apply job level filter
+    if (selectedJobLevels.length > 0) {
+      result = result.filter((job) => selectedJobLevels.includes(job.level));
+    }
+
+    // Apply salary range filter
+    if (selectedSalaryRanges.length > 0) {
+      result = result.filter((job) =>
+        selectedSalaryRanges.includes(job.salary)
+      );
+    }
+
+    // Apply sorting
+    if (sortBy === "Newest") {
+      // For demo purposes, we'll just reverse the order
+      result = [...result].reverse();
+    } else if (sortBy === "Most Applied") {
+      result = [...result].sort((a, b) => b.applied - a.applied);
+    }
+
+    setFilteredJobs(result);
+    setCurrentPage(1); // Reset to first page when filters change
+  }, [
+    searchTerm,
+    location,
+    selectedJobTypes,
+    selectedCategories,
+    selectedJobLevels,
+    selectedSalaryRanges,
+    sortBy,
+  ]);
+
+  // Handle job type checkbox changes
+  const handleJobTypeChange = (type) => {
+    setSelectedJobTypes((prev) => {
+      if (prev.includes(type)) {
+        return prev.filter((t) => t !== type);
+      } else {
+        return [...prev, type];
+      }
+    });
+  };
+
+  // Handle category checkbox changes
+  const handleCategoryChange = (category) => {
+    setSelectedCategories((prev) => {
+      if (prev.includes(category)) {
+        return prev.filter((c) => c !== category);
+      } else {
+        return [...prev, category];
+      }
+    });
+  };
+
+  // Handle job level checkbox changes
+  const handleJobLevelChange = (level) => {
+    setSelectedJobLevels((prev) => {
+      if (prev.includes(level)) {
+        return prev.filter((l) => l !== level);
+      } else {
+        return [...prev, level];
+      }
+    });
+  };
+
+  // Handle salary range checkbox changes
+  const handleSalaryRangeChange = (range) => {
+    setSelectedSalaryRanges((prev) => {
+      if (prev.includes(range)) {
+        return prev.filter((r) => r !== range);
+      } else {
+        return [...prev, range];
+      }
+    });
+  };
+
+  // Handle popular job click
+  const handlePopularJobClick = (job) => {
+    setSearchTerm(job);
+  };
+
+  // Handle search
+  const handleSearch = () => {
+    // The search is applied through the useEffect
+  };
 
   const indexOfLastJob = currentPage * jobsPerPage;
   const indexOfFirstJob = indexOfLastJob - jobsPerPage;
-  const currentJobs = jobs.slice(indexOfFirstJob, indexOfLastJob);
-  const totalPages = Math.ceil(jobs.length / jobsPerPage);
+  const currentJobs = filteredJobs.slice(indexOfFirstJob, indexOfLastJob);
+  const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -104,15 +289,17 @@ const Jobs = () => {
         <div className="flex-grow transition-all">
           <Header />
           <div className="">
-            {/*Part 1*/}
+            {/*Part 1 - Search Bar*/}
             <div className="p-6 relative border-b border-gray-300">
-              <div className="bg-white shadow-sm p-6  border border-gray-200 flex items-center space-x-4">
+              <div className="bg-white shadow-sm p-6 border border-gray-200 flex items-center space-x-4">
                 <Search className="text-black w-10 h-10 pr-2" />
                 <div className="flex-1 flex items-center border-b border-gray-300 pb-3 w-1/2">
                   <input
                     type="text"
                     placeholder="Job title or keyword"
                     className="w-full outline-none text-lg text-gray-700 py-3"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
                   />
                 </div>
 
@@ -151,24 +338,34 @@ const Jobs = () => {
                   )}
                 </div>
 
-                <button className="bg-blue-600 text-white px-10 py-4  font-medium text-lg">
+                <button
+                  className="bg-blue-600 text-white px-10 py-4 font-medium text-lg cursor-pointer"
+                  onClick={handleSearch}
+                >
                   Search
                 </button>
               </div>
 
               <p className="text-gray-500 mt-3 text-lg">
                 Popular:{" "}
-                <span className="text-gray-500 text-lg">
-                  {popularJobs.join(", ")}
-                </span>
+                {popularJobs.map((job, index) => (
+                  <span
+                    key={index}
+                    className="text-gray-500 text-lg cursor-pointer hover:text-blue-500"
+                    onClick={() => handlePopularJobClick(job)}
+                  >
+                    {job}
+                    {index < popularJobs.length - 1 ? ", " : ""}
+                  </span>
+                ))}
               </p>
             </div>
-            {/*Part 2*/}
-            <div class="flex p-6">
+            {/*Part 2 - Filters and Results*/}
+            <div className="flex p-6">
               <div className="w-1/4 p-4 bg-white">
                 {/* Type of Employment */}
                 <div
-                  className="flex justify-between items-center cursor-pointer "
+                  className="flex justify-between items-center cursor-pointer"
                   onClick={() => setIsOpen(!isOpen)}
                 >
                   <h2 className="text-xl font-semibold text-gray-900">
@@ -185,21 +382,19 @@ const Jobs = () => {
                     {jobTypes.map((job, index) => (
                       <label
                         key={index}
-                        className="flex items-center space-x-4 text-gray-800 text-lg"
+                        className="flex items-center space-x-4 text-gray-800 text-lg cursor-pointer"
                       >
-                        {" "}
-                        {/* Bigger text */}
                         <input
                           type="checkbox"
-                          className="w-6 h-6 text-blue-600 border-gray-500 rounded focus:ring-0"
-                        />{" "}
-                        {/* Bigger checkboxes */}
+                          className="w-6 h-6 text-blue-600 border-gray-500 rounded focus:ring-0 cursor-pointer"
+                          checked={selectedJobTypes.includes(job.type)}
+                          onChange={() => handleJobTypeChange(job.type)}
+                        />
                         <span>
                           {job.type}{" "}
                           <span className="text-gray-500 text-base">
                             ({job.count})
-                          </span>{" "}
-                          {/* Larger count text */}
+                          </span>
                         </span>
                       </label>
                     ))}
@@ -207,7 +402,7 @@ const Jobs = () => {
                 )}
                 {/* Categories */}
                 <div
-                  className="flex justify-between items-center cursor-pointer mt-8 "
+                  className="flex justify-between items-center cursor-pointer mt-8"
                   onClick={() => setCategoriesOpen(!categoriesOpen)}
                 >
                   <h2 className="text-xl font-semibold text-gray-900">
@@ -224,11 +419,13 @@ const Jobs = () => {
                     {categories.map((category, index) => (
                       <label
                         key={index}
-                        className="flex items-center space-x-4 text-gray-800 text-lg"
+                        className="flex items-center space-x-4 text-gray-800 text-lg cursor-pointer"
                       >
                         <input
                           type="checkbox"
-                          className="w-6 h-6 text-blue-600 border-gray-500 rounded focus:ring-0"
+                          className="w-6 h-6 text-blue-600 border-gray-500 rounded focus:ring-0 cursor-pointer"
+                          checked={selectedCategories.includes(category.name)}
+                          onChange={() => handleCategoryChange(category.name)}
                         />
                         <span>
                           {category.name}{" "}
@@ -242,7 +439,7 @@ const Jobs = () => {
                 )}
                 {/* Job Level */}
                 <div
-                  className="flex justify-between items-center cursor-pointer mt-8 "
+                  className="flex justify-between items-center cursor-pointer mt-8"
                   onClick={() => setJobLevelOpen(!jobLevelOpen)}
                 >
                   <h2 className="text-xl font-semibold text-gray-900">
@@ -259,11 +456,13 @@ const Jobs = () => {
                     {jobLevels.map((level, index) => (
                       <label
                         key={index}
-                        className="flex items-center space-x-4 text-gray-800 text-lg"
+                        className="flex items-center space-x-4 text-gray-800 text-lg cursor-pointer"
                       >
                         <input
                           type="checkbox"
-                          className="w-6 h-6 text-blue-600 border-gray-500 rounded focus:ring-0"
+                          className="w-6 h-6 text-blue-600 border-gray-500 rounded focus:ring-0 cursor-pointer"
+                          checked={selectedJobLevels.includes(level.name)}
+                          onChange={() => handleJobLevelChange(level.name)}
                         />
                         <span>
                           {level.name}{" "}
@@ -277,7 +476,7 @@ const Jobs = () => {
                 )}
                 {/* Salary Range */}
                 <div
-                  className="flex justify-between items-center cursor-pointer mt-8 "
+                  className="flex justify-between items-center cursor-pointer mt-8"
                   onClick={() => setSalaryOpen(!salaryOpen)}
                 >
                   <h2 className="text-xl font-semibold text-gray-900">
@@ -294,11 +493,13 @@ const Jobs = () => {
                     {salaryRanges.map((range, index) => (
                       <label
                         key={index}
-                        className="flex items-center space-x-4 text-gray-800 text-lg"
+                        className="flex items-center space-x-4 text-gray-800 text-lg cursor-pointer"
                       >
                         <input
                           type="checkbox"
-                          className="w-6 h-6 text-blue-600 border-gray-500 rounded focus:ring-0"
+                          className="w-6 h-6 text-blue-600 border-gray-500 rounded focus:ring-0 cursor-pointer"
+                          checked={selectedSalaryRanges.includes(range.label)}
+                          onChange={() => handleSalaryRangeChange(range.label)}
                         />
                         <span>
                           {range.label}{" "}
@@ -316,13 +517,13 @@ const Jobs = () => {
                   <div>
                     <h2 className="text-xl font-bold">All Jobs</h2>
                     <p className="text-gray-500">
-                      Showing {jobs.length} results
+                      Showing {filteredJobs.length} results
                     </p>
                   </div>
                   <div className="flex items-center gap-4">
                     <div className="relative">
                       <button
-                        className="text-gray-600 font-semibold flex items-center"
+                        className="text-gray-600 font-semibold flex items-center cursor-pointer"
                         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                       >
                         Sort by: {sortBy}{" "}
@@ -333,7 +534,7 @@ const Jobs = () => {
                           {sortOptions.map((option, index) => (
                             <button
                               key={index}
-                              className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                              className="block w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer"
                               onClick={() => {
                                 setSortBy(option);
                                 setIsDropdownOpen(false);
@@ -347,15 +548,17 @@ const Jobs = () => {
                     </div>
                     <div className="flex gap-2">
                       <button
-                        className={`p-2 rounded ${
-                          view === "grid" ? "bg-gray-200" : "text-gray-600"
+                        className={`p-2 rounded cursor-pointer ${
+                          view === "grid"
+                            ? "bg-blue-500 text-white"
+                            : "text-gray-600"
                         }`}
                         onClick={() => setView("grid")}
                       >
                         <Grid className="w-5 h-5" />
                       </button>
                       <button
-                        className={`p-2 rounded ${
+                        className={`p-2 rounded cursor-pointer ${
                           view === "list"
                             ? "bg-blue-500 text-white"
                             : "text-gray-600"
@@ -368,80 +571,206 @@ const Jobs = () => {
                   </div>
                 </div>
 
-                <div className="mt-6 space-y-4">
-                  {currentJobs.map((job, index) => (
-                    <div
-                      key={index}
-                      className="bg-white p-4 shadow-md rounded-sm flex justify-between items-center border border-gray-200 "
-                    >
-                      <div className="flex items-center gap-4">
-                        <img
-                          src={job.logo}
-                          alt={job.company}
-                          className="w-10 h-10 rounded-full"
-                        />
-                        <div>
-                          <h3 className="text-lg font-bold">{job.title}</h3>
-                          <p className="text-gray-500">
-                            {job.company} • {job.location}
+                {/* List View */}
+                {view === "list" && (
+                  <div className="mt-6 space-y-4">
+                    {currentJobs.length > 0 ? (
+                      currentJobs.map((job, index) => (
+                        <div
+                          key={index}
+                          className="bg-white p-4 shadow-md rounded-sm flex justify-between items-center border border-gray-200"
+                        >
+                          <div className="flex items-center gap-4">
+                            <img
+                              src={job.logo}
+                              alt={job.company}
+                              className="w-10 h-10 rounded-full"
+                            />
+                            <div>
+                              <h3 className="text-lg font-bold">{job.title}</h3>
+                              <p className="text-gray-500">
+                                {job.company} • {job.location}
+                              </p>
+                              <div className="flex gap-2 mt-2">
+                                <span
+                                  className={`text-xs px-3 py-1 rounded-full font-semibold border ${
+                                    job.jobType === "Full-Time"
+                                      ? "bg-green-100 text-green-600 border-green-300"
+                                      : job.jobType === "Remote"
+                                      ? "bg-indigo-100 text-indigo-600 border-indigo-300"
+                                      : job.jobType === "Part-Time"
+                                      ? "bg-orange-100 text-orange-600 border-orange-300"
+                                      : "bg-gray-200 text-gray-600 border-gray-400"
+                                  }`}
+                                >
+                                  {job.jobType}
+                                </span>
+                                <div className="border-r border-gray-300 text-transparent">
+                                  .
+                                </div>
+                                {job.categories.map((cat, i) => (
+                                  <span
+                                    key={i}
+                                    className={`text-xs px-3 py-1 rounded-full font-semibold border ${
+                                      cat === "Marketing"
+                                        ? "bg-yellow-100 text-yellow-600 border-yellow-300"
+                                        : cat === "Design"
+                                        ? "bg-blue-100 text-blue-600 border-blue-300"
+                                        : cat === "Technology"
+                                        ? "bg-purple-100 text-purple-600 border-purple-300"
+                                        : "bg-teal-100 text-teal-600 border-teal-300"
+                                    }`}
+                                  >
+                                    {cat}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            className="text-center"
+                            style={{ width: "150px" }}
+                          >
+                            <Link to="/description">
+                              <button className="bg-blue-500 text-white px-4 py-2 rounded-sm w-full cursor-pointer">
+                                Apply
+                              </button>
+                            </Link>
+                            <p className="text-xs text-gray-500 mt-2 font-medium">
+                              <span className="text-black font-bold">
+                                {job.applied}
+                              </span>{" "}
+                              applied of {job.capacity} capacity
+                            </p>
+                            <div className="w-full bg-gray-200 h-2 mt-1 rounded-full relative">
+                              <div
+                                className="bg-blue-500 h-2 rounded-full"
+                                style={{
+                                  width: `${
+                                    (job.applied / job.capacity) * 100
+                                  }%`,
+                                }}
+                              ></div>
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="text-center py-8 bg-white shadow-md rounded-sm">
+                        <p className="text-gray-500 text-lg">
+                          No jobs found matching your criteria
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Grid View */}
+                {view === "grid" && (
+                  <div className="mt-6 grid grid-cols-2 gap-4">
+                    {currentJobs.length > 0 ? (
+                      currentJobs.map((job, index) => (
+                        <div
+                          key={index}
+                          className="bg-white p-4 shadow-md rounded-sm border border-gray-200 flex flex-col"
+                        >
+                          <div className="flex items-center gap-3 mb-3">
+                            <img
+                              src={job.logo}
+                              alt={job.company}
+                              className="w-10 h-10 rounded-full"
+                            />
+                            <div>
+                              <h3 className="text-lg font-bold">{job.title}</h3>
+                              <p className="text-gray-500 text-sm">
+                                {job.company}
+                              </p>
+                            </div>
+                          </div>
+
+                          <p className="text-gray-500 text-sm mb-3">
+                            <MapPin className="inline w-4 h-4 mr-1" />
+                            {job.location}
                           </p>
-                          <div className="flex gap-2 mt-2">
+
+                          <div className="flex flex-wrap gap-2 mb-4">
                             <span
                               className={`text-xs px-3 py-1 rounded-full font-semibold border ${
                                 job.jobType === "Full-Time"
                                   ? "bg-green-100 text-green-600 border-green-300"
+                                  : job.jobType === "Remote"
+                                  ? "bg-indigo-100 text-indigo-600 border-indigo-300"
+                                  : job.jobType === "Part-Time"
+                                  ? "bg-orange-100 text-orange-600 border-orange-300"
                                   : "bg-gray-200 text-gray-600 border-gray-400"
                               }`}
                             >
                               {job.jobType}
                             </span>
-                            <div className="border-r border-gray-300 text-transparent">
-                              .
-                            </div>
                             {job.categories.map((cat, i) => (
                               <span
                                 key={i}
                                 className={`text-xs px-3 py-1 rounded-full font-semibold border ${
                                   cat === "Marketing"
                                     ? "bg-yellow-100 text-yellow-600 border-yellow-300"
-                                    : "bg-blue-100 text-blue-600 border-blue-300"
+                                    : cat === "Design"
+                                    ? "bg-blue-100 text-blue-600 border-blue-300"
+                                    : cat === "Technology"
+                                    ? "bg-purple-100 text-purple-600 border-purple-300"
+                                    : "bg-teal-100 text-teal-600 border-teal-300"
                                 }`}
                               >
                                 {cat}
                               </span>
                             ))}
                           </div>
+
+                          <div className="mt-auto">
+                            <Link
+                              to="/description"
+                              style={{
+                                display: "block",
+                                width: "150px",
+                                margin: "0 auto",
+                              }}
+                            >
+                              <button className="bg-blue-500 text-white px-4 py-2 rounded-sm w-full cursor-pointer mb-2">
+                                Apply
+                              </button>
+                            </Link>
+                            <p className="text-xs text-gray-500 mt-2 font-medium">
+                              <span className="text-black font-bold">
+                                {job.applied}
+                              </span>{" "}
+                              applied of {job.capacity} capacity
+                            </p>
+                            <div className="w-full bg-gray-200 h-2 mt-1 rounded-full relative">
+                              <div
+                                className="bg-blue-500 h-2 rounded-full"
+                                style={{
+                                  width: `${
+                                    (job.applied / job.capacity) * 100
+                                  }%`,
+                                }}
+                              ></div>
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                      <div className="text-center">
-                        <Link to="/description">
-                          <button className="bg-blue-500 text-white px-4 py-2 rounded-sm w-full cursor-pointer">
-                            Apply
-                          </button>
-                        </Link>
-                        <p className="text-xs text-gray-500 mt-2 font-medium">
-                          <span className="text-black font-bold">
-                            {job.applied}
-                          </span>{" "}
-                          applied of {job.capacity} capacity
+                      ))
+                    ) : (
+                      <div className="text-center py-8 col-span-2 bg-white shadow-md rounded-sm">
+                        <p className="text-gray-500 text-lg">
+                          No jobs found matching your criteria
                         </p>
-                        <div className="w-full bg-gray-200 h-2 mt-1 rounded-full relative">
-                          <div
-                            className="bg-blue-500 h-2 rounded-full"
-                            style={{
-                              width: `${(job.applied / job.capacity) * 100}%`,
-                            }}
-                          ></div>
-                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    )}
+                  </div>
+                )}
 
                 {/* Pagination */}
                 <div className="flex justify-center items-center mt-6 gap-2">
                   <button
-                    className="px-3 py-1 text-gray-600 rounded hover:bg-gray-200"
+                    className="px-3 py-1 text-gray-600 rounded hover:bg-gray-200 cursor-pointer"
                     onClick={() =>
                       setCurrentPage((prev) => Math.max(prev - 1, 1))
                     }
@@ -452,7 +781,7 @@ const Jobs = () => {
                   {[...Array(totalPages)].map((_, index) => (
                     <button
                       key={index}
-                      className={`px-3 py-1 rounded ${
+                      className={`px-3 py-1 rounded cursor-pointer ${
                         currentPage === index + 1
                           ? "bg-blue-500 text-white"
                           : "text-gray-600 hover:bg-gray-200"
@@ -463,7 +792,7 @@ const Jobs = () => {
                     </button>
                   ))}
                   <button
-                    className="px-3 py-1 text-gray-600 rounded hover:bg-gray-200"
+                    className="px-3 py-1 text-gray-600 rounded hover:bg-gray-200 cursor-pointer"
                     onClick={() =>
                       setCurrentPage((prev) => Math.min(prev + 1, totalPages))
                     }
