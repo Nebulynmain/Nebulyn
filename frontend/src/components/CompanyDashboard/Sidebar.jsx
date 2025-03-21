@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Home,
   Building,
@@ -6,14 +6,30 @@ import {
   Clipboard,
   Calendar,
   HelpCircle,
+  Settings,
+  LogOut,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
 const Sidebar = () => {
   const location = useLocation();
+  const [showLogout, setShowLogout] = useState(false);
 
   // Function to check active path
   const isActive = (path) => location.pathname === path;
+
+  // Toggle logout dropdown
+  const toggleLogout = () => {
+    setShowLogout(!showLogout);
+  };
+
+  // Handle logout functionality
+  const handleLogout = () => {
+    // Add your logout logic here
+    console.log("Logging out...");
+    // You might want to redirect to login page or call a logout API
+  };
+
   return (
     <div className="w-80 h-screen bg-[#F8F8FD] border-r border-gray-200 flex flex-col p-4 relative overflow-hidden">
       {/* Logo */}
@@ -107,7 +123,7 @@ const Sidebar = () => {
                     : "text-gray-600 hover:bg-gray-100"
                 }`}
               >
-                <HelpCircle size={20} className="mr-3" /> Settings
+                <Settings size={20} className="mr-3" /> Settings
               </Link>
             </li>
             <li>
@@ -126,17 +142,34 @@ const Sidebar = () => {
         </div>
       </nav>
 
-      {/* Profile Section */}
-      <div className="absolute bottom-6 left-4 flex items-center space-x-3 relative z-10">
-        <img
-          src="https://via.placeholder.com/40"
-          alt="Profile"
-          className="w-12 h-12 rounded-full border"
-        />
-        <div>
-          <p className="text-lg font-bold text-gray-800">Jake Gyll</p>
-          <p className="text-sm text-gray-500">jakegyll@email.com</p>
+      {/* Profile Section with Logout Dropdown */}
+      <div className="absolute bottom-6 left-4 z-10">
+        <div
+          className="flex items-center space-x-3 cursor-pointer p-2 rounded-lg hover:bg-gray-100"
+          onClick={toggleLogout}
+        >
+          <img
+            src="https://via.placeholder.com/40"
+            alt="Profile"
+            className="w-12 h-12 rounded-full border"
+          />
+          <div>
+            <p className="text-lg font-bold text-gray-800">Jake Gyll</p>
+            <p className="text-sm text-gray-500">jakegyll@email.com</p>
+          </div>
         </div>
+
+        {/* Logout Dropdown */}
+        {showLogout && (
+          <div className="absolute bottom-20 left-0 w-full bg-white shadow-lg rounded-lg p-2 border border-gray-200 transition-all duration-300">
+            <button
+              onClick={handleLogout}
+              className="flex items-center w-full px-4 py-3 text-red-600 hover:bg-gray-100 rounded-lg"
+            >
+              <LogOut size={20} className="mr-3" /> Logout
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
