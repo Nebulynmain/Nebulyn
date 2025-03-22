@@ -720,7 +720,7 @@ const Schedule = () => {
                     My Schedule
                   </h1>
                   <button
-                    className="bg-blue-500 text-white px-4 py-1 text-sm rounded-md"
+                    className="bg-blue-500 text-white px-4 py-1 text-sm rounded-md cursor-pointer"
                     onClick={goToToday}
                   >
                     Today
@@ -729,7 +729,7 @@ const Schedule = () => {
 
                 <div className="flex items-center space-x-2">
                   <button
-                    className="p-1 text-gray-500 hover:text-gray-700"
+                    className="p-1 text-gray-500 hover:text-gray-700 cursor-pointer"
                     onClick={goToPrevious}
                   >
                     <ChevronLeftIcon className="w-5 h-5" />
@@ -740,7 +740,7 @@ const Schedule = () => {
                   </span>
 
                   <button
-                    className="p-1 text-gray-500 hover:text-gray-700"
+                    className="p-1 text-gray-500 hover:text-gray-700 cursor-pointer"
                     onClick={goToNext}
                   >
                     <ChevronRightIcon className="w-5 h-5" />
@@ -748,7 +748,7 @@ const Schedule = () => {
 
                   <div className="ml-10 flex space-x-6">
                     <button
-                      className={`px-4 py-2 ${
+                      className={`px-4 py-2 cursor-pointer ${
                         activeView === "day"
                           ? "text-blue-500 border-b-2 border-blue-500"
                           : "text-gray-500"
@@ -758,7 +758,7 @@ const Schedule = () => {
                       Day
                     </button>
                     <button
-                      className={`px-4 py-2 ${
+                      className={`px-4 py-2 cursor-pointer ${
                         activeView === "week"
                           ? "text-blue-500 border-b-2 border-blue-500"
                           : "text-gray-500"
@@ -768,7 +768,7 @@ const Schedule = () => {
                       Week
                     </button>
                     <button
-                      className={`px-4 py-2 ${
+                      className={`px-4 py-2 cursor-pointer ${
                         activeView === "month"
                           ? "text-blue-500 border-b-2 border-blue-500"
                           : "text-gray-500"
@@ -792,7 +792,7 @@ const Schedule = () => {
                   <div className="p-4">
                     <button
                       onClick={() => setIsModalOpen(true)}
-                      className="w-full py-3 border border-gray-300 rounded-md flex items-center justify-center text-blue-500 font-medium"
+                      className="w-full py-3 border border-gray-300 rounded-md flex items-center justify-center text-blue-500 font-medium cursor-pointer"
                     >
                       <PlusIcon className="w-4 h-4 mr-2" />
                       Create Event
@@ -807,12 +807,15 @@ const Schedule = () => {
                       </h3>
                       <div className="flex space-x-2">
                         <button
-                          className="text-gray-500"
+                          className="text-gray-500 cursor-pointer"
                           onClick={goToPrevious}
                         >
                           <ChevronLeftIcon className="w-4 h-4" />
                         </button>
-                        <button className="text-gray-500" onClick={goToNext}>
+                        <button
+                          className="text-gray-500 cursor-pointer"
+                          onClick={goToNext}
+                        >
                           <ChevronRightIcon className="w-4 h-4" />
                         </button>
                       </div>
@@ -833,19 +836,18 @@ const Schedule = () => {
                           className="flex items-center justify-center"
                         >
                           <button
-                            className={`w-6 h-6 rounded-full text-xs flex items-center justify-center
-                              ${
-                                day.month !== "current"
-                                  ? "text-gray-400"
-                                  : "text-gray-700"
-                              }
-                              ${
-                                day.day === selectedDate &&
-                                day.month === "current"
-                                  ? "bg-blue-500 text-white"
-                                  : ""
-                              }
-                            `}
+                            className={`w-6 h-6 rounded-full text-xs flex items-center justify-center cursor-pointer
+                          ${
+                            day.month !== "current"
+                              ? "text-gray-400"
+                              : "text-gray-700"
+                          }
+                          ${
+                            day.day === selectedDate && day.month === "current"
+                              ? "bg-blue-500 text-white"
+                              : ""
+                          }
+                        `}
                             onClick={() => handleDaySelect(day.day, day.month)}
                           >
                             {day.day}
@@ -860,7 +862,7 @@ const Schedule = () => {
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="font-medium">Categories</h3>
                       <button
-                        className="text-blue-500 flex items-center"
+                        className="text-blue-500 flex items-center cursor-pointer"
                         onClick={() => setIsCategoryModalOpen(true)}
                       >
                         <PlusIcon className="w-4 h-4 mr-1" />
@@ -872,7 +874,7 @@ const Schedule = () => {
                       {categories.map((category) => (
                         <div key={category.id} className="flex items-center">
                           <button
-                            className={`w-5 h-5 rounded border flex items-center justify-center ${
+                            className={`w-5 h-5 rounded border flex items-center justify-center cursor-pointer ${
                               category.checked
                                 ? category.color === "blue"
                                   ? "bg-blue-500 border-blue-600"
@@ -915,7 +917,7 @@ const Schedule = () => {
                         </h2>
                         <button
                           onClick={() => setIsModalOpen(false)}
-                          className="text-gray-500 hover:text-gray-700"
+                          className="text-gray-500 hover:text-gray-700 cursor-pointer"
                         >
                           <XIcon className="w-5 h-5" />
                         </button>
@@ -988,7 +990,7 @@ const Schedule = () => {
                               name="categoryId"
                               value={newEvent.categoryId}
                               onChange={handleInputChange}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer"
                             >
                               {categories.map((category) => (
                                 <option key={category.id} value={category.id}>
@@ -1003,13 +1005,13 @@ const Schedule = () => {
                           <button
                             type="button"
                             onClick={() => setIsModalOpen(false)}
-                            className="px-4 py-2 text-sm text-gray-700 hover:text-gray-900"
+                            className="px-4 py-2 text-sm text-gray-700 hover:text-gray-900 cursor-pointer"
                           >
                             Cancel
                           </button>
                           <button
                             type="submit"
-                            className="px-4 py-2 text-sm text-white bg-blue-500 rounded-md hover:bg-blue-600"
+                            className="px-4 py-2 text-sm text-white bg-blue-500 rounded-md hover:bg-blue-600 cursor-pointer"
                           >
                             Create Event
                           </button>
@@ -1029,7 +1031,7 @@ const Schedule = () => {
                         </h2>
                         <button
                           onClick={() => setIsCategoryModalOpen(false)}
-                          className="text-gray-500 hover:text-gray-700"
+                          className="text-gray-500 hover:text-gray-700 cursor-pointer"
                         >
                           <XIcon className="w-5 h-5" />
                         </button>
@@ -1059,7 +1061,7 @@ const Schedule = () => {
                               name="color"
                               value={newCategory.color}
                               onChange={handleCategoryInputChange}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer"
                             >
                               {availableColors.map((color) => (
                                 <option key={color.value} value={color.value}>
@@ -1074,13 +1076,13 @@ const Schedule = () => {
                           <button
                             type="button"
                             onClick={() => setIsCategoryModalOpen(false)}
-                            className="px-4 py-2 text-sm text-gray-700 hover:text-gray-900"
+                            className="px-4 py-2 text-sm text-gray-700 hover:text-gray-900 cursor-pointer"
                           >
                             Cancel
                           </button>
                           <button
                             type="submit"
-                            className="px-4 py-2 text-sm text-white bg-blue-500 rounded-md hover:bg-blue-600"
+                            className="px-4 py-2 text-sm text-white bg-blue-500 rounded-md hover:bg-blue-600 cursor-pointer"
                           >
                             Create Category
                           </button>

@@ -141,7 +141,7 @@ const ApplicantDetail = () => {
               <p className="text-lg text-gray-600 mb-4">
                 Resume content goes here
               </p>
-              <button className="bg-blue-600 text-white px-6 py-3 rounded-lg text-lg">
+              <button className="bg-blue-600 text-white px-6 py-3 rounded-lg text-lg cursor-pointer">
                 Download Resume
               </button>
             </div>
@@ -156,7 +156,7 @@ const ApplicantDetail = () => {
               <h2 className="text-lg font-medium text-gray-700">
                 Current Stage
               </h2>
-              <button className="border border-blue-400 text-blue-500 px-4 py-2 rounded flex items-center">
+              <button className="border border-blue-400 text-blue-500 px-4 py-2 rounded flex items-center cursor-pointer">
                 <span>Give Rating</span>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -178,24 +178,24 @@ const ApplicantDetail = () => {
             {/* Progress Stages */}
             <div className="flex mb-8 gap-2">
               <div className="flex-1 relative">
-                <div className="py-2 px-4 text-center bg-blue-100 text-blue-500 skew-x-[-10deg]">
+                <div className="py-2 px-4 text-center bg-blue-100 text-blue-500 skew-x-[-10deg] cursor-pointer">
                   <span className="inline-block skew-x-[10deg]">In-Review</span>
                 </div>
               </div>
               <div className="flex-1 relative">
-                <div className="py-2 px-4 text-center bg-blue-100 text-blue-500 skew-x-[-10deg] border-l border-white">
+                <div className="py-2 px-4 text-center bg-blue-100 text-blue-500 skew-x-[-10deg] border-l border-white cursor-pointer">
                   <span className="inline-block skew-x-[10deg]">
                     Shortlisted
                   </span>
                 </div>
               </div>
               <div className="flex-1 relative">
-                <div className="py-2 px-4 text-center bg-blue-500 text-white font-semibold skew-x-[-10deg] border-l border-white">
+                <div className="py-2 px-4 text-center bg-blue-500 text-white font-semibold skew-x-[-10deg] border-l border-white cursor-pointer">
                   <span className="inline-block skew-x-[10deg]">Interview</span>
                 </div>
               </div>
               <div className="flex-1 relative">
-                <div className="py-2 px-4 text-center bg-[#F8F8FD] text-gray-500 skew-x-[-10deg] border-l border-white ">
+                <div className="py-2 px-4 text-center bg-[#F8F8FD] text-gray-500 skew-x-[-10deg] border-l border-white cursor-pointer">
                   <span className="inline-block skew-x-[10deg]">
                     Hired / Declined
                   </span>
@@ -230,17 +230,17 @@ const ApplicantDetail = () => {
                   <img
                     src="/api/placeholder/32/32"
                     alt="Team member"
-                    className="rounded-full border-2 border-white"
+                    className="rounded-full border-2 border-white cursor-pointer"
                   />
                   <img
                     src="/api/placeholder/32/32"
                     alt="Team member"
-                    className="rounded-full border-2 border-white"
+                    className="rounded-full border-2 border-white cursor-pointer"
                   />
                   <img
                     src="/api/placeholder/32/32"
                     alt="Team member"
-                    className="rounded-full border-2 border-white"
+                    className="rounded-full border-2 border-white cursor-pointer"
                   />
                 </div>
               </div>
@@ -248,7 +248,7 @@ const ApplicantDetail = () => {
 
             {/* Move to Next Step Button */}
             <div className="mb-8">
-              <button className="bg-[#F8F8FD] border-2 border-blue-500 text-blue-500 px-6 py-2 rounded text-lg font-semibold">
+              <button className="bg-[#F8F8FD] border-2 border-blue-500 text-blue-500 px-6 py-2 rounded text-lg font-semibold cursor-pointer">
                 Move To Next Step
               </button>
             </div>
@@ -258,7 +258,7 @@ const ApplicantDetail = () => {
             {/* Notes Section */}
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-base font-medium text-gray-700">Notes</h3>
-              <button className="text-blue-500 flex items-center text-sm">
+              <button className="text-blue-500 flex items-center text-sm cursor-pointer">
                 <span className="text-xl mr-1">+</span> Add Notes
               </button>
             </div>
@@ -270,7 +270,7 @@ const ApplicantDetail = () => {
                   <img
                     src="/api/placeholder/40/40"
                     alt="Maria Kelly"
-                    className="w-10 h-10 rounded-full mr-3"
+                    className="w-10 h-10 rounded-full mr-3 cursor-pointer"
                   />
                   <div className="flex-1">
                     <div className="flex justify-between">
@@ -297,7 +297,7 @@ const ApplicantDetail = () => {
                           <img
                             src="/api/placeholder/32/32"
                             alt="John Doe"
-                            className="w-8 h-8 rounded-full mr-2"
+                            className="w-8 h-8 rounded-full mr-2 cursor-pointer"
                           />
                           <div>
                             <div className="flex items-center">
@@ -318,7 +318,7 @@ const ApplicantDetail = () => {
                           <img
                             src="/api/placeholder/32/32"
                             alt="Sarah Chen"
-                            className="w-8 h-8 rounded-full mr-2"
+                            className="w-8 h-8 rounded-full mr-2 cursor-pointer"
                           />
                           <div>
                             <div className="flex items-center">
@@ -352,7 +352,7 @@ const ApplicantDetail = () => {
               <h2 className="text-xl font-medium text-gray-800">
                 Interview List
               </h2>
-              <button className="flex items-center text-blue-500 font-medium">
+              <button className="flex items-center text-blue-500 font-medium cursor-pointer">
                 <span className="mr-1">+</span>
                 Add Schedule Interview
               </button>
@@ -368,7 +368,7 @@ const ApplicantDetail = () => {
                   <img
                     src="/api/placeholder/40/40"
                     alt="Kathryn Murphy"
-                    className="w-10 h-10 rounded-full bg-gray-200"
+                    className="w-10 h-10 rounded-full bg-gray-200 cursor-pointer"
                   />
                 </div>
 
@@ -389,7 +389,7 @@ const ApplicantDetail = () => {
                 </div>
 
                 <div className="flex items-center ml-4">
-                  <button className="flex items-center border-2 border-blue-400 rounded px-3 py-1 mr-2 text-blue-500">
+                  <button className="flex items-center border-2 border-blue-400 rounded px-3 py-1 mr-2 text-blue-500 cursor-pointer">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       className="h-4 w-4 mr-1"
@@ -401,7 +401,7 @@ const ApplicantDetail = () => {
                     Add Feedback
                   </button>
 
-                  <button className="text-black-400">
+                  <button className="text-black-400 cursor-pointer">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       className="h-6 w-6"
@@ -429,7 +429,7 @@ const ApplicantDetail = () => {
                   <img
                     src="/api/placeholder/40/40"
                     alt="Jenny Wilson"
-                    className="w-10 h-10 rounded-full bg-gray-200"
+                    className="w-10 h-10 rounded-full bg-gray-200 cursor-pointer"
                   />
                 </div>
 
@@ -450,7 +450,7 @@ const ApplicantDetail = () => {
                 </div>
 
                 <div className="flex items-center ml-4">
-                  <button className="flex items-center border-2 border-blue-400 rounded px-3 py-1 mr-2 text-blue-500">
+                  <button className="flex items-center border-2 border-blue-400 rounded px-3 py-1 mr-2 text-blue-500 cursor-pointer">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       className="h-4 w-4 mr-1"
@@ -462,7 +462,7 @@ const ApplicantDetail = () => {
                     Add Feedback
                   </button>
 
-                  <button className="text-black-400">
+                  <button className="text-black-400 cursor-pointer">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       className="h-6 w-6"
@@ -490,7 +490,7 @@ const ApplicantDetail = () => {
                   <img
                     src="/api/placeholder/40/40"
                     alt="Thad Eddings"
-                    className="w-10 h-10 rounded-full bg-gray-200"
+                    className="w-10 h-10 rounded-full bg-gray-200 cursor-pointer"
                   />
                 </div>
 
@@ -511,7 +511,7 @@ const ApplicantDetail = () => {
                 </div>
 
                 <div className="flex items-center ml-4">
-                  <button className="flex items-center border-2 border-blue-400 rounded px-3 py-1 mr-2 text-blue-500">
+                  <button className="flex items-center border-2 border-blue-400 rounded px-3 py-1 mr-2 text-blue-500 cursor-pointer">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       className="h-4 w-4 mr-1"
@@ -523,7 +523,7 @@ const ApplicantDetail = () => {
                     Add Feedback
                   </button>
 
-                  <button className="text-black-400">
+                  <button className="text-black-400 cursor-pointer">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       className="h-6 w-6"
@@ -551,7 +551,7 @@ const ApplicantDetail = () => {
                   <img
                     src="/api/placeholder/40/40"
                     alt="Thad Eddings"
-                    className="w-10 h-10 rounded-full bg-gray-200"
+                    className="w-10 h-10 rounded-full bg-gray-200 cursor-pointer"
                   />
                 </div>
 
@@ -572,7 +572,7 @@ const ApplicantDetail = () => {
                 </div>
 
                 <div className="flex items-center ml-4">
-                  <button className="flex items-center border-2 border-blue-400 rounded px-3 py-1 mr-2 text-blue-500">
+                  <button className="flex items-center border-2 border-blue-400 rounded px-3 py-1 mr-2 text-blue-500 cursor-pointer">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       className="h-4 w-4 mr-1"
@@ -584,7 +584,7 @@ const ApplicantDetail = () => {
                     Add Feedback
                   </button>
 
-                  <button className="text-black-400">
+                  <button className="text-black-400 cursor-pointer">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       className="h-6 w-6"
@@ -729,7 +729,7 @@ const ApplicantDetail = () => {
                         <span className="text-sm text-gray-500">Email</span>
                         <a
                           href="mailto:jeromeBell45@email.com"
-                          className="block text-sm font-medium text-gray-700 hover:text-blue-500"
+                          className="block text-sm font-medium text-gray-700 hover:text-blue-500 cursor-pointer"
                         >
                           jeromeBell45@email.com
                         </a>
@@ -752,7 +752,7 @@ const ApplicantDetail = () => {
                         <span className="text-sm text-gray-500">Instagram</span>
                         <a
                           href="https://instagram.com/jeromebell"
-                          className="block text-sm font-medium text-blue-500 hover:underline"
+                          className="block text-sm font-medium text-blue-500 hover:underline cursor-pointer"
                         >
                           instagram.com/jeromebell
                         </a>
@@ -765,7 +765,7 @@ const ApplicantDetail = () => {
                         <span className="text-sm text-gray-500">Twitter</span>
                         <a
                           href="https://twitter.com/jeromebell"
-                          className="block text-sm font-medium text-blue-500 hover:underline"
+                          className="block text-sm font-medium text-blue-500 hover:underline cursor-pointer"
                         >
                           twitter.com/jeromebell
                         </a>
@@ -778,7 +778,7 @@ const ApplicantDetail = () => {
                         <span className="text-sm text-gray-500">Website</span>
                         <a
                           href="https://www.jeromebell.com"
-                          className="block text-sm font-medium text-blue-500 hover:underline"
+                          className="block text-sm font-medium text-blue-500 hover:underline cursor-pointer"
                         >
                           www.jeromebell.com
                         </a>

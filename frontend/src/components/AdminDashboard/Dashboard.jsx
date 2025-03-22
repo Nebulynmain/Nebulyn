@@ -190,11 +190,11 @@ const Dashboard = () => {
                     Good morning, Jake
                   </h1>
                   <p className="text-gray-500 mt-2 text-xl">
-                    Here is what’s happening with your job search applications
+                    Here is what's happening with your job search applications
                     from July 19 - July 25.
                   </p>
                 </div>
-                <div className="flex items-center border-2 border-gray-300  px-4 py-2 cursor-pointer mr-4">
+                <div className="flex items-center border-2 border-gray-300 px-4 py-2 cursor-pointer mr-4">
                   <span className="text-gray-700 font-semibold">
                     Jul 19 - Jul 25
                   </span>
@@ -206,7 +206,7 @@ const Dashboard = () => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 px-9">
                 <div className="grid gap-3 max-w-[258px] ">
                   {/* Total Jobs Applied Card */}
-                  <div className="bg-white rounded-sm border border-gray-200 shadow-md p-4 flex justify-between items-center w-[300px] h-[150px]">
+                  <div className="bg-white rounded-sm border border-gray-200 shadow-md p-4 flex justify-between items-center w-[300px] h-[150px] cursor-pointer">
                     <div>
                       <p className="text-xl font-bold text-black-500 mb-4">
                         Total Jobs Applied
@@ -252,7 +252,7 @@ const Dashboard = () => {
                   </div>
 
                   {/* Interviewed Card */}
-                  <div className="bg-white rounded-sm border border-gray-200 shadow-md p-4 flex justify-between items-center w-[300px] h-[150px]">
+                  <div className="bg-white rounded-sm border border-gray-200 shadow-md p-4 flex justify-between items-center w-[300px] h-[150px] cursor-pointer">
                     <div>
                       <p className="text-xl font-bold text-black-500 mb-4">
                         Interviewed
@@ -308,7 +308,7 @@ const Dashboard = () => {
 
                 {/* Job Applied */}
                 <div
-                  className="bg-white rounded-lg shadow-md p-6 flex flex-col border border-gray-200"
+                  className="bg-white rounded-lg shadow-md p-6 flex flex-col border border-gray-200 cursor-pointer"
                   style={{ width: "380px", height: "320px" }}
                 >
                   <h3 className="text-black-900 text-xl font-bold mb-4">
@@ -365,13 +365,13 @@ const Dashboard = () => {
                   </div>
 
                   <div className="">
-                    <button className="text-[#3B8BEB] text-lg font-semibold flex items-center hover:underline">
+                    <button className="text-[#3B8BEB] text-lg font-semibold flex items-center hover:underline cursor-pointer">
                       View All Applications <span className="ml-1">→</span>
                     </button>
                   </div>
                 </div>
 
-                <div className="bg-white rounded-lg shadow-lg w-96 overflow-hidden">
+                <div className="bg-white rounded-lg shadow-lg w-96 overflow-hidden cursor-pointer">
                   {/* Header Section */}
                   <div className="p-4 border-b border-gray-200">
                     <h3 className="font-bold text-gray-800 text-xl">
@@ -387,7 +387,7 @@ const Dashboard = () => {
                     </span>
                     <div className="flex gap-2">
                       <button
-                        className="p-1 text-gray-500 hover:text-gray-700"
+                        className="p-1 text-gray-500 hover:text-gray-700 cursor-pointer"
                         onClick={goToPrevDate}
                         disabled={currentDateIndex === 0}
                       >
@@ -403,7 +403,7 @@ const Dashboard = () => {
                         </svg>
                       </button>
                       <button
-                        className="p-1 text-gray-500 hover:text-gray-700"
+                        className="p-1 text-gray-500 hover:text-gray-700 cursor-pointer"
                         onClick={goToNextDate}
                         disabled={
                           currentDateIndex === availableDates.length - 1
@@ -437,7 +437,7 @@ const Dashboard = () => {
 
                         {/* Interview details if available */}
                         {event.name ? (
-                          <div className="flex-1 p-2 bg-blue-50 rounded-lg border border-blue-100 flex items-center mb-3">
+                          <div className="flex-1 p-2 bg-blue-50 rounded-lg border border-blue-100 flex items-center mb-3 cursor-pointer">
                             <img
                               src={event.image}
                               alt="Profile"
@@ -476,7 +476,7 @@ const Dashboard = () => {
                   {applications.map((app) => (
                     <div
                       key={app.id}
-                      className={`flex items-center justify-between py-4 px-6 ${app.bgColor} mt-4 mb-4`}
+                      className={`flex items-center justify-between py-4 px-6 ${app.bgColor} mt-4 mb-4 cursor-pointer`}
                     >
                       {/* Left Section: Icon & Job Details */}
                       <div className="flex items-center space-x-4">
@@ -509,7 +509,7 @@ const Dashboard = () => {
                           {app.status}
                         </div>
 
-                        <button className="text-gray-400">
+                        <button className="text-gray-400 cursor-pointer">
                           <MoreHorizontal size={22} />
                         </button>
                       </div>
@@ -521,7 +521,7 @@ const Dashboard = () => {
                 <div className="flex justify-center py-4 mb-3">
                   <a
                     href="/applications"
-                    className="flex items-center text-sm text-blue-500 font-medium"
+                    className="flex items-center text-sm text-blue-500 font-medium cursor-pointer"
                   >
                     View all applications history
                     <ArrowRight size={16} className="ml-2" />

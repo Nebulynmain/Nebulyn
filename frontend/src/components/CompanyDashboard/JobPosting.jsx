@@ -13,64 +13,153 @@ const jobCategories = [
   "Sales",
 ];
 
-const RichTextEditor = ({ value, onChange, placeholder }) => {
-  const [text, setText] = useState(value || "");
+const RichTextEditor = () => {
+  const [description, setDescription] = useState("");
+  const editorRef = useRef(null);
+  const [charCount, setCharCount] = useState(0);
+  const maxChars = 500;
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [showLinkDialog, setShowLinkDialog] = useState(false);
   const [linkUrl, setLinkUrl] = useState("");
   const [linkText, setLinkText] = useState("");
-  const textareaRef = useRef(null);
 
   const emojis = ["😀", "😊", "👍", "🎉", "❤️", "🔥", "✅", "🚀", "💡", "📊"];
 
-  const insertTextAtPosition = (textToInsert) => {
-    const start = textareaRef.current.selectionStart;
-    const end = textareaRef.current.selectionEnd;
-    const newText =
-      text.substring(0, start) + textToInsert + text.substring(end);
-    setText(newText);
-    onChange(newText);
+  // Update char count whenever description changes
+  useEffect(() => {
+    if (editorRef.current) {
+      const textOnly = editorRef.current.textContent || "";
+      setCharCount(textOnly.length);
+    }
+  }, [description]);
+
+  const handleInput = () => {
+    if (editorRef.current) {
+      const content = editorRef.current.innerHTML;
+      setDescription(content);
+    }
   };
 
-  const applyBold = () => insertTextAtPosition("**bold text**");
-  const applyItalic = () => insertTextAtPosition("*italic text*");
-  const applyNumberedList = () => insertTextAtPosition("1. ");
-  const applyBulletList = () => insertTextAtPosition("• ");
-  const insertEmoji = (emoji) => insertTextAtPosition(emoji);
+  // Format handlers
+  const applyBold = () => {
+    document.execCommand("bold", false, null);
+    editorRef.current.focus();
+  };
+
+  const applyItalic = () => {
+    document.execCommand("italic", false, null);
+    editorRef.current.focus();
+  };
+
+  const applyNumberedList = () => {
+    const selection = window.getSelection();
+    const range = selection.getRangeAt(0);
+
+    // Get the selected content or use existing content at cursor position
+    let selectedText = range.toString();
+
+    if (selectedText) {
+      // If there's selected text, create a list with that text
+      const listHTML = `<ol style="list-style-type: decimal; margin-left: 20px;"><li>${selectedText}</li></ol><br>`;
+      document.execCommand("insertHTML", false, listHTML);
+    } else {
+      // If no selection, just insert an empty numbered list
+      document.execCommand("insertOrderedList", false, null);
+      // Add some styling to make sure it's visible
+      const listElements = editorRef.current.querySelectorAll("ol");
+      if (listElements.length > 0) {
+        const lastList = listElements[listElements.length - 1];
+        lastList.style.listStyleType = "decimal";
+        lastList.style.marginLeft = "20px";
+      }
+    }
+
+    editorRef.current.focus();
+  };
+
+  const applyBulletList = () => {
+    const selection = window.getSelection();
+    const range = selection.getRangeAt(0);
+
+    // Get the selected content or use existing content at cursor position
+    let selectedText = range.toString();
+
+    if (selectedText) {
+      // If there's selected text, create a list with that text
+      const listHTML = `<ul style="list-style-type: disc; margin-left: 20px;"><li>${selectedText}</li></ul><br>`;
+      document.execCommand("insertHTML", false, listHTML);
+    } else {
+      // If no selection, just insert an empty bullet list
+      document.execCommand("insertUnorderedList", false, null);
+      // Add some styling to make sure it's visible
+      const listElements = editorRef.current.querySelectorAll("ul");
+      if (listElements.length > 0) {
+        const lastList = listElements[listElements.length - 1];
+        lastList.style.listStyleType = "disc";
+        lastList.style.marginLeft = "20px";
+      }
+    }
+
+    editorRef.current.focus();
+  };
+
+  const insertEmoji = (emoji) => {
+    document.execCommand("insertText", false, emoji);
+    editorRef.current.focus();
+    setShowEmojiPicker(false);
+  };
 
   const insertLink = () => {
-    if (linkUrl) {
-      const textToInsert = linkText
-        ? `[${linkText}](${linkUrl})`
-        : `[${linkUrl}](${linkUrl})`;
-      insertTextAtPosition(textToInsert);
+    if (linkUrl.trim()) {
+      const displayText = linkText.trim() || linkUrl;
+
+      const selection = window.getSelection();
+      if (selection.rangeCount > 0 && !selection.getRangeAt(0).collapsed) {
+        document.execCommand("createLink", false, linkUrl);
+      } else {
+        document.execCommand(
+          "insertHTML",
+          false,
+          `<a href="${linkUrl}" target="_blank">${displayText}</a>`
+        );
+      }
+
       setLinkUrl("");
       setLinkText("");
       setShowLinkDialog(false);
+      editorRef.current.focus();
     }
   };
 
   return (
     <div className="border border-gray-300 rounded-lg p-2 bg-white">
-      <textarea
-        ref={textareaRef}
-        value={text}
-        onChange={(e) => {
-          setText(e.target.value);
-          onChange(e.target.value);
+      <div
+        ref={editorRef}
+        contentEditable="true"
+        onInput={handleInput}
+        className="w-full p-3 min-h-36 outline-none text-base overflow-auto"
+        style={{
+          minHeight: "9rem",
+          listStylePosition: "inside", // Ensure list markers appear properly
         }}
-        className="w-full p-3 min-h-36 outline-none resize-none text-base"
-        placeholder={placeholder} // Dynamic Placeholder
       />
       <div className="border-t border-gray-200 pt-3 px-3 flex items-center justify-between">
         <div className="flex space-x-4 relative">
+          {/* Emoji Picker Button */}
           <button
             type="button"
-            className="text-gray-500 hover:text-gray-700"
-            onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+            className={`text-gray-500 hover:text-gray-700 ${
+              showEmojiPicker ? "text-blue-500" : ""
+            }`}
+            onClick={() => {
+              setShowLinkDialog(false);
+              setShowEmojiPicker(!showEmojiPicker);
+            }}
           >
             😊
           </button>
+
+          {/* Emoji Picker Modal */}
           {showEmojiPicker && (
             <div className="absolute top-10 left-0 bg-white shadow-md rounded-lg p-3 z-10 border border-gray-200 min-w-48">
               <div className="grid grid-cols-4 gap-2">
@@ -87,41 +176,68 @@ const RichTextEditor = ({ value, onChange, placeholder }) => {
               </div>
             </div>
           )}
+
+          {/* Formatting Buttons */}
           <button
             type="button"
-            className="text-gray-700 font-bold"
-            onClick={applyBold}
+            className="text-gray-700 font-bold hover:bg-gray-100 px-2 py-1 rounded"
+            onClick={() => {
+              setShowEmojiPicker(false);
+              setShowLinkDialog(false);
+              applyBold();
+            }}
           >
             B
           </button>
           <button
             type="button"
-            className="text-gray-700 italic"
-            onClick={applyItalic}
+            className="text-gray-700 italic hover:bg-gray-100 px-2 py-1 rounded"
+            onClick={() => {
+              setShowEmojiPicker(false);
+              setShowLinkDialog(false);
+              applyItalic();
+            }}
           >
             I
           </button>
           <button
             type="button"
-            className="text-gray-700"
-            onClick={applyNumberedList}
+            className="text-gray-700 hover:bg-gray-100 px-2 py-1 rounded"
+            onClick={() => {
+              setShowEmojiPicker(false);
+              setShowLinkDialog(false);
+              applyNumberedList();
+            }}
           >
             🔢
           </button>
           <button
             type="button"
-            className="text-gray-700"
-            onClick={applyBulletList}
+            className="text-gray-700 hover:bg-gray-100 px-2 py-1 rounded"
+            onClick={() => {
+              setShowEmojiPicker(false);
+              setShowLinkDialog(false);
+              applyBulletList();
+            }}
           >
             •
           </button>
+
+          {/* Link Button */}
           <button
             type="button"
-            className="text-gray-500 hover:text-gray-700"
-            onClick={() => setShowLinkDialog(!showLinkDialog)}
+            className={`text-gray-500 hover:text-gray-700 ${
+              showLinkDialog ? "text-blue-500" : ""
+            }`}
+            onClick={() => {
+              setShowEmojiPicker(false);
+              setShowLinkDialog(!showLinkDialog);
+            }}
           >
             🔗
           </button>
+
+          {/* Link Dialog */}
           {showLinkDialog && (
             <div className="absolute top-10 right-0 bg-white shadow-md rounded-lg p-3 z-10 border border-gray-200 w-64">
               <input
@@ -147,7 +263,9 @@ const RichTextEditor = ({ value, onChange, placeholder }) => {
             </div>
           )}
         </div>
-        <div className="text-sm text-gray-500">{text.length} / 500</div>
+        <div className="text-sm text-gray-500">
+          {charCount} / {maxChars}
+        </div>
       </div>
     </div>
   );

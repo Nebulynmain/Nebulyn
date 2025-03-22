@@ -169,7 +169,7 @@ const Settings = () => {
           <div className="p-6">
             <div className="border-b border-gray-300 flex space-x-8 text-lg w-full">
               <button
-                className={`pb-3 border-b-4 px-6 ${
+                className={`pb-3 border-b-4 px-6 cursor-pointer ${
                   activeTab === "profile"
                     ? "border-blue-500 font-semibold text-blue-600"
                     : "border-transparent text-gray-500"
@@ -179,7 +179,7 @@ const Settings = () => {
                 My Profile
               </button>
               <button
-                className={`pb-3 border-b-4 px-6 ${
+                className={`pb-3 border-b-4 px-6 cursor-pointer ${
                   activeTab === "login"
                     ? "border-blue-500 font-semibold text-blue-600"
                     : "border-transparent text-gray-500"
@@ -189,7 +189,7 @@ const Settings = () => {
                 Login Details
               </button>
               <button
-                className={`pb-3 border-b-4 px-6 ${
+                className={`pb-3 border-b-4 px-6 cursor-pointer ${
                   activeTab === "notifications"
                     ? "border-blue-500 font-semibold text-blue-600"
                     : "border-transparent text-gray-500"
@@ -313,7 +313,7 @@ const Settings = () => {
                           name="gender"
                           value={formData.gender}
                           onChange={handleChange}
-                          className="mt-1 p-3 border border-gray-300 rounded-lg w-full"
+                          className="mt-1 p-3 border border-gray-300 rounded-lg w-full cursor-pointer"
                         >
                           <option value="">Select Gender</option>
                           <option>Male</option>
@@ -340,7 +340,7 @@ const Settings = () => {
                           value="job-seeker"
                           checked={formData.accountType === "job-seeker"}
                           onChange={handleChange}
-                          className="w-5 h-5 text-blue-500 focus:ring-blue-400 mt-2"
+                          className="w-5 h-5 text-blue-500 focus:ring-blue-400 mt-2 cursor-pointer"
                         />
                         <div>
                           <span className="text-xl font-semibold">
@@ -358,7 +358,7 @@ const Settings = () => {
                           value="employer"
                           checked={formData.accountType === "employer"}
                           onChange={handleChange}
-                          className="w-5 h-5 text-blue-500 focus:ring-blue-400 mt-2"
+                          className="w-5 h-5 text-blue-500 focus:ring-blue-400 mt-2 cursor-pointer"
                         />
                         <div>
                           <span className="text-xl font-semibold">
@@ -376,7 +376,7 @@ const Settings = () => {
                   <div className="flex justify-end mt-6">
                     <button
                       onClick={handleSaveProfile}
-                      className="bg-[#3B8BEB] text-white font-semibold px-6 py-3 rounded-sm shadow-md hover:bg-blue-600 transition"
+                      className="bg-[#3B8BEB] text-white font-semibold px-6 py-3 rounded-sm shadow-md hover:bg-blue-600 transition cursor-pointer"
                     >
                       Save Profile
                     </button>
@@ -428,7 +428,7 @@ const Settings = () => {
                       <div>
                         <button
                           onClick={handleUpdateEmail}
-                          className="bg-[#3B8BEB] text-white font-semibold px-6 py-3 rounded-sm shadow-md hover:bg-blue-600 transition"
+                          className="bg-[#3B8BEB] text-white font-semibold px-6 py-3 rounded-sm shadow-md hover:bg-blue-600 transition cursor-pointer"
                         >
                           Update Email
                         </button>
@@ -476,7 +476,7 @@ const Settings = () => {
                       <div>
                         <button
                           onClick={handleChangePassword}
-                          className="bg-[#3B8BEB] text-white font-semibold px-6 py-3 rounded-sm shadow-md hover:bg-blue-600 transition"
+                          className="bg-[#3B8BEB] text-white font-semibold px-6 py-3 rounded-sm shadow-md hover:bg-blue-600 transition cursor-pointer"
                         >
                           Change Password
                         </button>
@@ -513,8 +513,12 @@ const Settings = () => {
                           <Checkbox
                             checked={selected.includes(option.id)}
                             onChange={() => toggleSelection(option.id)}
+                            className="cursor-pointer"
                           />
-                          <div>
+                          <div
+                            className="cursor-pointer"
+                            onClick={() => toggleSelection(option.id)}
+                          >
                             <p className="font-bold text-gray-900 text-2xl mt-1.5">
                               {option.label}
                             </p>
@@ -545,7 +549,7 @@ const Settings = () => {
                             />
                             <button
                               onClick={handleSaveEmail}
-                              className="bg-green-600 text-white font-semibold px-5 py-2 rounded-md shadow-md hover:bg-green-700 transition"
+                              className="bg-green-600 text-white font-semibold px-5 py-2 rounded-md shadow-md hover:bg-green-700 transition cursor-pointer"
                             >
                               Save
                             </button>
@@ -553,7 +557,7 @@ const Settings = () => {
                         ) : (
                           <button
                             onClick={handleEditEmail}
-                            className="bg-[#3B8BEB] text-white font-semibold px-6 py-3 rounded-sm shadow-md hover:bg-blue-600 transition"
+                            className="bg-[#3B8BEB] text-white font-semibold px-6 py-3 rounded-sm shadow-md hover:bg-blue-600 transition cursor-pointer"
                           >
                             Update Email
                           </button>

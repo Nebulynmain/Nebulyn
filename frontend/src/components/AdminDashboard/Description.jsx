@@ -188,12 +188,12 @@ const Companies = () => {
                       {/* Left side with logo and text */}
                       <div className="flex items-center">
                         {/* Purple logo */}
-                        <div className="bg-indigo-500 w-16 h-16 flex items-center justify-center rounded-lg text-white font-bold text-3xl mr-6">
+                        <div className="bg-indigo-500 w-16 h-16 flex items-center justify-center rounded-lg text-white font-bold text-3xl mr-6 cursor-pointer">
                           S
                         </div>
 
                         {/* Job details */}
-                        <div>
+                        <div className="cursor-pointer">
                           <h2 className="text-2xl font-bold text-gray-900">
                             Social Media Assistant
                           </h2>
@@ -206,7 +206,7 @@ const Companies = () => {
                       {/* Right side with share and apply button */}
                       <div className="flex items-center">
                         {/* Share icon */}
-                        <div className="mr-6 border border-gray-300 rounded-full p-3 flex items-center justify-center">
+                        <div className="mr-6 border border-gray-300 rounded-full p-3 flex items-center justify-center cursor-pointer hover:bg-gray-100">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="20"
@@ -238,7 +238,7 @@ const Companies = () => {
                         </div>
 
                         {/* Apply button */}
-                        <button className="bg-blue-500 hover:bg-blue-600 text-white text-lg font-semibold py-3 px-8 rounded-lg">
+                        <button className="bg-blue-500 hover:bg-blue-600 text-white text-lg font-semibold py-3 px-8 rounded-lg cursor-pointer">
                           Apply
                         </button>
                       </div>
@@ -460,7 +460,7 @@ const Companies = () => {
                           section.data.map((item, index) => (
                             <span
                               key={index}
-                              className={`${section.bgColor} ${section.textColor} px-4 py-2 rounded-full text-base font-medium`}
+                              className={`${section.bgColor} ${section.textColor} px-4 py-2 rounded-full text-base font-medium cursor-pointer hover:opacity-90`}
                             >
                               {item}
                             </span>
@@ -493,7 +493,7 @@ const Companies = () => {
                 {perksData.map((perk, index) => (
                   <div
                     key={index}
-                    className="flex flex-col items-left text-left p-6  transition duration-300"
+                    className="flex flex-col items-left text-left p-6 transition duration-300 cursor-pointer hover:bg-gray-50 rounded-lg"
                   >
                     <div className="mb-4">{perk.icon}</div>
                     <h3 className="text-xl font-semibold mb-2 text-gray-900">
@@ -505,7 +505,7 @@ const Companies = () => {
               </div>
             </div>
             {/*Part 4*/}
-            <div className="p-8  border-t border-gray-500">
+            <div className="p-8 border-t border-gray-500">
               <InfoCard
                 logo="https://via.placeholder.com/40" // Replace with actual logo
                 title="Stripe"
