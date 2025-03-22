@@ -528,11 +528,11 @@ const JobApplicant = () => {
         <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
           {/* Search Input */}
           <div className="relative w-full md:w-auto">
-            <Search className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+            <Search className="absolute left-3 top-3 h-5 w-5 text-gray-400 cursor-pointer" />
             <input
               type="text"
               placeholder="Search Applicants"
-              className="w-full md:w-64 pl-10 pr-5 py-2 md:py-3 text-base border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="w-full md:w-64 pl-10 pr-5 py-2 md:py-3 text-base border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer"
               value={searchTerm}
               onChange={(e) => {
                 setSearchTerm(e.target.value);
@@ -542,8 +542,8 @@ const JobApplicant = () => {
           </div>
 
           {/* Filter Button */}
-          <button className="flex items-center gap-2 px-5 py-2 md:py-3 border rounded-lg hover:bg-gray-100 text-base w-full md:w-auto justify-center md:justify-start">
-            <Filter className="h-5 w-5" /> Filter
+          <button className="flex items-center gap-2 px-5 py-2 md:py-3 border rounded-lg hover:bg-gray-100 text-base w-full md:w-auto justify-center md:justify-start cursor-pointer">
+            <Filter className="h-5 w-5 cursor-pointer" /> Filter
           </button>
 
           {/* Vertical Divider */}
@@ -552,7 +552,7 @@ const JobApplicant = () => {
           {/* View Toggle Buttons */}
           <div className="flex bg-blue-100 p-2 rounded-lg w-full md:w-auto mt-4 md:mt-0">
             <button
-              className={`w-40 h-12 px-6 py-2 rounded-md text-blue-600 text-base ${
+              className={`w-40 h-12 px-6 py-2 rounded-md text-blue-600 text-base cursor-pointer ${
                 view === "pipeline" ? "bg-white shadow" : "hover:bg-blue-200"
               }`}
               onClick={() => setView("pipeline")}
@@ -560,7 +560,7 @@ const JobApplicant = () => {
               Pipeline View
             </button>
             <button
-              className={`w-40 h-12 px-6 py-2 rounded-md text-blue-600 text-base ${
+              className={`w-40 h-12 px-6 py-2 rounded-md text-blue-600 text-base cursor-pointer ${
                 view === "table" ? "bg-white shadow" : "hover:bg-blue-200"
               }`}
               onClick={() => setView("table")}
@@ -580,7 +580,7 @@ const JobApplicant = () => {
                 <th className="p-3 md:p-4 text-left">
                   <input
                     type="checkbox"
-                    className="form-checkbox text-blue-500 border-gray-300 rounded-md"
+                    className="form-checkbox text-blue-500 border-gray-300 rounded-md cursor-pointer"
                     checked={selectAll}
                     onChange={handleSelectAll}
                   />
@@ -595,8 +595,8 @@ const JobApplicant = () => {
                 ].map((header) => (
                   <th key={header} className="p-3 md:p-4 text-left font-medium">
                     <div className="flex items-center space-x-2 cursor-pointer">
-                      <span>{header}</span>
-                      <span className="text-xs">▲▼</span>
+                      <span className="cursor-pointer">{header}</span>
+                      <span className="text-xs cursor-pointer">▲▼</span>
                     </div>
                   </th>
                 ))}
@@ -606,73 +606,82 @@ const JobApplicant = () => {
             <tbody>
               {currentApplicants.length > 0 ? (
                 currentApplicants.map((candidate) => (
-                  <tr key={candidate.id} className="border-t hover:bg-gray-50">
+                  <tr
+                    key={candidate.id}
+                    className="border-t hover:bg-gray-50 cursor-pointer"
+                  >
                     <td className="p-3 md:p-4">
                       <input
                         type="checkbox"
-                        className="form-checkbox text-blue-500"
+                        className="form-checkbox text-blue-500 cursor-pointer"
                         checked={selectedCandidates.includes(candidate.id)}
                         onChange={() => handleSelect(candidate.id)}
                       />
                     </td>
-                    <td className="p-3 md:p-4">
+                    <td className="p-3 md:p-4 cursor-pointer">
                       <div className="flex items-center space-x-3">
                         <img
                           src={candidate.image}
                           alt={candidate.name}
-                          className="w-8 h-8 rounded-full border object-cover"
+                          className="w-8 h-8 rounded-full border object-cover cursor-pointer"
                         />
-                        <span className="font-medium text-gray-900">
+                        <span className="font-medium text-gray-900 cursor-pointer">
                           {candidate.name}
                         </span>
                       </div>
                     </td>
-                    <td className="p-3 md:p-4">
+                    <td className="p-3 md:p-4 cursor-pointer">
                       <div className="flex items-center space-x-1">
                         <Star
-                          className={getStarColor(candidate.score)}
+                          className={`${getStarColor(
+                            candidate.score
+                          )} cursor-pointer`}
                           fill={candidate.score > 0 ? "#FACC15" : "none"}
                           size={16}
                         />
-                        <span className="text-gray-900 font-medium">
+                        <span className="text-gray-900 font-medium cursor-pointer">
                           {candidate.score}
                         </span>
                       </div>
                     </td>
-                    <td className="p-3 md:p-4">
+                    <td className="p-3 md:p-4 cursor-pointer">
                       <span
-                        className={`px-3 py-1 rounded-full text-sm font-medium 
-                ${
-                  candidate.hiringStage === "Interview"
-                    ? "text-yellow-600 bg-yellow-100"
-                    : ""
-                }
-                ${
-                  candidate.hiringStage === "Shortlisted"
-                    ? "text-blue-600 bg-blue-100"
-                    : ""
-                }
-                ${
-                  candidate.hiringStage === "Declined"
-                    ? "text-red-600 bg-red-100"
-                    : ""
-                }
-                ${
-                  candidate.hiringStage === "Hired"
-                    ? "text-green-600 bg-green-100"
-                    : ""
-                }
-                ${
-                  candidate.hiringStage === "Interviewed"
-                    ? "text-blue-600 bg-blue-100"
-                    : ""
-                }`}
+                        className={`px-3 py-1 rounded-full text-sm font-medium cursor-pointer
+              ${
+                candidate.hiringStage === "Interview"
+                  ? "text-yellow-600 bg-yellow-100"
+                  : ""
+              }
+              ${
+                candidate.hiringStage === "Shortlisted"
+                  ? "text-blue-600 bg-blue-100"
+                  : ""
+              }
+              ${
+                candidate.hiringStage === "Declined"
+                  ? "text-red-600 bg-red-100"
+                  : ""
+              }
+              ${
+                candidate.hiringStage === "Hired"
+                  ? "text-green-600 bg-green-100"
+                  : ""
+              }
+              ${
+                candidate.hiringStage === "Interviewed"
+                  ? "text-blue-600 bg-blue-100"
+                  : ""
+              }`}
                       >
                         {candidate.hiringStage}
                       </span>
                     </td>
-                    <td className="p-3 md:p-4">{candidate.appliedDate}</td>
-                    <td className="p-3 md:p-4">{candidate.jobRole}</td>
+                    <td className="p-3 md:p-4 cursor-pointer">
+                      {candidate.appliedDate}
+                    </td>
+                    <td className="p-3 md:p-4 cursor-pointer">
+                      {candidate.jobRole}
+                    </td>
                     <td className="p-3 md:p-4">
                       <button
                         className="px-3 py-1 md:px-4 md:py-2 border border-blue-500 bg-[#E9EBFD] text-blue-500 rounded text-sm cursor-pointer"
@@ -705,17 +714,25 @@ const JobApplicant = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
             {stageOrder.map((stage) => (
               <div key={stage} className="bg-white rounded-lg shadow">
-                <div className={`p-3 rounded-t-lg ${getStageColor(stage)}`}>
-                  <div className="flex justify-between items-center">
-                    <h3 className={`font-medium ${getStageTextColor(stage)}`}>
+                <div
+                  className={`p-3 rounded-t-lg ${getStageColor(
+                    stage
+                  )} cursor-pointer`}
+                >
+                  <div className="flex justify-between items-center cursor-pointer">
+                    <h3
+                      className={`font-medium ${getStageTextColor(
+                        stage
+                      )} cursor-pointer`}
+                    >
                       {stage}
                     </h3>
-                    <span className="bg-white px-2 py-1 rounded-full text-sm font-medium text-gray-700">
+                    <span className="bg-white px-2 py-1 rounded-full text-sm font-medium text-gray-700 cursor-pointer">
                       {stageGroups[stage].length}
                     </span>
                   </div>
                 </div>
-                <div className="p-3 max-h-96 overflow-y-auto">
+                <div className="p-3 max-h-96 overflow-y-auto cursor-pointer">
                   {stageGroups[stage].length > 0 ? (
                     stageGroups[stage].map((candidate) => (
                       <CandidateCard key={candidate.id} candidate={candidate} />
@@ -743,11 +760,17 @@ const JobApplicant = () => {
                 setApplicantsPerPage(Number(e.target.value));
                 setCurrentPage(1); // Reset to first page
               }}
-              className="border rounded-md px-2 py-1"
+              className="border rounded-md px-2 py-1 cursor-pointer"
             >
-              <option value={10}>10</option>
-              <option value={20}>20</option>
-              <option value={50}>50</option>
+              <option value={10} className="cursor-pointer">
+                10
+              </option>
+              <option value={20} className="cursor-pointer">
+                20
+              </option>
+              <option value={50} className="cursor-pointer">
+                50
+              </option>
             </select>
             <span>Applicants per page</span>
           </div>
@@ -755,20 +778,20 @@ const JobApplicant = () => {
             <button
               onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
-              className={`p-2 border rounded-md ${
+              className={`p-2 border rounded-md cursor-pointer ${
                 currentPage === 1
                   ? "text-gray-300 cursor-not-allowed"
                   : "hover:bg-gray-100"
               }`}
             >
-              <ChevronLeft size={16} />
+              <ChevronLeft size={16} className="cursor-pointer" />
             </button>
             {totalPages <= 5 ? (
               [...Array(totalPages)].map((_, index) => (
                 <button
                   key={index + 1}
                   onClick={() => paginate(index + 1)}
-                  className={`px-3 py-1 md:px-4 md:py-2 border rounded-md ${
+                  className={`px-3 py-1 md:px-4 md:py-2 border rounded-md cursor-pointer ${
                     currentPage === index + 1
                       ? "bg-blue-500 text-white"
                       : "hover:bg-gray-100"
@@ -783,7 +806,7 @@ const JobApplicant = () => {
                 {currentPage > 1 && (
                   <button
                     onClick={() => paginate(1)}
-                    className="px-3 py-1 md:px-4 md:py-2 border rounded-md hover:bg-gray-100"
+                    className="px-3 py-1 md:px-4 md:py-2 border rounded-md hover:bg-gray-100 cursor-pointer"
                   >
                     1
                   </button>
@@ -792,18 +815,18 @@ const JobApplicant = () => {
                 {currentPage > 1 && (
                   <button
                     onClick={() => paginate(currentPage - 1)}
-                    className="px-3 py-1 md:px-4 md:py-2 border rounded-md hover:bg-gray-100"
+                    className="px-3 py-1 md:px-4 md:py-2 border rounded-md hover:bg-gray-100 cursor-pointer"
                   >
                     {currentPage - 1}
                   </button>
                 )}
-                <button className="px-3 py-1 md:px-4 md:py-2 border rounded-md bg-blue-500 text-white">
+                <button className="px-3 py-1 md:px-4 md:py-2 border rounded-md bg-blue-500 text-white cursor-pointer">
                   {currentPage}
                 </button>
                 {currentPage < totalPages && (
                   <button
                     onClick={() => paginate(currentPage + 1)}
-                    className="px-3 py-1 md:px-4 md:py-2 border rounded-md hover:bg-gray-100"
+                    className="px-3 py-1 md:px-4 md:py-2 border rounded-md hover:bg-gray-100 cursor-pointer"
                   >
                     {currentPage + 1}
                   </button>
@@ -814,7 +837,7 @@ const JobApplicant = () => {
                 {currentPage < totalPages && (
                   <button
                     onClick={() => paginate(totalPages)}
-                    className="px-3 py-1 md:px-4 md:py-2 border rounded-md hover:bg-gray-100"
+                    className="px-3 py-1 md:px-4 md:py-2 border rounded-md hover:bg-gray-100 cursor-pointer"
                   >
                     {totalPages}
                   </button>
@@ -826,13 +849,13 @@ const JobApplicant = () => {
                 setCurrentPage((prev) => Math.min(prev + 1, totalPages))
               }
               disabled={currentPage === totalPages}
-              className={`p-2 border rounded-md ${
+              className={`p-2 border rounded-md cursor-pointer ${
                 currentPage === totalPages
                   ? "text-gray-300 cursor-not-allowed"
                   : "hover:bg-gray-100"
               }`}
             >
-              <ChevronRight size={16} />
+              <ChevronRight size={16} className="cursor-pointer" />
             </button>
           </div>
         </div>
@@ -1350,7 +1373,7 @@ const JobApplicant = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <div className="flex flex-row flex-grow">
-        <div className="h-screen sticky top-0 ">
+        <div className="h-screen sticky top-0 cursor-pointer">
           <Sidebar />
         </div>
         <div className="flex-grow transition-all">
@@ -1370,19 +1393,28 @@ const JobApplicant = () => {
                   className="text-3xl text-gray-900 cursor-pointer"
                   onClick={() => navigate("/job-listing")}
                 >
-                  <span className="font-bold">Social Media Assistant</span>
-                  <p className="text-gray-600 text-lg mt-2">
+                  <span className="font-bold cursor-pointer">
+                    Social Media Assistant
+                  </span>
+                  <p className="text-gray-600 text-lg mt-2 cursor-pointer">
                     Design • Full-Time •
-                    <span className="text-gray-900 font-semibold"> 4</span> /
-                    <span className="text-gray-400"> 11 Hired</span>
+                    <span className="text-gray-900 font-semibold cursor-pointer">
+                      {" "}
+                      4
+                    </span>{" "}
+                    /
+                    <span className="text-gray-400 cursor-pointer">
+                      {" "}
+                      11 Hired
+                    </span>
                   </p>
                 </h1>
               </div>
 
               {/* More Action Button */}
               <button className="border border-blue-500 text-blue-500 px-4 py-2 rounded-md flex items-center space-x-1 cursor-pointer">
-                <ChevronDown size={16} />
-                <span>More Action</span>
+                <ChevronDown size={16} className="cursor-pointer" />
+                <span className="cursor-pointer">More Action</span>
               </button>
             </div>
             {/*Part 2*/}
@@ -1401,8 +1433,8 @@ const JobApplicant = () => {
                     <span
                       className={
                         activeTab === "Applicants"
-                          ? "text-blue-500 font-medium text-lg"
-                          : "text-gray-500 text-lg"
+                          ? "text-blue-500 font-medium text-lg cursor-pointer"
+                          : "text-gray-500 text-lg cursor-pointer"
                       }
                     >
                       Applicants
@@ -1419,8 +1451,8 @@ const JobApplicant = () => {
                     <span
                       className={
                         activeTab === "Job Details"
-                          ? "text-blue-500 font-medium text-lg"
-                          : "text-gray-500 text-lg"
+                          ? "text-blue-500 font-medium text-lg cursor-pointer"
+                          : "text-gray-500 text-lg cursor-pointer"
                       }
                     >
                       Job Details
@@ -1437,8 +1469,8 @@ const JobApplicant = () => {
                     <span
                       className={
                         activeTab === "Analytics"
-                          ? "text-blue-500 font-medium text-lg"
-                          : "text-gray-500 text-lg"
+                          ? "text-blue-500 font-medium text-lg cursor-pointer"
+                          : "text-gray-500 text-lg cursor-pointer"
                       }
                     >
                       Analytics

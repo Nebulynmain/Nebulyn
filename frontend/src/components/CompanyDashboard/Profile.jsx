@@ -687,7 +687,7 @@ const Profile = () => {
                       toggleEditMode("logo");
                       fileInputRef.current.click();
                     }}
-                    className="absolute top-1 left-1 bg-white p-2 rounded-md shadow-md border border-gray-300 hover:bg-gray-200"
+                    className="absolute top-1 left-1 bg-white p-2 rounded-md shadow-md border border-gray-300 hover:bg-gray-200 cursor-pointer"
                   >
                     <Edit size={16} className="text-blue-500" />
                   </button>
@@ -729,7 +729,7 @@ const Profile = () => {
                       </h2>
                       <a
                         href={companyInfo.website}
-                        className="text-blue-500 text-lg"
+                        className="text-blue-500 text-lg cursor-pointer"
                       >
                         {companyInfo.website}
                       </a>
@@ -758,7 +758,7 @@ const Profile = () => {
                               );
                               handleCompanyInfoUpdate("founded", formattedDate);
                             }}
-                            className="font-semibold block w-full focus:outline-none"
+                            className="font-semibold block w-full focus:outline-none cursor-pointer"
                           />
                         ) : (
                           <p className="font-semibold">{companyInfo.founded}</p>
@@ -781,7 +781,7 @@ const Profile = () => {
                                 e.target.value
                               )
                             }
-                            className="font-semibold block w-full focus:outline-none"
+                            className="font-semibold block w-full focus:outline-none cursor-pointer"
                           />
                         ) : (
                           <p className="font-semibold">
@@ -806,7 +806,7 @@ const Profile = () => {
                                 e.target.value
                               )
                             }
-                            className="font-semibold block w-full focus:outline-none"
+                            className="font-semibold block w-full focus:outline-none cursor-pointer"
                           />
                         ) : (
                           <p className="font-semibold">
@@ -831,7 +831,7 @@ const Profile = () => {
                                 e.target.value
                               )
                             }
-                            className="font-semibold block w-full focus:outline-none"
+                            className="font-semibold block w-full focus:outline-none cursor-pointer"
                           />
                         ) : (
                           <p className="font-semibold">
@@ -845,7 +845,7 @@ const Profile = () => {
               </div>
 
               <div className="flex gap-3">
-                <button className="flex items-center gap-2 h-10 px-4 py-2 text-gray-700 hover:bg-gray-100 text-base">
+                <button className="flex items-center gap-2 h-10 px-4 py-2 text-gray-700 hover:bg-gray-100 text-base cursor-pointer">
                   <Eye className="w-5 h-5" /> Public View
                 </button>
 
@@ -853,13 +853,13 @@ const Profile = () => {
                   <div className="flex gap-2">
                     <button
                       onClick={() => toggleEditMode("companyInfo")}
-                      className="flex items-center justify-center gap-2 h-10 px-4 py-2 text-black border rounded-sm text-base hover:bg-gray-200"
+                      className="flex items-center justify-center gap-2 h-10 px-4 py-2 text-black border rounded-sm text-base hover:bg-gray-200 cursor-pointer"
                     >
                       <X className="w-5 h-5" /> Cancel
                     </button>
                     <button
                       onClick={saveCompanyInfo} // Direct function call
-                      className="flex items-center justify-center gap-2 h-10 px-4 py-2 text-white bg-blue-500 border rounded-sm text-base hover:bg-blue-600"
+                      className="flex items-center justify-center gap-2 h-10 px-4 py-2 text-white bg-blue-500 border rounded-sm text-base hover:bg-blue-600 cursor-pointer"
                     >
                       <Check className="w-5 h-5" /> Save
                     </button>
@@ -867,7 +867,7 @@ const Profile = () => {
                 ) : (
                   <button
                     onClick={() => toggleEditMode("companyInfo")}
-                    className="flex items-center gap-2 h-10 px-4 py-2 text-black border rounded-sm text-base hover:bg-gray-200"
+                    className="flex items-center gap-2 h-10 px-4 py-2 text-black border rounded-sm text-base hover:bg-gray-200 cursor-pointer"
                   >
                     <Settings className="w-5 h-5" /> Profile Settings
                   </button>
@@ -886,7 +886,7 @@ const Profile = () => {
                     {!editModes.companyProfile && (
                       <button
                         onClick={() => toggleEditMode("companyProfile")}
-                        className="text-blue-500 w-10 h-10 flex items-center justify-center border border-gray-300 rounded-md"
+                        className="text-blue-500 w-10 h-10 flex items-center justify-center border border-gray-300 rounded-md cursor-pointer"
                       >
                         <Edit size={16} />
                       </button>
@@ -900,19 +900,19 @@ const Profile = () => {
                         onChange={(e) =>
                           handleCompanyInfoUpdate("description", e.target.value)
                         }
-                        className="w-full mt-2 p-2 border rounded"
+                        className="w-full mt-2 p-2 border rounded cursor-pointer"
                         rows={6}
                       />
                       <div className="flex justify-end mt-2 space-x-2">
                         <button
                           onClick={() => toggleEditMode("companyProfile")}
-                          className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
+                          className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 cursor-pointer"
                         >
                           Cancel
                         </button>
                         <button
                           onClick={saveCompanyInfo} // Save and close
-                          className="flex items-center justify-center gap-2 h-10 px-4 py-2 text-white bg-blue-500 border rounded-sm text-base hover:bg-blue-600"
+                          className="flex items-center justify-center gap-2 h-10 px-4 py-2 text-white bg-blue-500 border rounded-sm text-base hover:bg-blue-600 cursor-pointer"
                         >
                           <Check className="w-5 h-5" /> Save
                         </button>
@@ -932,13 +932,13 @@ const Profile = () => {
                     <div className="flex gap-2">
                       <button
                         onClick={() => setShowAddSocialForm(true)}
-                        className="text-blue-600 text-2xl font-semibold border border-gray-300 px-2 py-1 rounded-md"
+                        className="text-blue-600 text-2xl font-semibold border border-gray-300 px-2 py-1 rounded-md cursor-pointer"
                       >
                         <Plus size={20} />
                       </button>
                       <button
                         onClick={() => toggleEditMode("contact")}
-                        className="text-blue-500 w-10 h-10 flex items-center justify-center border border-gray-300 rounded-md"
+                        className="text-blue-500 w-10 h-10 flex items-center justify-center border border-gray-300 rounded-md cursor-pointer"
                       >
                         <Edit size={16} />
                       </button>
@@ -955,7 +955,7 @@ const Profile = () => {
                         <select
                           value={newSocialPlatform}
                           onChange={(e) => setNewSocialPlatform(e.target.value)}
-                          className="border rounded px-3 py-2"
+                          className="border rounded px-3 py-2 cursor-pointer"
                         >
                           <option value="">Select Platform</option>
                           <option value="linkedin">LinkedIn</option>
@@ -972,19 +972,19 @@ const Profile = () => {
                           value={newSocialLink}
                           onChange={(e) => setNewSocialLink(e.target.value)}
                           placeholder="e.g. linkedin.com/in/username"
-                          className="border rounded px-3 py-2"
+                          className="border rounded px-3 py-2 cursor-pointer"
                         />
                       </div>
                       <div className="flex gap-2 justify-end">
                         <button
                           onClick={() => setShowAddSocialForm(false)}
-                          className="border border-gray-300 px-3 py-1 rounded-md"
+                          className="border border-gray-300 px-3 py-1 rounded-md cursor-pointer"
                         >
                           Cancel
                         </button>
                         <button
                           onClick={handleAddSocialLink}
-                          className="bg-blue-500 text-white px-3 py-1 rounded-md"
+                          className="bg-blue-500 text-white px-3 py-1 rounded-md cursor-pointer"
                           disabled={!newSocialPlatform || !newSocialLink}
                         >
                           Add
@@ -1003,7 +1003,7 @@ const Profile = () => {
                           onChange={(e) =>
                             handleSocialLinkUpdate(platform, e.target.value)
                           }
-                          className="border rounded px-3 py-2"
+                          className="border rounded px-3 py-2 cursor-pointer"
                         />
                       ) : (
                         <a
@@ -1011,7 +1011,7 @@ const Profile = () => {
                           href={`https://${link}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center border border-blue-400 rounded-md px-3 py-2 text-blue-500 text-sm"
+                          className="flex items-center border border-blue-400 rounded-md px-3 py-2 text-blue-500 text-sm cursor-pointer"
                         >
                           {platform === "linkedin" && (
                             <Linkedin size={16} className="mr-2" />
@@ -1042,14 +1042,14 @@ const Profile = () => {
                     <div className="flex gap-2">
                       <button
                         onClick={() => handleAddItem("benefits")} // Pass "benefits"
-                        className="text-blue-600 text-2xl font-semibold border border-gray-300 px-2 py-1 rounded-md"
+                        className="text-blue-600 text-2xl font-semibold border border-gray-300 px-2 py-1 rounded-md cursor-pointer"
                       >
                         <Plus size={20} />
                       </button>
 
                       <button
                         onClick={() => toggleEditMode("benefits")}
-                        className="text-blue-500 w-10 h-10 flex items-center justify-center border border-gray-300 rounded-md"
+                        className="text-blue-500 w-10 h-10 flex items-center justify-center border border-gray-300 rounded-md cursor-pointer"
                       >
                         <Edit size={16} />
                       </button>
@@ -1075,7 +1075,7 @@ const Profile = () => {
                                 newBenefits[index].title = e.target.value;
                                 setBenefits(newBenefits);
                               }}
-                              className="font-bold text-xl border rounded px-2"
+                              className="font-bold text-xl border rounded px-2 cursor-pointer"
                             />
                             <textarea
                               value={benefit.description}
@@ -1084,7 +1084,7 @@ const Profile = () => {
                                 newBenefits[index].description = e.target.value;
                                 setBenefits(newBenefits);
                               }}
-                              className="text-gray-500 text-lg border rounded p-2"
+                              className="text-gray-500 text-lg border rounded p-2 cursor-pointer"
                               rows={3}
                             />
                           </>
@@ -1103,7 +1103,7 @@ const Profile = () => {
                         {editModes.benefits && (
                           <button
                             onClick={() => handleRemoveBenefit(index)}
-                            className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600"
+                            className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 cursor-pointer"
                           >
                             <Trash size={16} />
                           </button>
@@ -1116,7 +1116,7 @@ const Profile = () => {
                     <div className="flex justify-end mt-4 space-x-2">
                       <button
                         onClick={saveBenefits}
-                        className="flex items-center justify-center gap-2 h-10 px-4 py-2 text-white bg-blue-500 border rounded-sm text-base hover:bg-blue-600"
+                        className="flex items-center justify-center gap-2 h-10 px-4 py-2 text-white bg-blue-500 border rounded-sm text-base hover:bg-blue-600 cursor-pointer"
                       >
                         <Check className="w-5 h-5" /> Save
                       </button>
@@ -1131,13 +1131,13 @@ const Profile = () => {
                     <div className="flex gap-2">
                       <button
                         onClick={() => handleAddItem("team")}
-                        className="text-blue-600 text-2xl font-semibold border border-gray-300 px-2 py-1 rounded-md"
+                        className="text-blue-600 text-2xl font-semibold border border-gray-300 px-2 py-1 rounded-md cursor-pointer"
                       >
                         <Plus size={20} />
                       </button>
                       <button
                         onClick={() => toggleEditMode("team")}
-                        className="text-blue-500 w-10 h-10 flex items-center justify-center border border-gray-300 rounded-md"
+                        className="text-blue-500 w-10 h-10 flex items-center justify-center border border-gray-300 rounded-md cursor-pointer"
                       >
                         <Edit size={16} />
                       </button>
@@ -1154,7 +1154,7 @@ const Profile = () => {
                         {editModes.team && (
                           <button
                             onClick={() => handleRemoveTeamMember(index)}
-                            className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-red-600 z-10"
+                            className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-red-600 z-10 cursor-pointer"
                             type="button"
                           >
                             <Trash size={16} />
@@ -1193,7 +1193,7 @@ const Profile = () => {
                               onChange={(e) =>
                                 handleEditChange(index, "name", e.target.value)
                               }
-                              className="font-semibold text-center border rounded px-2 py-1 w-full mb-2"
+                              className="font-semibold text-center border rounded px-2 py-1 w-full mb-2 cursor-pointer"
                               placeholder="Name"
                             />
 
@@ -1204,7 +1204,7 @@ const Profile = () => {
                               onChange={(e) =>
                                 handleEditChange(index, "role", e.target.value)
                               }
-                              className="text-gray-500 text-sm text-center border rounded px-2 py-1 w-full mb-3"
+                              className="text-gray-500 text-sm text-center border rounded px-2 py-1 w-full mb-3 cursor-pointer"
                               placeholder="Role"
                             />
 
@@ -1227,7 +1227,7 @@ const Profile = () => {
                                           e.target.value
                                         )
                                       }
-                                      className="border rounded px-2 py-1 w-1/3"
+                                      className="border rounded px-2 py-1 w-1/3 cursor-pointer"
                                     >
                                       <option value="">Select</option>
                                       <option value="LinkedIn">LinkedIn</option>
@@ -1249,14 +1249,14 @@ const Profile = () => {
                                           e.target.value
                                         )
                                       }
-                                      className="border rounded px-2 py-1 flex-1"
+                                      className="border rounded px-2 py-1 flex-1 cursor-pointer"
                                       placeholder="URL"
                                     />
                                     <button
                                       onClick={() =>
                                         removeSocialLink(index, linkIndex)
                                       }
-                                      className="bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600"
+                                      className="bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 cursor-pointer"
                                       type="button"
                                     >
                                       <X size={14} />
@@ -1269,7 +1269,7 @@ const Profile = () => {
                             {/* Add More Social Links Button */}
                             <button
                               onClick={() => addSocialLink(index)}
-                              className="flex items-center justify-center gap-1 text-blue-600 mt-3 border border-blue-300 rounded-md px-3 py-1 hover:bg-blue-50 w-full"
+                              className="flex items-center justify-center gap-1 text-blue-600 mt-3 border border-blue-300 rounded-md px-3 py-1 hover:bg-blue-50 w-full cursor-pointer"
                               type="button"
                             >
                               <Plus size={16} /> Add Social Link
@@ -1293,7 +1293,7 @@ const Profile = () => {
                                     href={link.url}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="text-gray-600 hover:text-blue-500"
+                                    className="text-gray-600 hover:text-blue-500 cursor-pointer"
                                     title={link.platform}
                                   >
                                     {renderSocialIcon(link.platform)}
@@ -1312,7 +1312,7 @@ const Profile = () => {
                     <div className="flex justify-end mt-6">
                       <button
                         onClick={saveTeamMembers}
-                        className="flex items-center justify-center gap-2 h-12 px-6 py-2 text-white bg-blue-500 border rounded-md text-base font-medium hover:bg-blue-600 transition-colors"
+                        className="flex items-center justify-center gap-2 h-12 px-6 py-2 text-white bg-blue-500 border rounded-md text-base font-medium hover:bg-blue-600 transition-colors cursor-pointer"
                         type="button"
                       >
                         <Check className="w-5 h-5" /> Save
@@ -1334,7 +1334,7 @@ const Profile = () => {
                     {jobs.map((job, index) => (
                       <div
                         key={index}
-                        className="flex items-center p-4 border border-gray-200 rounded-lg shadow-sm bg-white hover:shadow-md transition"
+                        className="flex items-center p-4 border border-gray-200 rounded-lg shadow-sm bg-white hover:shadow-md transition cursor-pointer"
                       >
                         <img
                           src={job.logo}
@@ -1390,13 +1390,13 @@ const Profile = () => {
                     <div className="flex gap-2">
                       <button
                         onClick={() => handleAddItem("techStack")}
-                        className="text-blue-600 text-2xl font-semibold border border-gray-300 px-2 py-1 rounded-md"
+                        className="text-blue-600 text-2xl font-semibold border border-gray-300 px-2 py-1 rounded-md cursor-pointer"
                       >
                         <Plus size={20} />
                       </button>
                       <button
                         onClick={() => toggleEditMode("techStack")}
-                        className="text-blue-500 w-10 h-10 flex items-center justify-center border border-gray-300 rounded-md"
+                        className="text-blue-500 w-10 h-10 flex items-center justify-center border border-gray-300 rounded-md cursor-pointer"
                       >
                         <Edit size={16} />
                       </button>
@@ -1423,7 +1423,7 @@ const Profile = () => {
                               newTech[index].name = e.target.value;
                               setTechItems(newTech);
                             }}
-                            className="text-sm text-gray-700 border rounded px-2 text-center"
+                            className="text-sm text-gray-700 border rounded px-2 text-center cursor-pointer"
                           />
                         ) : (
                           <span className="text-sm text-gray-700">
@@ -1444,13 +1444,13 @@ const Profile = () => {
                     <div className="flex gap-2">
                       <button
                         onClick={() => handleAddItem("locations")}
-                        className="text-blue-600 text-2xl font-semibold border border-gray-300 px-2 py-1 rounded-md"
+                        className="text-blue-600 text-2xl font-semibold border border-gray-300 px-2 py-1 rounded-md cursor-pointer"
                       >
                         <Plus size={20} />
                       </button>
                       <button
                         onClick={() => toggleEditMode("locations")}
-                        className="text-blue-500 w-10 h-10 flex items-center justify-center border border-gray-300 rounded-md"
+                        className="text-blue-500 w-10 h-10 flex items-center justify-center border border-gray-300 rounded-md cursor-pointer"
                       >
                         <Edit size={16} />
                       </button>
@@ -1499,7 +1499,7 @@ const Profile = () => {
                               }));
                               setLocations(newLocations);
                             }}
-                            className="ml-2"
+                            className="ml-2 cursor-pointer"
                           />
                         )}
                         {!editModes.locations && item.isHeadquarter && (

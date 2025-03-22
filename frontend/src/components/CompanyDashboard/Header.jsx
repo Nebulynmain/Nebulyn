@@ -116,7 +116,7 @@ const Header = () => {
               {/* Header */}
               <div className="flex justify-between items-center border-gray-300 border-b pb-4 mb-4">
                 <h2 className="text-xl font-bold">Notifications</h2>{" "}
-                <button className="text-blue-600 text-base hover:underline">
+                <button className="text-blue-600 text-base hover:underline cursor-pointer">
                   Mark all as read
                 </button>
               </div>
@@ -126,25 +126,27 @@ const Header = () => {
                 {notifications.map((notification) => (
                   <div
                     key={notification.id}
-                    className="flex items-start gap-5 border-b border-gray-300 p-5 -mt-4"
+                    className="flex items-start gap-5 border-b border-gray-300 p-5 -mt-4 cursor-pointer hover:bg-gray-50"
                   >
                     {/* Avatar */}
                     <img
                       src={notification.avatar}
                       alt="User"
-                      className="w-14 h-14 rounded-full" // Bigger avatar
+                      className="w-14 h-14 rounded-full cursor-pointer" // Bigger avatar with cursor-pointer
                     />
                     {/* Content */}
                     <div className="flex-1">
                       <p className="text-base">
-                        <strong>{notification.name}</strong>{" "}
+                        <strong className="cursor-pointer hover:underline">
+                          {notification.name}
+                        </strong>{" "}
                         {notification.message}
                       </p>
 
                       {/* Status Badge (New / Shortlisted) */}
                       {notification.status && (
                         <span
-                          className={`text-xs font-semibold px-2 py-1 rounded-full inline-block mt-1 ${
+                          className={`text-xs font-semibold px-2 py-1 rounded-full inline-block mt-1 cursor-pointer ${
                             notification.status === "New"
                               ? "bg-yellow-100 text-yellow-600 border border-yellow-400"
                               : "bg-green-100 text-green-600 border border-green-400"
@@ -155,7 +157,7 @@ const Header = () => {
                       )}
 
                       {notification.role && (
-                        <div className="border-l-4 border-blue-500 pl-4 mt-3 bg-gray-100 p-3 rounded-sm">
+                        <div className="border-l-4 border-blue-500 pl-4 mt-3 bg-gray-100 p-3 rounded-sm cursor-pointer hover:bg-gray-200">
                           <p className="text-base font-semibold">
                             {notification.status}
                           </p>

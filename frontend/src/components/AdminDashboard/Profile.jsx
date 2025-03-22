@@ -1117,7 +1117,7 @@ function Profile() {
                           className="hidden"
                         />
                         <div
-                          className="absolute top-3 right-3 text-white rounded p-1"
+                          className="absolute top-3 right-3 text-white rounded p-1 cursor-pointer"
                           onClick={handleEditClick}
                         >
                           <EditButton />
@@ -1171,13 +1171,13 @@ function Profile() {
                               <button
                                 type="button"
                                 onClick={() => setIsEditingHeader(false)}
-                                className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
+                                className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 cursor-pointer"
                               >
                                 Cancel
                               </button>
                               <button
                                 type="submit"
-                                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 cursor-pointer"
                               >
                                 Save
                               </button>
@@ -1274,13 +1274,13 @@ function Profile() {
                             <button
                               type="button"
                               onClick={() => setIsEditingAbout(false)}
-                              className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
+                              className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 cursor-pointer"
                             >
                               Cancel
                             </button>
                             <button
                               type="submit"
-                              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 cursor-pointer"
                             >
                               Save
                             </button>
@@ -1294,6 +1294,7 @@ function Profile() {
                             </h2>
                             <EditButton
                               onClick={() => setIsEditingAbout(true)}
+                              className="cursor-pointer"
                             />
                           </div>
                           <p className="text-lg text-gray-700 mt-4 leading-relaxed">
@@ -1344,13 +1345,13 @@ function Profile() {
                             <button
                               type="button"
                               onClick={() => setIsEditingSkills(false)}
-                              className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
+                              className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 cursor-pointer"
                             >
                               Cancel
                             </button>
                             <button
                               type="submit"
-                              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 cursor-pointer"
                             >
                               Save
                             </button>
@@ -1363,11 +1364,12 @@ function Profile() {
                               Skills
                             </h2>
                             <div className="flex gap-2">
-                              {/* <button className="text-blue-600 text-3xl font-semibold border border-gray-300 px-2 hover:bg-blue-100 transition">
-                                <span className="relative -top-1">+</span>
-                              </button> */}
+                              {/* <button className="text-blue-600 text-3xl font-semibold border border-gray-300 px-2 hover:bg-blue-100 transition cursor-pointer">
+                <span className="relative -top-1">+</span>
+              </button> */}
                               <EditButton
                                 onClick={() => setIsEditingSkills(true)}
+                                className="cursor-pointer"
                               />
                             </div>
                           </div>
@@ -1394,7 +1396,7 @@ function Profile() {
                       </h2>
                       <button
                         onClick={handleAddClick}
-                        className="text-blue-600 text-3xl font-semibold border border-gray-300 px-2 hover:bg-blue-100 transition"
+                        className="text-blue-600 text-3xl font-semibold border border-gray-300 px-2 hover:bg-blue-100 transition cursor-pointer"
                       >
                         <span className="relative -top-1">+</span>
                       </button>
@@ -1406,7 +1408,7 @@ function Profile() {
                           {portfolioItems.map((item) => (
                             <div
                               key={item.id}
-                              className="w-64 mr-4 flex-shrink-0 select-none"
+                              className="w-64 mr-4 flex-shrink-0 select-none cursor-pointer"
                             >
                               <div className="bg-white rounded-lg overflow-hidden shadow-md mb-3 border border-gray-100 w-64">
                                 <img
@@ -1436,7 +1438,7 @@ function Profile() {
                           </h3>
                           <button
                             onClick={handleCloseModal}
-                            className="text-gray-500 hover:text-gray-700"
+                            className="text-gray-500 hover:text-gray-700 cursor-pointer"
                           >
                             ✕
                           </button>
@@ -1514,13 +1516,13 @@ function Profile() {
                             <button
                               type="button"
                               onClick={handleCloseModal}
-                              className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300"
+                              className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 cursor-pointer"
                             >
                               Cancel
                             </button>
                             <button
                               type="submit"
-                              className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                              className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 cursor-pointer"
                             >
                               Add Portfolio
                             </button>
@@ -1581,13 +1583,13 @@ function Profile() {
                             <button
                               type="button"
                               onClick={() => setIsEditingDetails(false)}
-                              className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
+                              className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 cursor-pointer"
                             >
                               Cancel
                             </button>
                             <button
                               type="submit"
-                              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 cursor-pointer"
                             >
                               Save
                             </button>
@@ -1602,6 +1604,7 @@ function Profile() {
                           </h2>
                           <EditButton
                             onClick={() => setIsEditingDetails(true)}
+                            className="cursor-pointer"
                           />
                         </div>
                         <div className="px-4 py-3">
@@ -1762,13 +1765,13 @@ function Profile() {
                             <button
                               type="button"
                               onClick={() => setIsEditingSocial(false)}
-                              className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
+                              className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 cursor-pointer"
                             >
                               Cancel
                             </button>
                             <button
                               type="submit"
-                              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 cursor-pointer"
                             >
                               Save
                             </button>
@@ -1783,6 +1786,7 @@ function Profile() {
                           </h2>
                           <EditButton
                             onClick={() => setIsEditingSocial(true)}
+                            className="cursor-pointer"
                           />
                         </div>
                         <div className="px-4 py-3">
@@ -1824,7 +1828,7 @@ function Profile() {
                               </div>
                               <a
                                 href={`https://${profileData.social.instagram}`}
-                                className="text-blue-500 text-sm"
+                                className="text-blue-500 text-sm cursor-pointer"
                               >
                                 {profileData.social.instagram}
                               </a>
@@ -1855,7 +1859,7 @@ function Profile() {
                               </div>
                               <a
                                 href={`https://${profileData.social.twitter}`}
-                                className="text-blue-500 text-sm"
+                                className="text-blue-500 text-sm cursor-pointer"
                               >
                                 {profileData.social.twitter}
                               </a>
@@ -1900,7 +1904,7 @@ function Profile() {
                               </div>
                               <a
                                 href={`https://${profileData.social.website}`}
-                                className="text-blue-500 text-sm"
+                                className="text-blue-500 text-sm cursor-pointer"
                               >
                                 {profileData.social.website}
                               </a>

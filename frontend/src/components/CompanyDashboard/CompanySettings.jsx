@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
 
@@ -153,137 +153,117 @@ const CompanySettings = () => {
     accountType: "business",
   });
 
-  // Calculated character count
-  const [charCount, setCharCount] = useState(formData.description.length);
+  const [description, setDescription] = useState("");
+  const editorRef = useRef(null);
+  const [charCount, setCharCount] = useState(0);
   const maxChars = 500;
-
-  // State for text editing
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [showLinkDialog, setShowLinkDialog] = useState(false);
   const [linkUrl, setLinkUrl] = useState("");
   const [linkText, setLinkText] = useState("");
 
-  // Get selection positions
-  const getSelectionPositions = () => {
-    if (textareaRef.current) {
-      return {
-        start: textareaRef.current.selectionStart,
-        end: textareaRef.current.selectionEnd,
-      };
+  // Update char count whenever description changes
+  useEffect(() => {
+    if (editorRef.current) {
+      const textOnly = editorRef.current.textContent || "";
+      setCharCount(textOnly.length);
     }
-    return { start: 0, end: 0 };
-  };
+  }, [description]);
 
-  // Insert text at cursor position
-  const insertTextAtPosition = (insertText, selectionStart, selectionEnd) => {
-    const currentDescription = formData.description;
-    const newText =
-      currentDescription.substring(0, selectionStart) +
-      insertText +
-      currentDescription.substring(selectionEnd);
-
-    if (newText.length <= maxChars) {
-      setFormData({
-        ...formData,
-        description: newText,
-      });
-      setCharCount(newText.length);
-
-      // Set cursor position after insertion
-      setTimeout(() => {
-        if (textareaRef.current) {
-          textareaRef.current.focus();
-          const newPosition = selectionStart + insertText.length;
-          textareaRef.current.setSelectionRange(newPosition, newPosition);
-        }
-      }, 0);
+  const handleInput = () => {
+    if (editorRef.current) {
+      const content = editorRef.current.innerHTML;
+      setDescription(content);
     }
   };
 
-  // Handle description changes and update character count
-  const handleDescriptionChange = (e) => {
-    const newText = e.target.value;
-    if (newText.length <= maxChars) {
-      setFormData({
-        ...formData,
-        description: newText,
-      });
-      setCharCount(newText.length);
-    }
-  };
-
-  // Handle account type selection
-  const handleAccountTypeChange = (type) => {
-    setFormData({
-      ...formData,
-      accountType: type,
-    });
-  };
-
-  // Text formatting functions
+  // Format handlers
   const applyBold = () => {
-    const { start, end } = getSelectionPositions();
-    if (start !== end) {
-      const selectedText = formData.description.substring(start, end);
-      insertTextAtPosition(`**${selectedText}**`, start, end);
-    } else {
-      insertTextAtPosition("**bold text**", start, end);
-    }
+    document.execCommand("bold", false, null);
+    editorRef.current.focus();
   };
 
   const applyItalic = () => {
-    const { start, end } = getSelectionPositions();
-    if (start !== end) {
-      const selectedText = formData.description.substring(start, end);
-      insertTextAtPosition(`*${selectedText}*`, start, end);
-    } else {
-      insertTextAtPosition("*italic text*", start, end);
-    }
+    document.execCommand("italic", false, null);
+    editorRef.current.focus();
   };
 
+  // Improved list insertion that preserves selected content
   const applyNumberedList = () => {
-    const { start } = getSelectionPositions();
-    // Find the start of the current line
-    let lineStart = start;
-    while (lineStart > 0 && formData.description[lineStart - 1] !== "\n") {
-      lineStart--;
+    const selection = window.getSelection();
+    const range = selection.getRangeAt(0);
+
+    // Get the selected content or use existing content at cursor position
+    let selectedText = range.toString();
+
+    if (selectedText) {
+      // If there's selected text, create a list with that text
+      const listHTML = `<ol style="list-style-type: decimal; margin-left: 20px;"><li>${selectedText}</li></ol><br>`;
+      document.execCommand("insertHTML", false, listHTML);
+    } else {
+      // If no selection, just insert an empty numbered list
+      document.execCommand("insertOrderedList", false, null);
+      // Add some styling to make sure it's visible
+      const listElements = editorRef.current.querySelectorAll("ol");
+      if (listElements.length > 0) {
+        const lastList = listElements[listElements.length - 1];
+        lastList.style.listStyleType = "decimal";
+        lastList.style.marginLeft = "20px";
+      }
     }
 
-    insertTextAtPosition("1. ", lineStart, lineStart);
+    editorRef.current.focus();
   };
 
   const applyBulletList = () => {
-    const { start } = getSelectionPositions();
-    // Find the start of the current line
-    let lineStart = start;
-    while (lineStart > 0 && formData.description[lineStart - 1] !== "\n") {
-      lineStart--;
+    const selection = window.getSelection();
+    const range = selection.getRangeAt(0);
+
+    // Get the selected content or use existing content at cursor position
+    let selectedText = range.toString();
+
+    if (selectedText) {
+      // If there's selected text, create a list with that text
+      const listHTML = `<ul style="list-style-type: disc; margin-left: 20px;"><li>${selectedText}</li></ul><br>`;
+      document.execCommand("insertHTML", false, listHTML);
+    } else {
+      // If no selection, just insert an empty bullet list
+      document.execCommand("insertUnorderedList", false, null);
+      // Add some styling to make sure it's visible
+      const listElements = editorRef.current.querySelectorAll("ul");
+      if (listElements.length > 0) {
+        const lastList = listElements[listElements.length - 1];
+        lastList.style.listStyleType = "disc";
+        lastList.style.marginLeft = "20px";
+      }
     }
 
-    insertTextAtPosition("• ", lineStart, lineStart);
+    editorRef.current.focus();
   };
 
-  // Handle emoji insertion
   const insertEmoji = (emoji) => {
-    const { start, end } = getSelectionPositions();
-    insertTextAtPosition(emoji, start, end);
-    setShowEmojiPicker(false);
+    document.execCommand("insertText", false, emoji);
+    editorRef.current.focus();
   };
 
-  // Handle link insertion
   const insertLink = () => {
-    if (linkUrl) {
-      const textToInsert = linkText
-        ? `[${linkText}](${linkUrl})`
-        : `[${linkUrl}](${linkUrl})`;
+    if (linkUrl.trim()) {
+      const displayText = linkText.trim() || linkUrl;
 
-      const { start, end } = getSelectionPositions();
-      insertTextAtPosition(textToInsert, start, end);
+      const selection = window.getSelection();
+      if (selection.rangeCount > 0 && !selection.getRangeAt(0).collapsed) {
+        document.execCommand("createLink", false, linkUrl);
+      } else {
+        document.execCommand(
+          "insertHTML",
+          false,
+          `<a href="${linkUrl}" target="_blank">${displayText}</a>`
+        );
+      }
 
-      // Reset form
       setLinkUrl("");
       setLinkText("");
-      setShowLinkDialog(false);
+      editorRef.current.focus();
     }
   };
 
@@ -508,7 +488,7 @@ const CompanySettings = () => {
           <div className="p-6">
             <div className="border-b border-gray-300 flex space-x-8 text-lg w-full">
               <button
-                className={`pb-3 border-b-4 px-6 ${
+                className={`pb-3 border-b-4 px-6 cursor-pointer ${
                   activeTab === "overview"
                     ? "border-blue-500 font-semibold text-blue-600"
                     : "border-transparent text-gray-500"
@@ -518,7 +498,7 @@ const CompanySettings = () => {
                 Overview
               </button>
               <button
-                className={`pb-3 border-b-4 px-6 ${
+                className={`pb-3 border-b-4 px-6 cursor-pointer ${
                   activeTab === "sociallinks"
                     ? "border-blue-500 font-semibold text-blue-600"
                     : "border-transparent text-gray-500"
@@ -528,7 +508,7 @@ const CompanySettings = () => {
                 Social Links
               </button>
               <button
-                className={`pb-3 border-b-4 px-6 ${
+                className={`pb-3 border-b-4 px-6 cursor-pointer ${
                   activeTab === "team"
                     ? "border-blue-500 font-semibold text-blue-600"
                     : "border-transparent text-gray-500"
@@ -653,7 +633,7 @@ const CompanySettings = () => {
                               onKeyDown={handleAddLocation}
                             />
                           </div>
-                          <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                          <div className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer">
                             <svg
                               className="w-4 h-4 text-gray-500"
                               fill="none"
@@ -681,14 +661,14 @@ const CompanySettings = () => {
                               name="employee"
                               value={formData.employee}
                               onChange={handleChange}
-                              className="w-full p-3 border border-gray-300 rounded-lg appearance-none"
+                              className="w-full p-3 border border-gray-300 rounded-lg appearance-none cursor-pointer"
                             >
                               <option value="1 - 50">1 - 50</option>
                               <option value="51 - 200">51 - 200</option>
                               <option value="201 - 500">201 - 500</option>
                               <option value="500+">500+</option>
                             </select>
-                            <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer">
                               <svg
                                 className="w-4 h-4 text-gray-500"
                                 fill="none"
@@ -715,14 +695,14 @@ const CompanySettings = () => {
                               name="industry"
                               value={formData.industry}
                               onChange={handleChange}
-                              className="w-full p-3 border border-gray-300 rounded-lg appearance-none"
+                              className="w-full p-3 border border-gray-300 rounded-lg appearance-none cursor-pointer"
                             >
                               <option value="Technology">Technology</option>
                               <option value="Finance">Finance</option>
                               <option value="Healthcare">Healthcare</option>
                               <option value="Education">Education</option>
                             </select>
-                            <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer">
                               <svg
                                 className="w-4 h-4 text-gray-500"
                                 fill="none"
@@ -751,7 +731,7 @@ const CompanySettings = () => {
                               name="dateFoundedDay"
                               value={formData.dateFoundedDay}
                               onChange={handleChange}
-                              className="w-full p-3 border border-gray-300 rounded-lg appearance-none"
+                              className="w-full p-3 border border-gray-300 rounded-lg appearance-none cursor-pointer"
                             >
                               {Array.from({ length: 31 }, (_, i) => i + 1).map(
                                 (day) => (
@@ -761,7 +741,7 @@ const CompanySettings = () => {
                                 )
                               )}
                             </select>
-                            <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer">
                               <svg
                                 className="w-4 h-4 text-gray-500"
                                 fill="none"
@@ -783,7 +763,7 @@ const CompanySettings = () => {
                               name="dateFoundedMonth"
                               value={formData.dateFoundedMonth}
                               onChange={handleChange}
-                              className="w-full p-3 border border-gray-300 rounded-lg appearance-none"
+                              className="w-full p-3 border border-gray-300 rounded-lg appearance-none cursor-pointer"
                             >
                               {[
                                 "January",
@@ -804,7 +784,7 @@ const CompanySettings = () => {
                                 </option>
                               ))}
                             </select>
-                            <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer">
                               <svg
                                 className="w-4 h-4 text-gray-500"
                                 fill="none"
@@ -826,7 +806,7 @@ const CompanySettings = () => {
                               name="dateFoundedYear"
                               value={formData.dateFoundedYear}
                               onChange={handleChange}
-                              className="w-full p-3 border border-gray-300 rounded-lg appearance-none"
+                              className="w-full p-3 border border-gray-300 rounded-lg appearance-none cursor-pointer"
                             >
                               {Array.from(
                                 { length: 50 },
@@ -837,7 +817,7 @@ const CompanySettings = () => {
                                 </option>
                               ))}
                             </select>
-                            <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer">
                               <svg
                                 className="w-4 h-4 text-gray-500"
                                 fill="none"
@@ -885,7 +865,7 @@ const CompanySettings = () => {
                               onKeyDown={handleAddTech}
                             />
                           </div>
-                          <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                          <div className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer">
                             <svg
                               className="w-4 h-4 text-gray-500"
                               fill="none"
@@ -922,30 +902,34 @@ const CompanySettings = () => {
                         Description
                       </h2>
                       <div className="border border-gray-300 rounded-lg p-2 bg-white">
-                        <textarea
-                          ref={textareaRef}
-                          value={formData.description}
-                          onChange={handleDescriptionChange}
-                          className="w-full p-3 min-h-36 outline-none resize-none text-base"
-                          placeholder="Enter company description..."
+                        <div
+                          ref={editorRef}
+                          contentEditable="true"
+                          onInput={handleInput}
+                          className="w-full p-3 min-h-36 outline-none text-base overflow-auto"
+                          style={{
+                            minHeight: "9rem",
+                            // Ensure lists display correctly
+                            listStylePosition: "inside",
+                          }}
                         />
                         <div className="border-t border-gray-200 pt-3 px-3 flex items-center justify-between">
                           <div className="flex space-x-4 relative">
                             {/* Emoji Picker Button */}
                             <button
                               type="button"
-                              className={`text-gray-500 hover:text-gray-700 ${
+                              className={`text-gray-500 hover:text-gray-700 cursor-pointer ${
                                 showEmojiPicker ? "text-blue-500" : ""
                               }`}
                               onClick={() => {
-                                setShowLinkDialog(false); // Close link dialog if open
+                                setShowLinkDialog(false);
                                 setShowEmojiPicker(!showEmojiPicker);
                               }}
                             >
                               😊
                             </button>
 
-                            {/* Emoji Picker Modal - Positioned better */}
+                            {/* Emoji Picker Modal */}
                             {showEmojiPicker && (
                               <div className="absolute top-10 left-0 bg-white shadow-md rounded-lg p-3 z-10 border border-gray-200 min-w-48">
                                 <div className="grid grid-cols-4 gap-2">
@@ -953,10 +937,10 @@ const CompanySettings = () => {
                                     <button
                                       key={index}
                                       type="button"
-                                      className="text-xl hover:bg-gray-100 w-8 h-8 flex items-center justify-center rounded"
+                                      className="text-xl hover:bg-gray-100 w-8 h-8 flex items-center justify-center rounded cursor-pointer"
                                       onClick={() => {
                                         insertEmoji(emoji);
-                                        setShowEmojiPicker(false); // Auto close after selection
+                                        setShowEmojiPicker(false);
                                       }}
                                     >
                                       {emoji}
@@ -969,7 +953,7 @@ const CompanySettings = () => {
                             {/* Formatting Buttons */}
                             <button
                               type="button"
-                              className="text-gray-700 font-bold"
+                              className="text-gray-700 font-bold cursor-pointer"
                               onClick={() => {
                                 setShowEmojiPicker(false);
                                 setShowLinkDialog(false);
@@ -980,7 +964,7 @@ const CompanySettings = () => {
                             </button>
                             <button
                               type="button"
-                              className="text-gray-700 italic"
+                              className="text-gray-700 italic cursor-pointer"
                               onClick={() => {
                                 setShowEmojiPicker(false);
                                 setShowLinkDialog(false);
@@ -991,7 +975,7 @@ const CompanySettings = () => {
                             </button>
                             <button
                               type="button"
-                              className="text-gray-700"
+                              className="text-gray-700 cursor-pointer"
                               onClick={() => {
                                 setShowEmojiPicker(false);
                                 setShowLinkDialog(false);
@@ -1002,7 +986,7 @@ const CompanySettings = () => {
                             </button>
                             <button
                               type="button"
-                              className="text-gray-700"
+                              className="text-gray-700 cursor-pointer"
                               onClick={() => {
                                 setShowEmojiPicker(false);
                                 setShowLinkDialog(false);
@@ -1015,18 +999,18 @@ const CompanySettings = () => {
                             {/* Link Button */}
                             <button
                               type="button"
-                              className={`text-gray-500 hover:text-gray-700 ${
+                              className={`text-gray-500 hover:text-gray-700 cursor-pointer ${
                                 showLinkDialog ? "text-blue-500" : ""
                               }`}
                               onClick={() => {
-                                setShowEmojiPicker(false); // Close emoji picker if open
+                                setShowEmojiPicker(false);
                                 setShowLinkDialog(!showLinkDialog);
                               }}
                             >
                               🔗
                             </button>
 
-                            {/* Link Dialog - Better positioned */}
+                            {/* Link Dialog */}
                             {showLinkDialog && (
                               <div className="absolute top-10 right-0 bg-white shadow-md rounded-lg p-3 z-10 border border-gray-200 w-64">
                                 <input
@@ -1044,10 +1028,10 @@ const CompanySettings = () => {
                                   onChange={(e) => setLinkText(e.target.value)}
                                 />
                                 <button
-                                  className="bg-blue-500 text-white px-3 py-1 rounded"
+                                  className="bg-blue-500 text-white px-3 py-1 rounded cursor-pointer"
                                   onClick={() => {
                                     insertLink();
-                                    setShowLinkDialog(false); // Auto close after insertion
+                                    setShowLinkDialog(false);
                                   }}
                                 >
                                   Insert Link
@@ -1070,7 +1054,7 @@ const CompanySettings = () => {
                   <div className="flex justify-end mt-6">
                     <button
                       onClick={handleSaveProfile}
-                      className="bg-[#3B8BEB] text-white font-semibold px-6 py-3 rounded-sm shadow-md hover:bg-blue-600 transition"
+                      className="bg-[#3B8BEB] text-white font-semibold px-6 py-3 rounded-sm shadow-md hover:bg-blue-600 transition cursor-pointer"
                     >
                       Save Changes
                     </button>
@@ -1092,7 +1076,7 @@ const CompanySettings = () => {
                     </div>
                     <div className="w-2/3 space-y-6 mb-7">
                       <div>
-                        <label className="block text-gray-700 mb-1">
+                        <label className="block text-gray-700 mb-1 cursor-pointer">
                           Instagram
                         </label>
                         <input
@@ -1108,7 +1092,7 @@ const CompanySettings = () => {
                       </div>
 
                       <div>
-                        <label className="block text-gray-700 mb-1">
+                        <label className="block text-gray-700 mb-1 cursor-pointer">
                           Twitter
                         </label>
                         <input
@@ -1123,7 +1107,7 @@ const CompanySettings = () => {
                       </div>
 
                       <div>
-                        <label className="block text-gray-700 mb-1">
+                        <label className="block text-gray-700 mb-1 cursor-pointer">
                           Facebook
                         </label>
                         <input
@@ -1139,7 +1123,7 @@ const CompanySettings = () => {
                       </div>
 
                       <div>
-                        <label className="block text-gray-700 mb-1">
+                        <label className="block text-gray-700 mb-1 cursor-pointer">
                           LinkedIn
                         </label>
                         <input
@@ -1153,7 +1137,7 @@ const CompanySettings = () => {
                       </div>
 
                       <div>
-                        <label className="block text-gray-700 mb-1">
+                        <label className="block text-gray-700 mb-1 cursor-pointer">
                           Youtube
                         </label>
                         <input
@@ -1171,7 +1155,7 @@ const CompanySettings = () => {
                   <div className="flex justify-end mb-5 mt-5">
                     <button
                       onClick={handleSaveChanges}
-                      className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-6 rounded"
+                      className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-6 rounded cursor-pointer"
                     >
                       Save Changes
                     </button>
@@ -1197,7 +1181,7 @@ const CompanySettings = () => {
                         <div className="flex space-x-4">
                           <button
                             onClick={() => setShowAddModal(true)}
-                            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md flex items-center"
+                            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md flex items-center cursor-pointer"
                           >
                             <span className="mr-2">+</span>
                             Add Members
@@ -1205,7 +1189,7 @@ const CompanySettings = () => {
                           <div className="flex">
                             <button
                               onClick={() => setViewMode("grid")}
-                              className={`p-2 rounded-l-md border ${
+                              className={`p-2 rounded-l-md border cursor-pointer ${
                                 viewMode === "grid"
                                   ? "bg-blue-100 border-blue-200"
                                   : "bg-gray-100 border-gray-200"
@@ -1230,7 +1214,7 @@ const CompanySettings = () => {
                             </button>
                             <button
                               onClick={() => setViewMode("list")}
-                              className={`p-2 rounded-r-md border-t border-b border-r ${
+                              className={`p-2 rounded-r-md border-t border-b border-r cursor-pointer ${
                                 viewMode === "list"
                                   ? "bg-blue-100 border-blue-200"
                                   : "bg-gray-100 border-gray-200"
@@ -1270,7 +1254,7 @@ const CompanySettings = () => {
                               <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                 <button
                                   onClick={() => handleSelectMember(member)}
-                                  className="p-1 text-gray-500 hover:text-blue-500 mr-1"
+                                  className="p-1 text-gray-500 hover:text-blue-500 mr-1 cursor-pointer"
                                 >
                                   <svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -1288,7 +1272,7 @@ const CompanySettings = () => {
                                 </button>
                                 <button
                                   onClick={() => handleRemoveMember(member.id)}
-                                  className="p-1 text-gray-500 hover:text-red-500"
+                                  className="p-1 text-gray-500 hover:text-red-500 cursor-pointer"
                                 >
                                   <svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -1323,7 +1307,7 @@ const CompanySettings = () => {
                                     href={member.socials.instagram}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="text-gray-400 hover:text-gray-600"
+                                    className="text-gray-400 hover:text-gray-600 cursor-pointer"
                                   >
                                     <svg
                                       xmlns="http://www.w3.org/2000/svg"
@@ -1359,7 +1343,7 @@ const CompanySettings = () => {
                                     href={member.socials.linkedin}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="text-gray-400 hover:text-gray-600"
+                                    className="text-gray-400 hover:text-gray-600 cursor-pointer"
                                   >
                                     <svg
                                       xmlns="http://www.w3.org/2000/svg"
@@ -1420,7 +1404,7 @@ const CompanySettings = () => {
                                       href={member.socials.instagram}
                                       target="_blank"
                                       rel="noopener noreferrer"
-                                      className="text-gray-400 hover:text-gray-600"
+                                      className="text-gray-400 hover:text-gray-600 cursor-pointer"
                                     >
                                       <svg
                                         xmlns="http://www.w3.org/2000/svg"
@@ -1456,7 +1440,7 @@ const CompanySettings = () => {
                                       href={member.socials.linkedin}
                                       target="_blank"
                                       rel="noopener noreferrer"
-                                      className="text-gray-400 hover:text-gray-600"
+                                      className="text-gray-400 hover:text-gray-600 cursor-pointer"
                                     >
                                       <svg
                                         xmlns="http://www.w3.org/2000/svg"
@@ -1484,7 +1468,7 @@ const CompanySettings = () => {
                                 <div className="flex">
                                   <button
                                     onClick={() => handleSelectMember(member)}
-                                    className="p-1 text-gray-500 hover:text-blue-500 mr-1"
+                                    className="p-1 text-gray-500 hover:text-blue-500 mr-1 cursor-pointer"
                                   >
                                     <svg
                                       xmlns="http://www.w3.org/2000/svg"
@@ -1504,7 +1488,7 @@ const CompanySettings = () => {
                                     onClick={() =>
                                       handleRemoveMember(member.id)
                                     }
-                                    className="p-1 text-gray-500 hover:text-red-500"
+                                    className="p-1 text-gray-500 hover:text-red-500 cursor-pointer"
                                   >
                                     <svg
                                       xmlns="http://www.w3.org/2000/svg"
@@ -1550,7 +1534,7 @@ const CompanySettings = () => {
                                     },
                                   });
                                 }}
-                                className="text-gray-500 hover:text-gray-700"
+                                className="text-gray-500 hover:text-gray-700 cursor-pointer"
                               >
                                 <svg
                                   xmlns="http://www.w3.org/2000/svg"
@@ -1627,7 +1611,7 @@ const CompanySettings = () => {
                                     setShowAddModal(false);
                                     setSelectedMember(null);
                                   }}
-                                  className="px-4 py-2 border border-gray-300 rounded-md mr-2 hover:bg-gray-100"
+                                  className="px-4 py-2 border border-gray-300 rounded-md mr-2 hover:bg-gray-100 cursor-pointer"
                                 >
                                   Cancel
                                 </button>
@@ -1637,7 +1621,7 @@ const CompanySettings = () => {
                                       ? handleUpdateMember
                                       : handleAddMember
                                   }
-                                  className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                                  className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 cursor-pointer"
                                 >
                                   {selectedMember ? "Update" : "Add"}
                                 </button>
@@ -1652,7 +1636,7 @@ const CompanySettings = () => {
                   <div className="flex justify-end mb-5">
                     <button
                       onClick={handleSaveChanges}
-                      className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-6 rounded"
+                      className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-6 rounded cursor-pointer"
                     >
                       Save Changes
                     </button>

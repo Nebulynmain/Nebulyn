@@ -281,7 +281,7 @@ const Applicant = () => {
                 </div>
 
                 {/* Filter Button */}
-                <button className="flex items-center gap-2 px-5 py-2 md:py-3 border rounded-lg hover:bg-gray-100 text-base w-full md:w-auto justify-center md:justify-start">
+                <button className="flex items-center gap-2 px-5 py-2 md:py-3 border rounded-lg hover:bg-gray-100 text-base w-full md:w-auto justify-center md:justify-start cursor-pointer">
                   <Filter className="h-5 w-5" /> Filter
                 </button>
 
@@ -291,7 +291,7 @@ const Applicant = () => {
                 {/* View Toggle Buttons */}
                 <div className="flex bg-blue-100 p-2 rounded-lg w-full md:w-auto mt-4 md:mt-0">
                   <button
-                    className={`w-40 h-12 px-6 py-2 rounded-md text-blue-600 text-base ${
+                    className={`w-40 h-12 px-6 py-2 rounded-md text-blue-600 text-base cursor-pointer ${
                       view === "pipeline"
                         ? "bg-white shadow"
                         : "hover:bg-blue-200"
@@ -301,7 +301,7 @@ const Applicant = () => {
                     Pipeline View
                   </button>
                   <button
-                    className={`w-40 h-12 px-6 py-2 rounded-md text-blue-600 text-base ${
+                    className={`w-40 h-12 px-6 py-2 rounded-md text-blue-600 text-base cursor-pointer ${
                       view === "table" ? "bg-white shadow" : "hover:bg-blue-200"
                     }`}
                     onClick={() => setView("table")}
@@ -321,7 +321,7 @@ const Applicant = () => {
                       <th className="p-3 md:p-4 text-left">
                         <input
                           type="checkbox"
-                          className="form-checkbox text-blue-500 border-gray-300 rounded-md"
+                          className="form-checkbox text-blue-500 border-gray-300 rounded-md cursor-pointer"
                           checked={selectAll}
                           onChange={handleSelectAll}
                         />
@@ -357,7 +357,7 @@ const Applicant = () => {
                           <td className="p-3 md:p-4">
                             <input
                               type="checkbox"
-                              className="form-checkbox text-blue-500"
+                              className="form-checkbox text-blue-500 cursor-pointer"
                               checked={selectedCandidates.includes(
                                 candidate.id
                               )}
@@ -506,7 +506,7 @@ const Applicant = () => {
                       setApplicantsPerPage(Number(e.target.value));
                       setCurrentPage(1); // Reset to first page
                     }}
-                    className="border rounded-md px-2 py-1"
+                    className="border rounded-md px-2 py-1 cursor-pointer"
                   >
                     <option value={10}>10</option>
                     <option value={20}>20</option>
@@ -523,7 +523,7 @@ const Applicant = () => {
                     className={`p-2 border rounded-md ${
                       currentPage === 1
                         ? "text-gray-300 cursor-not-allowed"
-                        : "hover:bg-gray-100"
+                        : "hover:bg-gray-100 cursor-pointer"
                     }`}
                   >
                     <ChevronLeft size={16} />
@@ -533,7 +533,7 @@ const Applicant = () => {
                       <button
                         key={index + 1}
                         onClick={() => paginate(index + 1)}
-                        className={`px-3 py-1 md:px-4 md:py-2 border rounded-md ${
+                        className={`px-3 py-1 md:px-4 md:py-2 border rounded-md cursor-pointer ${
                           currentPage === index + 1
                             ? "bg-blue-500 text-white"
                             : "hover:bg-gray-100"
@@ -548,7 +548,7 @@ const Applicant = () => {
                       {currentPage > 1 && (
                         <button
                           onClick={() => paginate(1)}
-                          className="px-3 py-1 md:px-4 md:py-2 border rounded-md hover:bg-gray-100"
+                          className="px-3 py-1 md:px-4 md:py-2 border rounded-md hover:bg-gray-100 cursor-pointer"
                         >
                           1
                         </button>
@@ -557,18 +557,18 @@ const Applicant = () => {
                       {currentPage > 1 && (
                         <button
                           onClick={() => paginate(currentPage - 1)}
-                          className="px-3 py-1 md:px-4 md:py-2 border rounded-md hover:bg-gray-100"
+                          className="px-3 py-1 md:px-4 md:py-2 border rounded-md hover:bg-gray-100 cursor-pointer"
                         >
                           {currentPage - 1}
                         </button>
                       )}
-                      <button className="px-3 py-1 md:px-4 md:py-2 border rounded-md bg-blue-500 text-white">
+                      <button className="px-3 py-1 md:px-4 md:py-2 border rounded-md bg-blue-500 text-white cursor-pointer">
                         {currentPage}
                       </button>
                       {currentPage < totalPages && (
                         <button
                           onClick={() => paginate(currentPage + 1)}
-                          className="px-3 py-1 md:px-4 md:py-2 border rounded-md hover:bg-gray-100"
+                          className="px-3 py-1 md:px-4 md:py-2 border rounded-md hover:bg-gray-100 cursor-pointer"
                         >
                           {currentPage + 1}
                         </button>
@@ -579,7 +579,7 @@ const Applicant = () => {
                       {currentPage < totalPages && (
                         <button
                           onClick={() => paginate(totalPages)}
-                          className="px-3 py-1 md:px-4 md:py-2 border rounded-md hover:bg-gray-100"
+                          className="px-3 py-1 md:px-4 md:py-2 border rounded-md hover:bg-gray-100 cursor-pointer"
                         >
                           {totalPages}
                         </button>
@@ -594,7 +594,7 @@ const Applicant = () => {
                     className={`p-2 border rounded-md ${
                       currentPage === totalPages
                         ? "text-gray-300 cursor-not-allowed"
-                        : "hover:bg-gray-100"
+                        : "hover:bg-gray-100 cursor-pointer"
                     }`}
                   >
                     <ChevronRight size={16} />

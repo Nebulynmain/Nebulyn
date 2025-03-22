@@ -25,7 +25,7 @@ const CompanyHelp = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <div className="flex flex-row flex-grow">
-        <div className="h-screen sticky top-0 ">
+        <div className="h-screen sticky top-0">
           <Sidebar />
         </div>
         <div className="flex-grow transition-all">
@@ -45,22 +45,24 @@ const CompanyHelp = () => {
                       placeholder="Search"
                       className="w-full px-4 py-2 border border-gray-300 rounded-sm text-gray-700 pl-10"
                     />
-                    <FiSearch className="absolute left-3 top-3 text-gray-400" />
+                    <FiSearch className="absolute left-3 top-3 text-gray-400 cursor-pointer" />
                   </div>
                 </div>
                 {/* Menu Items */}
                 <ul className="space-y-6 mt-4">
-                  <li className="font-semibold text-blue-600 mt-10">
+                  <li className="font-semibold text-blue-600 mt-10 cursor-pointer">
                     Getting Started
                   </li>
-                  <li className="border-b  border-gray-400 pb-5">My Profile</li>
-                  <li className="border-b border-gray-400 pb-5">
+                  <li className="border-b border-gray-400 pb-5 cursor-pointer">
+                    My Profile
+                  </li>
+                  <li className="border-b border-gray-400 pb-5 cursor-pointer">
                     Applying for a job
                   </li>
-                  <li className="border-b border-gray-400 pb-5">
+                  <li className="border-b border-gray-400 pb-5 cursor-pointer">
                     Job Search Tips
                   </li>
-                  <li>Job Alerts</li>
+                  <li className="cursor-pointer">Job Alerts</li>
                 </ul>
                 {/* Contact Section */}
                 <div className="absolute bottom-6 flex items-center z-10 w-[17.5%]">
@@ -76,18 +78,6 @@ const CompanyHelp = () => {
                     <button className="w-[50%] mt-3 bg-white text-[#3B8BEB] py-2 rounded-md cursor-pointer font-semibold text-sm shadow">
                       Contact Us
                     </button>
-
-                    {/* SVG Decorative Element */}
-                    <svg
-                      className="absolute bottom-4 right-2 opacity-30"
-                      width="150"
-                      height="150"
-                      viewBox="0 0 100 100"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <circle cx="100" cy="100" r="60" fill="white" />
-                    </svg>
                   </div>
                 </div>
               </div>
@@ -99,7 +89,7 @@ const CompanyHelp = () => {
                   <span className="font-medium text-gray-700 mr-2">
                     Sort by:
                   </span>
-                  <select className="border p-2 rounded-md text-gray-700 border-gray-400">
+                  <select className="border p-2 rounded-md text-gray-700 border-gray-400 cursor-pointer">
                     <option>Most relevant</option>
                   </select>
                 </div>
@@ -143,14 +133,14 @@ const CompanyHelp = () => {
                         <span className="text-gray-700 text-lg">
                           Was this article helpful?
                         </span>
-                        <button className="border px-4 py-1 rounded-sm bg-white border-blue-400 text-gray-700 hover:bg-gray-100 flex items-center space-x-2">
+                        <button className="border px-4 py-1 rounded-sm bg-white border-blue-400 text-gray-700 hover:bg-gray-100 flex items-center space-x-2 cursor-pointer">
                           <ThumbsUp
                             size={16}
                             className="text-blue-400 font-bold"
                           />
                           <span className="text-blue-400 font-bold">Yes</span>
                         </button>
-                        <button className="border px-4 py-1 rounded-sm bg-white border-blue-400 text-gray-700 hover:bg-gray-100 flex items-center space-x-2">
+                        <button className="border px-4 py-1 rounded-sm bg-white border-blue-400 text-gray-700 hover:bg-gray-100 flex items-center space-x-2 cursor-pointer">
                           <ThumbsDown
                             size={16}
                             className="text-blue-400 font-bold"
