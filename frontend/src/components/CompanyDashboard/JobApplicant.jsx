@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from "react";
-import Sidebar from "./Sidebar";
-import Header from "./Header";
 import {
   ChevronDown,
   Search,
@@ -15,8 +13,8 @@ import {
   Laptop,
   Bus,
   Heart,
+  X,
 } from "lucide-react";
-
 import {
   LineChart,
   Line,
@@ -26,11 +24,12 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import Sidebar from "./Sidebar";
+import Header from "./Header";
 import { useNavigate } from "react-router-dom";
 
 const JobApplicant = () => {
   const navigate = useNavigate();
-
   const [view, setView] = useState("table");
   const candidates = [
     {
@@ -125,156 +124,7 @@ const JobApplicant = () => {
     },
   ];
 
-  const [selectedCandidates, setSelectedCandidates] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectAll, setSelectAll] = useState(false);
-
-  // Pagination states
-  const [currentPage, setCurrentPage] = useState(1);
-  const [applicantsPerPage, setApplicantsPerPage] = useState(10);
-
-  const handleSelectAll = () => {
-    if (selectAll) {
-      setSelectedCandidates([]);
-    } else {
-      setSelectedCandidates(candidates.map((candidate) => candidate.id));
-    }
-    setSelectAll(!selectAll);
-  };
-
-  const handleSelect = (id) => {
-    if (selectedCandidates.includes(id)) {
-      setSelectedCandidates(selectedCandidates.filter((cid) => cid !== id));
-    } else {
-      setSelectedCandidates([...selectedCandidates, id]);
-    }
-  };
-
-  // Filtering applicants based on search input
-  const filteredCandidates = candidates.filter((candidate) =>
-    candidate.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  // Pagination logic
-  const indexOfLastApplicant = currentPage * applicantsPerPage;
-  const indexOfFirstApplicant = indexOfLastApplicant - applicantsPerPage;
-  const currentApplicants = filteredCandidates.slice(
-    indexOfFirstApplicant,
-    indexOfLastApplicant
-  );
-
-  // Change page
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
-  // Calculate total pages
-  const totalPages = Math.ceil(filteredCandidates.length / applicantsPerPage);
-
-  // Define the order of hiring stages for consistent display
-  const stageOrder = [
-    "Shortlisted",
-    "Interview",
-    "Interviewed",
-    "Hired",
-    "Declined",
-  ];
-
-  // Group candidates by hiring stage for pipeline view
-  const stageGroups = {
-    Shortlisted: filteredCandidates.filter(
-      (c) => c.hiringStage === "Shortlisted"
-    ),
-    Interview: filteredCandidates.filter((c) => c.hiringStage === "Interview"),
-    Interviewed: filteredCandidates.filter(
-      (c) => c.hiringStage === "Interviewed"
-    ),
-    Hired: filteredCandidates.filter((c) => c.hiringStage === "Hired"),
-    Declined: filteredCandidates.filter((c) => c.hiringStage === "Declined"),
-  };
-
-  // Get stage background color
-  const getStageColor = (stage) => {
-    switch (stage) {
-      case "Shortlisted":
-        return "bg-blue-50";
-      case "Interview":
-        return "bg-yellow-50";
-      case "Interviewed":
-        return "bg-blue-50";
-      case "Hired":
-        return "bg-green-50";
-      case "Declined":
-        return "bg-red-50";
-      default:
-        return "bg-gray-50";
-    }
-  };
-
-  // Get stage text color
-  const getStageTextColor = (stage) => {
-    switch (stage) {
-      case "Shortlisted":
-        return "text-blue-600";
-      case "Interview":
-        return "text-yellow-600";
-      case "Interviewed":
-        return "text-blue-600";
-      case "Hired":
-        return "text-green-600";
-      case "Declined":
-        return "text-red-600";
-      default:
-        return "text-gray-600";
-    }
-  };
-
-  // Get star color for ratings
-  const getStarColor = (score) => {
-    return score > 0 ? "text-yellow-500" : "text-gray-400";
-  };
-
-  // Candidate card for pipeline view
-  const CandidateCard = ({ candidate }) => (
-    <div className="bg-white p-4 rounded-lg shadow mb-3 border border-gray-200">
-      <div className="flex items-center mb-3">
-        <div className="w-10 h-10 flex-shrink-0">
-          <img
-            src={candidate.image}
-            alt={candidate.name}
-            className="w-full h-full rounded-full border object-cover"
-          />
-        </div>
-        <div className="ml-3 min-w-0">
-          <h3 className="font-medium text-gray-900 truncate">
-            {candidate.name}
-          </h3>
-          <p className="text-sm text-gray-500 truncate">{candidate.jobRole}</p>
-        </div>
-      </div>
-      <div className="flex justify-between items-center">
-        <div className="flex items-center">
-          <Star
-            className={getStarColor(candidate.score)}
-            fill={candidate.score > 0 ? "#FACC15" : "none"}
-            size={16}
-          />
-          <span className="ml-1 text-gray-900 font-medium">
-            {candidate.score}
-          </span>
-        </div>
-        <span className="text-sm text-gray-500">{candidate.appliedDate}</span>
-      </div>
-      <div className="mt-3 flex justify-center">
-        <button
-          className="w-full px-3 py-1 cursor-pointer border border-blue-500 bg-[#E9EBFD] text-blue-500 text-sm rounded hover:bg-blue-100 transition-colors"
-          onClick={() => navigate("/applicant-detail")}
-        >
-          See Application
-        </button>
-      </div>
-    </div>
-  );
-
-  const jobData = {
+  const [jobData, setJobData] = useState({
     company: "Stripe",
     position: "Social Media Marketing Expert",
     description:
@@ -298,9 +148,9 @@ const JobApplicant = () => {
       "Project management skills",
       "Copy editing skills",
     ],
-  };
+  });
 
-  const sampleJobData = {
+  const [sampleJobData, setSampleJobData] = useState({
     applied: 5,
     capacity: 10,
     deadline: "July 31, 2021",
@@ -315,7 +165,7 @@ const JobApplicant = () => {
       "Social Media Marketing",
       "Copy Editing",
     ],
-  };
+  });
 
   const perksData = [
     {
@@ -362,17 +212,6 @@ const JobApplicant = () => {
     },
   ];
 
-  const categories = Array.isArray(sampleJobData.categories)
-    ? sampleJobData.categories
-    : [];
-  const requiredSkills = Array.isArray(sampleJobData.requiredSkills)
-    ? sampleJobData.requiredSkills
-    : [];
-
-  const [isHovering, setIsHovering] = useState(false);
-  const [hoverSegment, setHoverSegment] = useState(null);
-
-  // Data for the chart
   const data = [
     { name: "Direct", value: 48, color: "#FFBA49" },
     { name: "Social", value: 23, color: "#4DA1FF" },
@@ -380,9 +219,193 @@ const JobApplicant = () => {
     { name: "Other", value: 5, color: "#4ECDC4" },
   ];
 
+  const [selectedCandidates, setSelectedCandidates] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectAll, setSelectAll] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [applicantsPerPage, setApplicantsPerPage] = useState(10);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editedJobData, setEditedJobData] = useState(jobData);
+  const [editedSampleData, setEditedSampleData] = useState(sampleJobData);
+  const [activeTab, setActiveTab] = useState("Applicants");
+  const [isHovering, setIsHovering] = useState(false);
+  const [hoverSegment, setHoverSegment] = useState(null);
+  const [hoveredPoint, setHoveredPoint] = useState(null);
+
+  const handleSelectAll = () => {
+    if (selectAll) {
+      setSelectedCandidates([]);
+    } else {
+      setSelectedCandidates(candidates.map((candidate) => candidate.id));
+    }
+    setSelectAll(!selectAll);
+  };
+
+  const handleSelect = (id) => {
+    if (selectedCandidates.includes(id)) {
+      setSelectedCandidates(selectedCandidates.filter((cid) => cid !== id));
+    } else {
+      setSelectedCandidates([...selectedCandidates, id]);
+    }
+  };
+
+  const handleJobDataChange = (field, value) => {
+    setEditedJobData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const handleSampleDataChange = (field, value) => {
+    setEditedSampleData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const handleArrayFieldChange = (field, index, value) => {
+    setEditedJobData((prev) => ({
+      ...prev,
+      [field]: prev[field].map((item, i) => (i === index ? value : item)),
+    }));
+  };
+
+  const handleAddArrayItem = (field) => {
+    setEditedJobData((prev) => ({
+      ...prev,
+      [field]: [...prev[field], ""],
+    }));
+  };
+
+  const handleRemoveArrayItem = (field, index) => {
+    setEditedJobData((prev) => ({
+      ...prev,
+      [field]: prev[field].filter((_, i) => i !== index),
+    }));
+  };
+
+  const handleSaveChanges = () => {
+    setJobData(editedJobData);
+    setSampleJobData(editedSampleData);
+    setIsEditModalOpen(false);
+  };
+
+  const filteredCandidates = candidates.filter((candidate) =>
+    candidate.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const indexOfLastApplicant = currentPage * applicantsPerPage;
+  const indexOfFirstApplicant = indexOfLastApplicant - applicantsPerPage;
+  const currentApplicants = filteredCandidates.slice(
+    indexOfFirstApplicant,
+    indexOfLastApplicant
+  );
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  const totalPages = Math.ceil(filteredCandidates.length / applicantsPerPage);
+
+  const stageOrder = [
+    "Shortlisted",
+    "Interview",
+    "Interviewed",
+    "Hired",
+    "Declined",
+  ];
+
+  const stageGroups = {
+    Shortlisted: filteredCandidates.filter(
+      (c) => c.hiringStage === "Shortlisted"
+    ),
+    Interview: filteredCandidates.filter((c) => c.hiringStage === "Interview"),
+    Interviewed: filteredCandidates.filter(
+      (c) => c.hiringStage === "Interviewed"
+    ),
+    Hired: filteredCandidates.filter((c) => c.hiringStage === "Hired"),
+    Declined: filteredCandidates.filter((c) => c.hiringStage === "Declined"),
+  };
+
+  const getStageColor = (stage) => {
+    switch (stage) {
+      case "Shortlisted":
+        return "bg-blue-50";
+      case "Interview":
+        return "bg-yellow-50";
+      case "Interviewed":
+        return "bg-blue-50";
+      case "Hired":
+        return "bg-green-50";
+      case "Declined":
+        return "bg-red-50";
+      default:
+        return "bg-gray-50";
+    }
+  };
+
+  const getStageTextColor = (stage) => {
+    switch (stage) {
+      case "Shortlisted":
+        return "text-blue-600";
+      case "Interview":
+        return "text-yellow-600";
+      case "Interviewed":
+        return "text-blue-600";
+      case "Hired":
+        return "text-green-600";
+      case "Declined":
+        return "text-red-600";
+      default:
+        return "text-gray-600";
+    }
+  };
+
+  const getStarColor = (score) => {
+    return score > 0 ? "text-yellow-500" : "text-gray-400";
+  };
+
+  const CandidateCard = ({ candidate }) => (
+    <div className="bg-white p-4 rounded-lg shadow mb-3 border border-gray-200">
+      <div className="flex items-center mb-3">
+        <div className="w-10 h-10 flex-shrink-0">
+          <img
+            src={candidate.image}
+            alt={candidate.name}
+            className="w-full h-full rounded-full border object-cover"
+          />
+        </div>
+        <div className="ml-3 min-w-0">
+          <h3 className="font-medium text-gray-900 truncate">
+            {candidate.name}
+          </h3>
+          <p className="text-sm text-gray-500 truncate">{candidate.jobRole}</p>
+        </div>
+      </div>
+      <div className="flex justify-between items-center">
+        <div className="flex items-center">
+          <Star
+            className={getStarColor(candidate.score)}
+            fill={candidate.score > 0 ? "#FACC15" : "none"}
+            size={16}
+          />
+          <span className="ml-1 text-gray-900 font-medium">
+            {candidate.score}
+          </span>
+        </div>
+        <span className="text-sm text-gray-500">{candidate.appliedDate}</span>
+      </div>
+      <div className="mt-3 flex justify-center">
+        <button
+          className="w-full px-3 py-1 cursor-pointer border border-blue-500 bg-[#E9EBFD] text-blue-500 text-sm rounded hover:bg-blue-100 transition-colors"
+          onClick={() => navigate("/applicant-detail")}
+        >
+          See Application
+        </button>
+      </div>
+    </div>
+  );
+
   const total = data.reduce((sum, item) => sum + item.value, 0);
 
-  // Generate SVG paths for the donut chart
   const generatePaths = () => {
     let cumulativePercent = 0;
     return data.map((item, index) => {
@@ -390,7 +413,6 @@ const JobApplicant = () => {
       const endPercent = startPercent + (item.value / total) * 100;
       cumulativePercent = endPercent;
 
-      // Calculate SVG arc coordinates
       const startAngle = (startPercent / 100) * 2 * Math.PI - Math.PI / 2;
       const endAngle = (endPercent / 100) * 2 * Math.PI - Math.PI / 2;
 
@@ -407,10 +429,8 @@ const JobApplicant = () => {
       const endInnerX = Math.cos(endAngle) * innerRadius;
       const endInnerY = Math.sin(endAngle) * innerRadius;
 
-      // Large arc flag
       const largeArcFlag = endPercent - startPercent > 50 ? 1 : 0;
 
-      // Create SVG path
       const pathData = [
         `M ${startOuterX} ${startOuterY}`,
         `A ${outerRadius} ${outerRadius} 0 ${largeArcFlag} 1 ${endOuterX} ${endOuterY}`,
@@ -468,9 +488,6 @@ const JobApplicant = () => {
     { name: "Thailand", visitors: 867, code: "th" },
   ];
 
-  const [hoveredPoint, setHoveredPoint] = useState(null);
-
-  // Sample data for the chart
   const chart = [
     { name: "19 Jul", views: 400 },
     { name: "20 Jul", views: 30 },
@@ -495,10 +512,7 @@ const JobApplicant = () => {
 
   const CustomDot = (props) => {
     const { cx, cy, index } = props;
-
-    // Check if this is the last point
     const isLast = index === data.length - 1;
-
     return (
       <g>
         {/* <circle
@@ -513,359 +527,237 @@ const JobApplicant = () => {
     );
   };
 
-  // State to track which tab is active
-  const [activeTab, setActiveTab] = useState("Applicants");
+  const EditJobModal = () => {
+    if (!isEditModalOpen) return null;
 
-  // Tab content components
-  const renderApplicantsTab = () => (
-    <div className="container mx-auto">
-      {/* Header Section */}
-      <div className="flex flex-col md:flex-row md:justify-between md:items-center p-4 md:p-6">
-        <h2 className="text-2xl md:text-3xl font-semibold text-gray-800 mb-4 md:mb-0">
-          Total Applicants:{" "}
-          <span className="font-bold">{filteredCandidates.length}</span>
-        </h2>
-        <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
-          {/* Search Input */}
-          <div className="relative w-full md:w-auto">
-            <Search className="absolute left-3 top-3 h-5 w-5 text-gray-400 cursor-pointer" />
-            <input
-              type="text"
-              placeholder="Search Applicants"
-              className="w-full md:w-64 pl-10 pr-5 py-2 md:py-3 text-base border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer"
-              value={searchTerm}
-              onChange={(e) => {
-                setSearchTerm(e.target.value);
-                setCurrentPage(1); // Reset to first page when searching
-              }}
-            />
-          </div>
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg w-3/4 max-h-[90vh] overflow-y-auto">
+          <div className="p-6">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold">Edit Job Details</h2>
+              <button
+                onClick={() => setIsEditModalOpen(false)}
+                className="text-gray-500 hover:text-gray-700 cursor-pointer"
+              >
+                <X size={24} />
+              </button>
+            </div>
 
-          {/* Filter Button */}
-          <button className="flex items-center gap-2 px-5 py-2 md:py-3 border rounded-lg hover:bg-gray-100 text-base w-full md:w-auto justify-center md:justify-start cursor-pointer">
-            <Filter className="h-5 w-5 cursor-pointer" /> Filter
-          </button>
+            <div className="mb-6">
+              <h3 className="text-xl font-semibold mb-4">Basic Information</h3>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Position Title
+                  </label>
+                  <input
+                    type="text"
+                    value={editedSampleData.position}
+                    onChange={(e) =>
+                      handleSampleDataChange("position", e.target.value)
+                    }
+                    className="w-full p-2 border rounded-md"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Description
+                  </label>
+                  <textarea
+                    value={editedJobData.description}
+                    onChange={(e) =>
+                      handleJobDataChange("description", e.target.value)
+                    }
+                    className="w-full p-2 border rounded-md h-32"
+                  />
+                </div>
+              </div>
+            </div>
 
-          {/* Vertical Divider */}
-          <div className="hidden md:block border-l h-8 mx-1"></div>
+            <div className="mb-6">
+              <h3 className="text-xl font-semibold mb-4">Job Details</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Job Type
+                  </label>
+                  <input
+                    type="text"
+                    value={editedSampleData.jobType}
+                    onChange={(e) =>
+                      handleSampleDataChange("jobType", e.target.value)
+                    }
+                    className="w-full p-2 border rounded-md"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Salary Range
+                  </label>
+                  <input
+                    type="text"
+                    value={editedSampleData.salary}
+                    onChange={(e) =>
+                      handleSampleDataChange("salary", e.target.value)
+                    }
+                    className="w-full p-2 border rounded-md"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Application Deadline
+                  </label>
+                  <input
+                    type="text"
+                    value={editedSampleData.deadline}
+                    onChange={(e) =>
+                      handleSampleDataChange("deadline", e.target.value)
+                    }
+                    className="w-full p-2 border rounded-md"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Capacity
+                  </label>
+                  <input
+                    type="number"
+                    value={editedSampleData.capacity}
+                    onChange={(e) =>
+                      handleSampleDataChange(
+                        "capacity",
+                        parseInt(e.target.value)
+                      )
+                    }
+                    className="w-full p-2 border rounded-md"
+                  />
+                </div>
+              </div>
+            </div>
 
-          {/* View Toggle Buttons */}
-          <div className="flex bg-blue-100 p-2 rounded-lg w-full md:w-auto mt-4 md:mt-0">
-            <button
-              className={`w-40 h-12 px-6 py-2 rounded-md text-blue-600 text-base cursor-pointer ${
-                view === "pipeline" ? "bg-white shadow" : "hover:bg-blue-200"
-              }`}
-              onClick={() => setView("pipeline")}
-            >
-              Pipeline View
-            </button>
-            <button
-              className={`w-40 h-12 px-6 py-2 rounded-md text-blue-600 text-base cursor-pointer ${
-                view === "table" ? "bg-white shadow" : "hover:bg-blue-200"
-              }`}
-              onClick={() => setView("table")}
-            >
-              Table View
-            </button>
+            <div className="mb-6">
+              <h3 className="text-xl font-semibold mb-4">Responsibilities</h3>
+              <div className="space-y-3">
+                {editedJobData.responsibilities.map((responsibility, index) => (
+                  <div key={index} className="flex gap-2">
+                    <input
+                      type="text"
+                      value={responsibility}
+                      onChange={(e) =>
+                        handleArrayFieldChange(
+                          "responsibilities",
+                          index,
+                          e.target.value
+                        )
+                      }
+                      className="flex-1 p-2 border rounded-md"
+                    />
+                    <button
+                      onClick={() =>
+                        handleRemoveArrayItem("responsibilities", index)
+                      }
+                      className="text-red-500 hover:text-red-700 cursor-pointer"
+                    >
+                      <X size={20} />
+                    </button>
+                  </div>
+                ))}
+                <button
+                  onClick={() => handleAddArrayItem("responsibilities")}
+                  className="text-blue-500 hover:text-blue-700 cursor-pointer"
+                >
+                  + Add Responsibility
+                </button>
+              </div>
+            </div>
+
+            <div className="mb-6">
+              <h3 className="text-xl font-semibold mb-4">Who You Are</h3>
+              <div className="space-y-3">
+                {editedJobData.whoYouAre.map((trait, index) => (
+                  <div key={index} className="flex gap-2">
+                    <input
+                      type="text"
+                      value={trait}
+                      onChange={(e) =>
+                        handleArrayFieldChange(
+                          "whoYouAre",
+                          index,
+                          e.target.value
+                        )
+                      }
+                      className="flex-1 p-2 border rounded-md"
+                    />
+                    <button
+                      onClick={() => handleRemoveArrayItem("whoYouAre", index)}
+                      className="text-red-500 hover:text-red-700 cursor-pointer"
+                    >
+                      <X size={20} />
+                    </button>
+                  </div>
+                ))}
+                <button
+                  onClick={() => handleAddArrayItem("whoYouAre")}
+                  className="text-blue-500 hover:text-blue-700 cursor-pointer"
+                >
+                  + Add Trait
+                </button>
+              </div>
+            </div>
+
+            <div className="mb-6">
+              <h3 className="text-xl font-semibold mb-4">Nice-To-Haves</h3>
+              <div className="space-y-3">
+                {editedJobData.niceToHaves.map((item, index) => (
+                  <div key={index} className="flex gap-2">
+                    <input
+                      type="text"
+                      value={item}
+                      onChange={(e) =>
+                        handleArrayFieldChange(
+                          "niceToHaves",
+                          index,
+                          e.target.value
+                        )
+                      }
+                      className="flex-1 p-2 border rounded-md"
+                    />
+                    <button
+                      onClick={() =>
+                        handleRemoveArrayItem("niceToHaves", index)
+                      }
+                      className="text-red-500 hover:text-red-700 cursor-pointer"
+                    >
+                      <X size={20} />
+                    </button>
+                  </div>
+                ))}
+                <button
+                  onClick={() => handleAddArrayItem("niceToHaves")}
+                  className="text-blue-500 hover:text-blue-700 cursor-pointer"
+                >
+                  + Add Nice-To-Have
+                </button>
+              </div>
+            </div>
+
+            <div className="flex justify-end mt-8">
+              <button
+                onClick={handleSaveChanges}
+                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 cursor-pointer"
+              >
+                Save Changes
+              </button>
+            </div>
           </div>
         </div>
       </div>
-
-      {/* Table View */}
-      {view === "table" && (
-        <div className="overflow-x-auto px-4 md:px-6">
-          <table className="min-w-full border-collapse border border-gray-200 rounded-lg overflow-hidden">
-            <thead className="bg-white text-gray-500 uppercase text-sm border-b border-gray-200">
-              <tr>
-                <th className="p-3 md:p-4 text-left">
-                  <input
-                    type="checkbox"
-                    className="form-checkbox text-blue-500 border-gray-300 rounded-md cursor-pointer"
-                    checked={selectAll}
-                    onChange={handleSelectAll}
-                  />
-                </th>
-                {[
-                  "Full Name",
-                  "Score",
-                  "Hiring Stage",
-                  "Applied Date",
-                  "Job Role",
-                  "Action",
-                ].map((header) => (
-                  <th key={header} className="p-3 md:p-4 text-left font-medium">
-                    <div className="flex items-center space-x-2 cursor-pointer">
-                      <span className="cursor-pointer">{header}</span>
-                      <span className="text-xs cursor-pointer">▲▼</span>
-                    </div>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-
-            <tbody>
-              {currentApplicants.length > 0 ? (
-                currentApplicants.map((candidate) => (
-                  <tr
-                    key={candidate.id}
-                    className="border-t hover:bg-gray-50 cursor-pointer"
-                  >
-                    <td className="p-3 md:p-4">
-                      <input
-                        type="checkbox"
-                        className="form-checkbox text-blue-500 cursor-pointer"
-                        checked={selectedCandidates.includes(candidate.id)}
-                        onChange={() => handleSelect(candidate.id)}
-                      />
-                    </td>
-                    <td className="p-3 md:p-4 cursor-pointer">
-                      <div className="flex items-center space-x-3">
-                        <img
-                          src={candidate.image}
-                          alt={candidate.name}
-                          className="w-8 h-8 rounded-full border object-cover cursor-pointer"
-                        />
-                        <span className="font-medium text-gray-900 cursor-pointer">
-                          {candidate.name}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="p-3 md:p-4 cursor-pointer">
-                      <div className="flex items-center space-x-1">
-                        <Star
-                          className={`${getStarColor(
-                            candidate.score
-                          )} cursor-pointer`}
-                          fill={candidate.score > 0 ? "#FACC15" : "none"}
-                          size={16}
-                        />
-                        <span className="text-gray-900 font-medium cursor-pointer">
-                          {candidate.score}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="p-3 md:p-4 cursor-pointer">
-                      <span
-                        className={`px-3 py-1 rounded-full text-sm font-medium cursor-pointer
-              ${
-                candidate.hiringStage === "Interview"
-                  ? "text-yellow-600 bg-yellow-100"
-                  : ""
-              }
-              ${
-                candidate.hiringStage === "Shortlisted"
-                  ? "text-blue-600 bg-blue-100"
-                  : ""
-              }
-              ${
-                candidate.hiringStage === "Declined"
-                  ? "text-red-600 bg-red-100"
-                  : ""
-              }
-              ${
-                candidate.hiringStage === "Hired"
-                  ? "text-green-600 bg-green-100"
-                  : ""
-              }
-              ${
-                candidate.hiringStage === "Interviewed"
-                  ? "text-blue-600 bg-blue-100"
-                  : ""
-              }`}
-                      >
-                        {candidate.hiringStage}
-                      </span>
-                    </td>
-                    <td className="p-3 md:p-4 cursor-pointer">
-                      {candidate.appliedDate}
-                    </td>
-                    <td className="p-3 md:p-4 cursor-pointer">
-                      {candidate.jobRole}
-                    </td>
-                    <td className="p-3 md:p-4">
-                      <button
-                        className="px-3 py-1 md:px-4 md:py-2 border border-blue-500 bg-[#E9EBFD] text-blue-500 rounded text-sm cursor-pointer"
-                        onClick={() => navigate("/applicant-detail")}
-                      >
-                        See Application
-                      </button>
-                    </td>
-                    <td className="p-4 text-gray-600 text-lg cursor-pointer">
-                      ...
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="7" className="p-4 text-center text-gray-500">
-                    No matching applicants found
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      )}
-
-      {/* Pipeline View */}
-      {view === "pipeline" && (
-        <div className="p-4">
-          {/* Responsive Pipeline Grid Layout */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-            {stageOrder.map((stage) => (
-              <div key={stage} className="bg-white rounded-lg shadow">
-                <div
-                  className={`p-3 rounded-t-lg ${getStageColor(
-                    stage
-                  )} cursor-pointer`}
-                >
-                  <div className="flex justify-between items-center cursor-pointer">
-                    <h3
-                      className={`font-medium ${getStageTextColor(
-                        stage
-                      )} cursor-pointer`}
-                    >
-                      {stage}
-                    </h3>
-                    <span className="bg-white px-2 py-1 rounded-full text-sm font-medium text-gray-700 cursor-pointer">
-                      {stageGroups[stage].length}
-                    </span>
-                  </div>
-                </div>
-                <div className="p-3 max-h-96 overflow-y-auto cursor-pointer">
-                  {stageGroups[stage].length > 0 ? (
-                    stageGroups[stage].map((candidate) => (
-                      <CandidateCard key={candidate.id} candidate={candidate} />
-                    ))
-                  ) : (
-                    <div className="text-center py-8 text-gray-500">
-                      No candidates
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Pagination - Only show for table view */}
-      {view === "table" && (
-        <div className="flex flex-col md:flex-row justify-between items-center p-4 md:p-6">
-          <div className="flex items-center space-x-2 mb-4 md:mb-0">
-            <span>View</span>
-            <select
-              value={applicantsPerPage}
-              onChange={(e) => {
-                setApplicantsPerPage(Number(e.target.value));
-                setCurrentPage(1); // Reset to first page
-              }}
-              className="border rounded-md px-2 py-1 cursor-pointer"
-            >
-              <option value={10} className="cursor-pointer">
-                10
-              </option>
-              <option value={20} className="cursor-pointer">
-                20
-              </option>
-              <option value={50} className="cursor-pointer">
-                50
-              </option>
-            </select>
-            <span>Applicants per page</span>
-          </div>
-          <div className="flex items-center space-x-1 md:space-x-2 overflow-x-auto w-full md:w-auto justify-center">
-            <button
-              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
-              className={`p-2 border rounded-md cursor-pointer ${
-                currentPage === 1
-                  ? "text-gray-300 cursor-not-allowed"
-                  : "hover:bg-gray-100"
-              }`}
-            >
-              <ChevronLeft size={16} className="cursor-pointer" />
-            </button>
-            {totalPages <= 5 ? (
-              [...Array(totalPages)].map((_, index) => (
-                <button
-                  key={index + 1}
-                  onClick={() => paginate(index + 1)}
-                  className={`px-3 py-1 md:px-4 md:py-2 border rounded-md cursor-pointer ${
-                    currentPage === index + 1
-                      ? "bg-blue-500 text-white"
-                      : "hover:bg-gray-100"
-                  }`}
-                >
-                  {index + 1}
-                </button>
-              ))
-            ) : (
-              // Show limited pagination buttons for many pages
-              <>
-                {currentPage > 1 && (
-                  <button
-                    onClick={() => paginate(1)}
-                    className="px-3 py-1 md:px-4 md:py-2 border rounded-md hover:bg-gray-100 cursor-pointer"
-                  >
-                    1
-                  </button>
-                )}
-                {currentPage > 2 && <span className="px-1">...</span>}
-                {currentPage > 1 && (
-                  <button
-                    onClick={() => paginate(currentPage - 1)}
-                    className="px-3 py-1 md:px-4 md:py-2 border rounded-md hover:bg-gray-100 cursor-pointer"
-                  >
-                    {currentPage - 1}
-                  </button>
-                )}
-                <button className="px-3 py-1 md:px-4 md:py-2 border rounded-md bg-blue-500 text-white cursor-pointer">
-                  {currentPage}
-                </button>
-                {currentPage < totalPages && (
-                  <button
-                    onClick={() => paginate(currentPage + 1)}
-                    className="px-3 py-1 md:px-4 md:py-2 border rounded-md hover:bg-gray-100 cursor-pointer"
-                  >
-                    {currentPage + 1}
-                  </button>
-                )}
-                {currentPage < totalPages - 1 && (
-                  <span className="px-1">...</span>
-                )}
-                {currentPage < totalPages && (
-                  <button
-                    onClick={() => paginate(totalPages)}
-                    className="px-3 py-1 md:px-4 md:py-2 border rounded-md hover:bg-gray-100 cursor-pointer"
-                  >
-                    {totalPages}
-                  </button>
-                )}
-              </>
-            )}
-            <button
-              onClick={() =>
-                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-              }
-              disabled={currentPage === totalPages}
-              className={`p-2 border rounded-md cursor-pointer ${
-                currentPage === totalPages
-                  ? "text-gray-300 cursor-not-allowed"
-                  : "hover:bg-gray-100"
-              }`}
-            >
-              <ChevronRight size={16} className="cursor-pointer" />
-            </button>
-          </div>
-        </div>
-      )}
-    </div>
-  );
+    );
+  };
 
   const renderJobDetailsTab = () => (
     <div>
-      {/*Part 1*/}
       <div className="flex items-center justify-between w-full p-6 border-2 border-blue-400 mt-5">
         <div className="flex items-center gap-3">
           <div className="flex items-center justify-center w-12 h-12 text-white bg-blue-500 rounded-md">
@@ -875,7 +767,10 @@ const JobApplicant = () => {
             Social Media Assistant
           </span>
         </div>
-        <button className="flex items-center gap-1 px-3 py-2 text-sm text-blue-500 border border-blue-500 cursor-pointer">
+        <button
+          onClick={() => setIsEditModalOpen(true)}
+          className="flex items-center gap-1 px-3 py-2 text-sm text-blue-500 border border-blue-500 cursor-pointer hover:bg-blue-50"
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="16"
@@ -893,10 +788,9 @@ const JobApplicant = () => {
           Edit Job Details
         </button>
       </div>
-      {/*Part 2*/}
-      <div class="flex p-6">
+      {EditJobModal()}
+      <div className="flex p-6">
         <div className="w-3/4 p-6 bg-white">
-          {/* Description Section */}
           <div className="mb-8">
             <h2 className="text-xl font-bold text-gray-800 mb-4">
               Description
@@ -904,7 +798,6 @@ const JobApplicant = () => {
             <p className="text-lg text-gray-600">{jobData.description}</p>
           </div>
 
-          {/* Responsibilities Section */}
           <div className="mb-8">
             <h2 className="text-xl font-bold text-gray-800 mb-4">
               Responsibilities
@@ -943,7 +836,6 @@ const JobApplicant = () => {
             </ul>
           </div>
 
-          {/* Who You Are Section */}
           <div className="mb-8">
             <h2 className="text-xl font-bold text-gray-800 mb-4">
               Who You Are
@@ -982,7 +874,6 @@ const JobApplicant = () => {
             </ul>
           </div>
 
-          {/* Nice-To-Haves Section */}
           <div>
             <h2 className="text-xl font-bold text-gray-800 mb-4">
               Nice-To-Haves
@@ -1024,13 +915,11 @@ const JobApplicant = () => {
 
         <div className="w-1/4 p-6">
           <div className="bg-white p-4">
-            {/* About this role */}
             <h2 className="text-xl font-bold text-gray-800 mb-6">
               About this role
             </h2>
 
             <div className="bg-gray-50 p-5 rounded-lg mb-8">
-              {/* Progress stats */}
               <div className="mb-5">
                 <div className="flex justify-between text-base mb-2">
                   <span className="text-gray-800 font-semibold">
@@ -1044,17 +933,17 @@ const JobApplicant = () => {
                   <div
                     className="h-full bg-green-500 rounded-full"
                     style={{
-                      width: `$
-                              {((sampleJobData.applied || 0) /
-                                (sampleJobData.capacity || 1)) *
-                              100}%`,
+                      width: `${
+                        ((sampleJobData.applied || 0) /
+                          (sampleJobData.capacity || 1)) *
+                        100
+                      }%`,
                     }}
                   ></div>
                 </div>
               </div>
             </div>
 
-            {/* Job details */}
             <div className="space-y-4 py-2">
               {[
                 {
@@ -1080,17 +969,17 @@ const JobApplicant = () => {
             <div className="border-b border-blue-400 text-transparent mb-6">
               .
             </div>
-            {/* Categories & Required Skills */}
+
             {[
               {
                 title: "Categories",
-                data: categories,
+                data: sampleJobData.categories,
                 bgColor: "bg-orange-100",
                 textColor: "text-orange-600",
               },
               {
                 title: "Required Skills",
-                data: requiredSkills,
+                data: sampleJobData.requiredSkills,
                 bgColor: "bg-blue-100",
                 textColor: "text-blue-600",
               },
@@ -1100,7 +989,7 @@ const JobApplicant = () => {
                   {section.title}
                 </h3>
                 <div className="flex flex-wrap gap-3">
-                  {section.data.length > 0 ? (
+                  {section.data && section.data.length > 0 ? (
                     section.data.map((item, index) => (
                       <span
                         key={index}
@@ -1123,7 +1012,7 @@ const JobApplicant = () => {
           </div>
         </div>
       </div>
-      {/*Part 3*/}
+
       <div className="py-8 px-6 bg-white border-t border-blue-400">
         <div className="text-left mb-10 px-9">
           <h2 className="text-3xl font-bold text-gray-900">Perks & Benefits</h2>
@@ -1135,7 +1024,7 @@ const JobApplicant = () => {
           {perksData.map((perk, index) => (
             <div
               key={index}
-              className="flex flex-col items-left text-left p-6  transition duration-300"
+              className="flex flex-col items-left text-left p-6 transition duration-300"
             >
               <div className="mb-4">{perk.icon}</div>
               <h3 className="text-xl font-semibold mb-2 text-gray-900">
@@ -1149,8 +1038,318 @@ const JobApplicant = () => {
     </div>
   );
 
+  const renderApplicantsTab = () => (
+    <div className="container mx-auto">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center p-4 md:p-6">
+        <h2 className="text-2xl md:text-3xl font-semibold text-gray-800 mb-4 md:mb-0">
+          Total Applicants:{" "}
+          <span className="font-bold">{filteredCandidates.length}</span>
+        </h2>
+        <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
+          <div className="relative w-full md:w-auto">
+            <Search className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search Applicants"
+              className="w-full md:w-64 pl-10 pr-5 py-2 md:py-3 text-base border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setCurrentPage(1);
+              }}
+            />
+          </div>
+
+          <button className="flex items-center gap-2 px-5 py-2 md:py-3 border rounded-lg hover:bg-gray-100 text-base w-full md:w-auto justify-center md:justify-start">
+            <Filter className="h-5 w-5" /> Filter
+          </button>
+
+          <div className="hidden md:block border-l h-8 mx-1"></div>
+
+          <div className="flex bg-blue-100 p-2 rounded-lg w-full md:w-auto mt-4 md:mt-0">
+            <button
+              className={`w-40 h-12 px-6 py-2 rounded-md text-blue-600 text-base ${
+                view === "pipeline" ? "bg-white shadow" : "hover:bg-blue-200"
+              }`}
+              onClick={() => setView("pipeline")}
+            >
+              Pipeline View
+            </button>
+            <button
+              className={`w-40 h-12 px-6 py-2 rounded-md text-blue-600 text-base ${
+                view === "table" ? "bg-white shadow" : "hover:bg-blue-200"
+              }`}
+              onClick={() => setView("table")}
+            >
+              Table View
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {view === "table" && (
+        <div className="overflow-x-auto px-4 md:px-6">
+          <table className="min-w-full border-collapse border border-gray-200 rounded-lg overflow-hidden">
+            <thead className="bg-white text-gray-500 uppercase text-sm border-b border-gray-200">
+              <tr>
+                <th className="p-3 md:p-4 text-left">
+                  <input
+                    type="checkbox"
+                    className="form-checkbox text-blue-500 border-gray-300 rounded-md"
+                    checked={selectAll}
+                    onChange={handleSelectAll}
+                  />
+                </th>
+                {[
+                  "Full Name",
+                  "Score",
+                  "Hiring Stage",
+                  "Applied Date",
+                  "Job Role",
+                  "Action",
+                ].map((header) => (
+                  <th key={header} className="p-3 md:p-4 text-left font-medium">
+                    <div className="flex items-center space-x-2">
+                      <span>{header}</span>
+                      <span className="text-xs">▲▼</span>
+                    </div>
+                  </th>
+                ))}
+              </tr>
+            </thead>
+
+            <tbody>
+              {currentApplicants.length > 0 ? (
+                currentApplicants.map((candidate) => (
+                  <tr key={candidate.id} className="border-t hover:bg-gray-50">
+                    <td className="p-3 md:p-4">
+                      <input
+                        type="checkbox"
+                        className="form-checkbox text-blue-500"
+                        checked={selectedCandidates.includes(candidate.id)}
+                        onChange={() => handleSelect(candidate.id)}
+                      />
+                    </td>
+                    <td className="p-3 md:p-4">
+                      <div className="flex items-center space-x-3">
+                        <img
+                          src={candidate.image}
+                          alt={candidate.name}
+                          className="w-8 h-8 rounded-full border object-cover"
+                        />
+                        <span className="font-medium text-gray-900">
+                          {candidate.name}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="p-3 md:p-4">
+                      <div className="flex items-center space-x-1">
+                        <Star
+                          className={getStarColor(candidate.score)}
+                          fill={candidate.score > 0 ? "#FACC15" : "none"}
+                          size={16}
+                        />
+                        <span className="text-gray-900 font-medium">
+                          {candidate.score}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="p-3 md:p-4">
+                      <span
+                        className={`px-3 py-1 rounded-full text-sm font-medium
+                        ${
+                          candidate.hiringStage === "Interview"
+                            ? "text-yellow-600 bg-yellow-100"
+                            : ""
+                        }
+                        ${
+                          candidate.hiringStage === "Shortlisted"
+                            ? "text-blue-600 bg-blue-100"
+                            : ""
+                        }
+                        ${
+                          candidate.hiringStage === "Declined"
+                            ? "text-red-600 bg-red-100"
+                            : ""
+                        }
+                        ${
+                          candidate.hiringStage === "Hired"
+                            ? "text-green-600 bg-green-100"
+                            : ""
+                        }
+                        ${
+                          candidate.hiringStage === "Interviewed"
+                            ? "text-blue-600 bg-blue-100"
+                            : ""
+                        }`}
+                      >
+                        {candidate.hiringStage}
+                      </span>
+                    </td>
+                    <td className="p-3 md:p-4">{candidate.appliedDate}</td>
+                    <td className="p-3 md:p-4">{candidate.jobRole}</td>
+                    <td className="p-3 md:p-4">
+                      <button
+                        className="px-3 py-1 md:px-4 md:py-2 border border-blue-500 bg-[#E9EBFD] text-blue-500 rounded text-sm"
+                        onClick={() => navigate("/applicant-detail")}
+                      >
+                        See Application
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="7" className="p-4 text-center text-gray-500">
+                    No matching applicants found
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {view === "pipeline" && (
+        <div className="p-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+            {stageOrder.map((stage) => (
+              <div key={stage} className="bg-white rounded-lg shadow">
+                <div className={`p-3 rounded-t-lg ${getStageColor(stage)}`}>
+                  <div className="flex justify-between items-center">
+                    <h3 className={`font-medium ${getStageTextColor(stage)}`}>
+                      {stage}
+                    </h3>
+                    <span className="bg-white px-2 py-1 rounded-full text-sm font-medium text-gray-700">
+                      {stageGroups[stage].length}
+                    </span>
+                  </div>
+                </div>
+                <div className="p-3 max-h-96 overflow-y-auto">
+                  {stageGroups[stage].length > 0 ? (
+                    stageGroups[stage].map((candidate) => (
+                      <CandidateCard key={candidate.id} candidate={candidate} />
+                    ))
+                  ) : (
+                    <div className="text-center py-8 text-gray-500">
+                      No candidates
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {view === "table" && (
+        <div className="flex flex-col md:flex-row justify-between items-center p-4 md:p-6">
+          <div className="flex items-center space-x-2 mb-4 md:mb-0">
+            <span>View</span>
+            <select
+              value={applicantsPerPage}
+              onChange={(e) => {
+                setApplicantsPerPage(Number(e.target.value));
+                setCurrentPage(1);
+              }}
+              className="border rounded-md px-2 py-1"
+            >
+              <option value={10}>10</option>
+              <option value={20}>20</option>
+              <option value={50}>50</option>
+            </select>
+            <span>Applicants per page</span>
+          </div>
+          <div className="flex items-center space-x-1 md:space-x-2 overflow-x-auto w-full md:w-auto justify-center">
+            <button
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className={`p-2 border rounded-md ${
+                currentPage === 1
+                  ? "text-gray-300 cursor-not-allowed"
+                  : "hover:bg-gray-100"
+              }`}
+            >
+              <ChevronLeft size={16} />
+            </button>
+            {totalPages <= 5 ? (
+              [...Array(totalPages)].map((_, index) => (
+                <button
+                  key={index + 1}
+                  onClick={() => paginate(index + 1)}
+                  className={`px-3 py-1 md:px-4 md:py-2 border rounded-md ${
+                    currentPage === index + 1
+                      ? "bg-blue-500 text-white"
+                      : "hover:bg-gray-100"
+                  }`}
+                >
+                  {index + 1}
+                </button>
+              ))
+            ) : (
+              <>
+                {currentPage > 1 && (
+                  <button
+                    onClick={() => paginate(1)}
+                    className="px-3 py-1 md:px-4 md:py-2 border rounded-md hover:bg-gray-100"
+                  >
+                    1
+                  </button>
+                )}
+                {currentPage > 2 && <span className="px-1">...</span>}
+                {currentPage > 1 && (
+                  <button
+                    onClick={() => paginate(currentPage - 1)}
+                    className="px-3 py-1 md:px-4 md:py-2 border rounded-md hover:bg-gray-100"
+                  >
+                    {currentPage - 1}
+                  </button>
+                )}
+                <button className="px-3 py-1 md:px-4 md:py-2 border rounded-md bg-blue-500 text-white">
+                  {currentPage}
+                </button>
+                {currentPage < totalPages && (
+                  <button
+                    onClick={() => paginate(currentPage + 1)}
+                    className="px-3 py-1 md:px-4 md:py-2 border rounded-md hover:bg-gray-100"
+                  >
+                    {currentPage + 1}
+                  </button>
+                )}
+                {currentPage < totalPages - 1 && (
+                  <span className="px-1">...</span>
+                )}
+                {currentPage < totalPages && (
+                  <button
+                    onClick={() => paginate(totalPages)}
+                    className="px-3 py-1 md:px-4 md:py-2 border rounded-md hover:bg-gray-100"
+                  >
+                    {totalPages}
+                  </button>
+                )}
+              </>
+            )}
+            <button
+              onClick={() =>
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+              }
+              disabled={currentPage === totalPages}
+              className={`p-2 border rounded-md ${
+                currentPage === totalPages
+                  ? "text-gray-300 cursor-not-allowed"
+                  : "hover:bg-gray-100"
+              }`}
+            >
+              <ChevronRight size={16} />
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
   const renderAnalyticsTab = () => (
-    <div class="flex gap-4">
+    <div className="flex gap-4">
       <div className="w-3/4 py-6 bg-white">
         <div className="flex space-x-4">
           <div className="bg-white rounded-sm p-4 border border-gray-300 w-full">
@@ -1161,7 +1360,7 @@ const JobApplicant = () => {
               <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6 text-white cursor-pointer"
+                  className="h-6 w-6 text-white"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -1189,7 +1388,7 @@ const JobApplicant = () => {
               <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6 text-white cursor-pointer"
+                  className="h-6 w-6 text-white"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -1212,12 +1411,11 @@ const JobApplicant = () => {
           </div>
         </div>
 
-        {/* Job Listing View Stats Chart */}
         <div className="mt-6 border border-gray-300 p-4 rounded-sm">
           <div className="flex justify-between items-center mb-4 p-4">
             <h3 className="text-2xl font-bold">Job Listing View stats</h3>
             <div className="flex items-center border border-gray-300 rounded px-2 py-1">
-              <span className="text-md cursor-pointer">Last 7 days</span>
+              <span className="text-md">Last 7 days</span>
               <svg
                 className="h-6 w-6 ml-1"
                 fill="none"
@@ -1290,7 +1488,6 @@ const JobApplicant = () => {
             </svg>
           </div>
 
-          {/* Legend */}
           <div className="grid grid-cols-2 gap-4">
             {data.map((item) => (
               <div
@@ -1321,27 +1518,28 @@ const JobApplicant = () => {
             ))}
           </div>
         </div>
+
         <div className="border border-gray-300 p-3 mt-6">
           <h2 className="text-lg font-semibold mb-4 text-gray-800">
             Visitors by country
           </h2>
           <style>
             {`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 8px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: transparent;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background-color: #4fd1c5;
-          border-radius: 20px;
-        }
-        .custom-scrollbar {
-          scrollbar-width: thin;
-          scrollbar-color: #4fd1c5 transparent;
-        }
-        `}
+            .custom-scrollbar::-webkit-scrollbar {
+              width: 8px;
+            }
+            .custom-scrollbar::-webkit-scrollbar-track {
+              background: transparent;
+            }
+            .custom-scrollbar::-webkit-scrollbar-thumb {
+              background-color: #4fd1c5;
+              border-radius: 20px;
+            }
+            .custom-scrollbar {
+              scrollbar-width: thin;
+              scrollbar-color: #4fd1c5 transparent;
+            }
+            `}
           </style>
           <div className="h-64 overflow-y-auto pr-2 custom-scrollbar">
             <div className="space-y-3">
@@ -1373,15 +1571,13 @@ const JobApplicant = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <div className="flex flex-row flex-grow">
-        <div className="h-screen sticky top-0 cursor-pointer">
+        <div className="h-screen sticky top-0">
           <Sidebar />
         </div>
         <div className="flex-grow transition-all">
           <Header />
           <div className="">
-            {/*Part 1*/}
             <div className="flex justify-between items-center py-6 px-9">
-              {/* Back Button and Title */}
               <div className="flex items-center space-x-2">
                 <button
                   className="text-gray-700 text-4xl font-bold mb-2 cursor-pointer"
@@ -1393,33 +1589,22 @@ const JobApplicant = () => {
                   className="text-3xl text-gray-900 cursor-pointer"
                   onClick={() => navigate("/job-listing")}
                 >
-                  <span className="font-bold cursor-pointer">
-                    Social Media Assistant
-                  </span>
-                  <p className="text-gray-600 text-lg mt-2 cursor-pointer">
+                  <span className="font-bold">Social Media Assistant</span>
+                  <p className="text-gray-600 text-lg mt-2">
                     Design • Full-Time •
-                    <span className="text-gray-900 font-semibold cursor-pointer">
-                      {" "}
-                      4
-                    </span>{" "}
-                    /
-                    <span className="text-gray-400 cursor-pointer">
-                      {" "}
-                      11 Hired
-                    </span>
+                    <span className="text-gray-900 font-semibold"> 4</span> /
+                    <span className="text-gray-400"> 11 Hired</span>
                   </p>
                 </h1>
               </div>
 
-              {/* More Action Button */}
               <button className="border border-blue-500 text-blue-500 px-4 py-2 rounded-md flex items-center space-x-1 cursor-pointer">
-                <ChevronDown size={16} className="cursor-pointer" />
-                <span className="cursor-pointer">More Action</span>
+                <ChevronDown size={16} />
+                <span>More Action</span>
               </button>
             </div>
-            {/*Part 2*/}
+
             <div className="bg-white p-6 font-sans">
-              {/* Tabs Navigation */}
               <div className="border-b border-gray-200">
                 <div className="flex space-x-8">
                   <div
@@ -1433,8 +1618,8 @@ const JobApplicant = () => {
                     <span
                       className={
                         activeTab === "Applicants"
-                          ? "text-blue-500 font-medium text-lg cursor-pointer"
-                          : "text-gray-500 text-lg cursor-pointer"
+                          ? "text-blue-500 font-medium text-lg"
+                          : "text-gray-500 text-lg"
                       }
                     >
                       Applicants
@@ -1451,8 +1636,8 @@ const JobApplicant = () => {
                     <span
                       className={
                         activeTab === "Job Details"
-                          ? "text-blue-500 font-medium text-lg cursor-pointer"
-                          : "text-gray-500 text-lg cursor-pointer"
+                          ? "text-blue-500 font-medium text-lg"
+                          : "text-gray-500 text-lg"
                       }
                     >
                       Job Details
@@ -1469,8 +1654,8 @@ const JobApplicant = () => {
                     <span
                       className={
                         activeTab === "Analytics"
-                          ? "text-blue-500 font-medium text-lg cursor-pointer"
-                          : "text-gray-500 text-lg cursor-pointer"
+                          ? "text-blue-500 font-medium text-lg"
+                          : "text-gray-500 text-lg"
                       }
                     >
                       Analytics
@@ -1479,7 +1664,6 @@ const JobApplicant = () => {
                 </div>
               </div>
 
-              {/* Render content based on active tab */}
               {activeTab === "Applicants" && renderApplicantsTab()}
               {activeTab === "Job Details" && renderJobDetailsTab()}
               {activeTab === "Analytics" && renderAnalyticsTab()}
