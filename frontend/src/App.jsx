@@ -22,6 +22,9 @@ import ApplicantDetail from "./components/CompanyDashboard/ApplicantDetail";
 import JobApplicant from "./components/CompanyDashboard/JobApplicant";
 import JobPosting from "./components/CompanyDashboard/JobPosting";
 import CompanyHelp from "./components/CompanyDashboard/CompanyHelp";
+import About from "./components/LandingPage/About";
+import Contact from "./components/LandingPage/Contact";
+import ScrollToTop from "./components/ScrollToTop";
 
 function App() {
   const googleClientId =
@@ -31,6 +34,7 @@ function App() {
     <GoogleOAuthProvider clientId={googleClientId}>
       <Router>
         {/* Set up Routes */}
+        <ScrollToTop />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
@@ -53,6 +57,8 @@ function App() {
           <Route path="/job-applicant" element={<JobApplicant />} />
           <Route path="/job-posting" element={<JobPosting />} />
           <Route path="/company-help" element={<CompanyHelp />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
         </Routes>
       </Router>
     </GoogleOAuthProvider>
