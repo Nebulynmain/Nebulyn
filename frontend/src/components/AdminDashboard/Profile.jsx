@@ -211,27 +211,26 @@ function Profile() {
   const EditButton = ({ onClick }) => (
     <button
       onClick={onClick}
-      className="p-2 text-blue-600 border border-gray-300 rounded-md hover:bg-blue-100 transition-colors"
+      className="p-1.5 text-blue-600 border border-gray-300 rounded-md hover:bg-blue-100 transition-colors cursor-pointer"
     >
-      <Edit className="w-5 h-5" />
+      <Edit className="w-4 h-4" />
     </button>
   );
 
   const EditableInput = ({ value, onChange, label }) => (
-    <div className="mb-4">
-      <label className="block text-sm font-medium text-gray-700 mb-1">
+    <div className="mb-3">
+      <label className="block text-xs font-medium text-gray-700 mb-1">
         {label}
       </label>
       <input
         type="text"
         value={value}
         onChange={onChange}
-        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+        className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
       />
     </div>
   );
 
-  // New component for image upload
   const ImageUploader = ({ label, imagePreview, onImageChange }) => {
     const fileInputRef = React.useRef(null);
 
@@ -251,8 +250,8 @@ function Profile() {
     };
 
     return (
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+      <div className="mb-3">
+        <label className="block text-xs font-medium text-gray-700 mb-1">
           {label}
         </label>
         <input
@@ -264,23 +263,23 @@ function Profile() {
         />
         <div
           onClick={handleClick}
-          className="cursor-pointer border-2 border-dashed border-gray-300 rounded-lg p-4 flex flex-col items-center justify-center hover:border-blue-500 transition-colors"
+          className="cursor-pointer border-2 border-dashed border-gray-300 rounded-lg p-2 flex flex-col items-center justify-center hover:border-blue-500 transition-colors"
         >
           {imagePreview ? (
             <div className="w-full flex flex-col items-center">
               <img
                 src={imagePreview}
                 alt="Preview"
-                className="w-32 h-32 object-cover rounded-full mb-2 shadow-md"
+                className="w-24 h-24 object-cover rounded-full mb-1 shadow-md"
               />
-              <span className="text-sm text-blue-500">
+              <span className="text-xs text-blue-500">
                 Click to change image
               </span>
             </div>
           ) : (
-            <div className="flex flex-col items-center py-4">
-              <Upload className="w-10 h-10 text-gray-400 mb-2" />
-              <p className="text-sm text-gray-500">Click to upload image</p>
+            <div className="flex flex-col items-center py-2">
+              <Upload className="w-6 h-6 text-gray-400 mb-1" />
+              <p className="text-xs text-gray-500">Click to upload image</p>
             </div>
           )}
         </div>
@@ -288,7 +287,6 @@ function Profile() {
     );
   };
 
-  // Date Range Picker component
   const DateRangePicker = ({
     startDate,
     endDate,
@@ -308,10 +306,10 @@ function Profile() {
     };
 
     return (
-      <div className="space-y-3">
-        <div className="grid grid-cols-2 gap-4">
+      <div className="space-y-2">
+        <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-xs font-medium text-gray-700 mb-1">
               Start Date
             </label>
             <div className="relative">
@@ -319,14 +317,14 @@ function Profile() {
                 type="date"
                 value={startDate}
                 onChange={(e) => onStartDateChange(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 pr-10"
+                className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 pr-8"
               />
-              <Calendar className="w-5 h-5 text-gray-400 absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none" />
+              <Calendar className="w-4 h-4 text-gray-400 absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none" />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-xs font-medium text-gray-700 mb-1">
               End Date
             </label>
             <div className="relative">
@@ -334,10 +332,10 @@ function Profile() {
                 type="date"
                 value={current ? "" : endDate}
                 onChange={(e) => onEndDateChange(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 pr-10"
+                className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 pr-8"
                 disabled={current}
               />
-              <Calendar className="w-5 h-5 text-gray-400 absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none" />
+              <Calendar className="w-4 h-4 text-gray-400 absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none" />
             </div>
           </div>
         </div>
@@ -348,11 +346,11 @@ function Profile() {
             id="current-position"
             checked={current}
             onChange={handleCurrentChange}
-            className="h-4 w-4 text-blue-500 focus:ring-blue-500 border-gray-300 rounded"
+            className="h-3 w-3 text-blue-500 focus:ring-blue-500 border-gray-300 rounded cursor-pointer"
           />
           <label
             htmlFor="current-position"
-            className="ml-2 text-sm text-gray-700"
+            className="ml-2 text-xs text-gray-700 cursor-pointer"
           >
             I currently work here
           </label>
@@ -361,7 +359,6 @@ function Profile() {
     );
   };
 
-  // Function to format dates for display
   const formatDateRange = (startDate, endDate) => {
     if (!startDate) return "";
 
@@ -396,9 +393,9 @@ function Profile() {
     return (
       <form
         onSubmit={(e) => onSubmit(e, formData)}
-        className="space-y-6 p-6 w-full bg-white rounded-xl shadow-sm"
+        className="space-y-4 p-4 w-full bg-white rounded-lg shadow-sm"
       >
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="md:col-span-2">
             <ImageUploader
               label="Company Logo"
@@ -410,7 +407,7 @@ function Profile() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-xs font-medium text-gray-700 mb-1">
               Job Title
             </label>
             <input
@@ -419,14 +416,14 @@ function Profile() {
               onChange={(e) =>
                 setFormData({ ...formData, title: e.target.value })
               }
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
               placeholder="e.g. Software Engineer"
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-xs font-medium text-gray-700 mb-1">
               Company
             </label>
             <input
@@ -435,14 +432,14 @@ function Profile() {
               onChange={(e) =>
                 setFormData({ ...formData, company: e.target.value })
               }
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
               placeholder="e.g. Google"
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-xs font-medium text-gray-700 mb-1">
               Type
             </label>
             <select
@@ -450,7 +447,7 @@ function Profile() {
               onChange={(e) =>
                 setFormData({ ...formData, type: e.target.value })
               }
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer"
             >
               <option value="">Select Job Type</option>
               <option>Full-Time</option>
@@ -462,7 +459,7 @@ function Profile() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-xs font-medium text-gray-700 mb-1">
               Location
             </label>
             <input
@@ -471,14 +468,14 @@ function Profile() {
               onChange={(e) =>
                 setFormData({ ...formData, location: e.target.value })
               }
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
               placeholder="e.g. San Francisco, CA (Remote)"
               required
             />
           </div>
 
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-xs font-medium text-gray-700 mb-1">
               Duration
             </label>
             <DateRangePicker
@@ -495,7 +492,7 @@ function Profile() {
           </div>
 
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-xs font-medium text-gray-700 mb-1">
               Description
             </label>
             <textarea
@@ -503,8 +500,8 @@ function Profile() {
               onChange={(e) =>
                 setFormData({ ...formData, description: e.target.value })
               }
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-              rows={4}
+              className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+              rows={3}
               placeholder="Describe your responsibilities and achievements"
               required
             />
@@ -515,13 +512,13 @@ function Profile() {
           <button
             type="button"
             onClick={onCancel}
-            className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+            className="px-3 py-1.5 text-xs text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors cursor-pointer"
           >
             Cancel
           </button>
           <button
             type="submit"
-            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+            className="px-3 py-1.5 text-xs bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors cursor-pointer"
           >
             Save
           </button>
@@ -546,9 +543,9 @@ function Profile() {
     return (
       <form
         onSubmit={(e) => onSubmit(e, formData)}
-        className="space-y-6 p-6 w-full bg-white rounded-xl shadow-sm"
+        className="space-y-4 p-4 w-full bg-white rounded-lg shadow-sm"
       >
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="md:col-span-2">
             <ImageUploader
               label="School Logo"
@@ -560,7 +557,7 @@ function Profile() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-xs font-medium text-gray-700 mb-1">
               School
             </label>
             <input
@@ -569,14 +566,14 @@ function Profile() {
               onChange={(e) =>
                 setFormData({ ...formData, school: e.target.value })
               }
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
               placeholder="e.g. Stanford University"
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-xs font-medium text-gray-700 mb-1">
               Degree
             </label>
             <input
@@ -585,14 +582,14 @@ function Profile() {
               onChange={(e) =>
                 setFormData({ ...formData, degree: e.target.value })
               }
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
               placeholder="e.g. Bachelor of Science in Computer Science"
               required
             />
           </div>
 
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-xs font-medium text-gray-700 mb-1">
               Duration
             </label>
             <DateRangePicker
@@ -609,7 +606,7 @@ function Profile() {
           </div>
 
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-xs font-medium text-gray-700 mb-1">
               Description
             </label>
             <textarea
@@ -617,15 +614,15 @@ function Profile() {
               onChange={(e) =>
                 setFormData({ ...formData, description: e.target.value })
               }
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
-              rows={4}
+              className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+              rows={3}
               placeholder="Describe your course of study and achievements"
               required
             />
           </div>
 
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-xs font-medium text-gray-700 mb-1">
               School Website
             </label>
             <input
@@ -634,7 +631,7 @@ function Profile() {
               onChange={(e) =>
                 setFormData({ ...formData, link: e.target.value })
               }
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
               placeholder="e.g. https://www.stanford.edu"
               required
             />
@@ -645,13 +642,13 @@ function Profile() {
           <button
             type="button"
             onClick={onCancel}
-            className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+            className="px-3 py-1.5 text-xs text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors cursor-pointer"
           >
             Cancel
           </button>
           <button
             type="submit"
-            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+            className="px-3 py-1.5 text-xs bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors cursor-pointer"
           >
             Save
           </button>
@@ -673,8 +670,8 @@ function Profile() {
 
     if (isAddingExperience) {
       return (
-        <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-4xl mx-auto">
-          <h1 className="text-2xl font-bold text-gray-800 mb-6">
+        <div className="bg-white p-4 rounded-lg shadow-md w-full max-w-4xl mx-auto">
+          <h1 className="text-xl font-bold text-gray-800 mb-4">
             Add Experience
           </h1>
           <ExperienceForm
@@ -687,8 +684,8 @@ function Profile() {
 
     if (editingExperience) {
       return (
-        <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-4xl mx-auto">
-          <h1 className="text-2xl font-bold text-gray-800 mb-6">
+        <div className="bg-white p-4 rounded-lg shadow-md w-full max-w-4xl mx-auto">
+          <h1 className="text-xl font-bold text-gray-800 mb-4">
             Edit Experience
           </h1>
           <ExperienceForm
@@ -701,20 +698,20 @@ function Profile() {
     }
 
     return (
-      <div className="bg-white p-8 rounded-2xl shadow-lg w-full">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-800">Experiences</h1>
+      <div className="bg-white p-4 rounded-lg shadow-md w-full">
+        <div className="flex justify-between items-center mb-4">
+          <h1 className="text-xl font-bold text-gray-800">Experiences</h1>
           <button
             onClick={() => setIsAddingExperience(true)}
-            className="text-blue-600 text-3xl font-semibold border border-gray-300 px-2 hover:bg-blue-100 transition"
+            className="text-blue-600 text-xl font-semibold border border-gray-300 px-1.5 hover:bg-blue-100 transition cursor-pointer"
           >
-            <span className="relative -top-1">+</span>
+            <span className="relative -top-0.5">+</span>
           </button>
         </div>
 
         {experiences.length === 0 ? (
-          <div className="text-center py-12 bg-gray-50 rounded-xl border border-dashed border-gray-300">
-            <p className="text-gray-500">
+          <div className="text-center py-6 bg-gray-50 rounded-lg border border-dashed border-gray-300">
+            <p className="text-sm text-gray-500">
               No experiences added yet. Click the Add button to get started.
             </p>
           </div>
@@ -723,28 +720,28 @@ function Profile() {
             {experiences.slice(0, visibleCount).map((exp) => (
               <div
                 key={exp.id}
-                className="py-6 first:pt-0 border-b border-gray-200 last:border-0"
+                className="py-4 first:pt-0 border-b border-gray-200 last:border-0"
               >
-                <div className="flex justify-between items-start gap-6">
-                  <div className="flex items-start gap-6">
+                <div className="flex justify-between items-start gap-4">
+                  <div className="flex items-start gap-4">
                     <img
                       src={exp.logo}
                       alt={exp.company}
-                      className="w-16 h-16 rounded-full shadow-md object-cover"
+                      className="w-12 h-12 rounded-full shadow-md object-cover"
                     />
                     <div>
-                      <h2 className="text-xl font-semibold text-gray-900">
+                      <h2 className="text-lg font-semibold text-gray-900">
                         {exp.title}
                       </h2>
-                      <p className="text-gray-600 text-lg">
+                      <p className="text-gray-600 text-sm">
                         <span className="font-semibold">{exp.company}</span> •{" "}
                         {exp.type}
                       </p>
-                      <p className="text-gray-500 text-md">
+                      <p className="text-gray-500 text-xs">
                         {formatDateRange(exp.startDate, exp.endDate)} •{" "}
                         {exp.location}
                       </p>
-                      <p className="text-gray-700 mt-3 leading-relaxed">
+                      <p className="text-gray-700 mt-2 text-sm leading-relaxed">
                         {exp.description}
                       </p>
                     </div>
@@ -757,7 +754,7 @@ function Profile() {
             {visibleCount < experiences.length ? (
               <button
                 onClick={handleShowMore}
-                className="block text-blue-600 text-lg font-medium mt-6 mx-auto px-6 py-2 rounded-md hover:bg-blue-50 transition-colors"
+                className="block text-blue-600 text-sm font-medium mt-4 mx-auto px-4 py-1 rounded-md hover:bg-blue-50 transition-colors cursor-pointer"
               >
                 Show {Math.min(3, experiences.length - visibleCount)} more
                 experiences
@@ -766,7 +763,7 @@ function Profile() {
               experiences.length > 2 && (
                 <button
                   onClick={handleShowLess}
-                  className="block text-blue-600 text-lg font-medium mt-6 mx-auto px-6 py-2 rounded-md hover:bg-blue-50 transition-colors"
+                  className="block text-blue-600 text-sm font-medium mt-4 mx-auto px-4 py-1 rounded-md hover:bg-blue-50 transition-colors cursor-pointer"
                 >
                   Show less experiences
                 </button>
@@ -791,8 +788,8 @@ function Profile() {
 
     if (isAddingEducation) {
       return (
-        <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-4xl mx-auto">
-          <h1 className="text-2xl font-bold text-gray-800 mb-6">
+        <div className="bg-white p-4 rounded-lg shadow-md w-full max-w-4xl mx-auto">
+          <h1 className="text-xl font-bold text-gray-800 mb-4">
             Add Education
           </h1>
           <EducationForm
@@ -805,8 +802,8 @@ function Profile() {
 
     if (editingEducation) {
       return (
-        <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-4xl mx-auto">
-          <h1 className="text-2xl font-bold text-gray-800 mb-6">
+        <div className="bg-white p-4 rounded-lg shadow-md w-full max-w-4xl mx-auto">
+          <h1 className="text-xl font-bold text-gray-800 mb-4">
             Edit Education
           </h1>
           <EducationForm
@@ -819,20 +816,20 @@ function Profile() {
     }
 
     return (
-      <div className="bg-white p-8 rounded-2xl shadow-lg w-full">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-800">Education</h1>
+      <div className="bg-white p-4 rounded-lg shadow-md w-full">
+        <div className="flex justify-between items-center mb-4">
+          <h1 className="text-xl font-bold text-gray-800">Education</h1>
           <button
             onClick={() => setIsAddingEducation(true)}
-            className="text-blue-600 text-3xl font-semibold border border-gray-300 px-2 hover:bg-blue-100 transition"
+            className="text-blue-600 text-xl font-semibold border border-gray-300 px-1.5 hover:bg-blue-100 transition cursor-pointer"
           >
-            <span className="relative -top-1">+</span>
+            <span className="relative -top-0.5">+</span>
           </button>
         </div>
 
         {educations.length === 0 ? (
-          <div className="text-center py-12 bg-gray-50 rounded-xl border border-dashed border-gray-300">
-            <p className="text-gray-500">
+          <div className="text-center py-6 bg-gray-50 rounded-lg border border-dashed border-gray-300">
+            <p className="text-sm text-gray-500">
               No education entries added yet. Click the Add button to get
               started.
             </p>
@@ -842,26 +839,26 @@ function Profile() {
             {educations.slice(0, visibleCount).map((edu) => (
               <div
                 key={edu.id}
-                className="py-6 first:pt-0 border-b border-gray-200 last:border-0"
+                className="py-4 first:pt-0 border-b border-gray-200 last:border-0"
               >
-                <div className="flex justify-between items-start gap-6">
-                  <div className="flex items-start gap-6">
+                <div className="flex justify-between items-start gap-4">
+                  <div className="flex items-start gap-4">
                     <img
                       src={edu.logo}
                       alt={edu.school}
-                      className="w-16 h-16 rounded-full shadow-md object-cover"
+                      className="w-12 h-12 rounded-full shadow-md object-cover"
                     />
                     <div>
-                      <h2 className="text-xl font-semibold text-gray-900">
+                      <h2 className="text-lg font-semibold text-gray-900">
                         {edu.school}
                       </h2>
-                      <p className="text-gray-600 text-lg">
+                      <p className="text-gray-600 text-sm">
                         <span className="font-semibold">{edu.degree}</span>
                       </p>
-                      <p className="text-gray-500 text-md">
+                      <p className="text-gray-500 text-xs">
                         {formatDateRange(edu.startDate, edu.endDate)}
                       </p>
-                      <p className="text-gray-700 mt-3 leading-relaxed">
+                      <p className="text-gray-700 mt-2 text-sm leading-relaxed">
                         {edu.description}
                       </p>
                     </div>
@@ -874,7 +871,7 @@ function Profile() {
             {visibleCount < educations.length ? (
               <button
                 onClick={handleShowMore}
-                className="block text-blue-600 text-lg font-medium mt-6 mx-auto px-6 py-2 rounded-md hover:bg-blue-50 transition-colors"
+                className="block text-blue-600 text-sm font-medium mt-4 mx-auto px-4 py-1 rounded-md hover:bg-blue-50 transition-colors cursor-pointer"
               >
                 Show {Math.min(2, educations.length - visibleCount)} more
                 education entries
@@ -883,7 +880,7 @@ function Profile() {
               educations.length > 2 && (
                 <button
                   onClick={handleShowLess}
-                  className="block text-blue-600 text-lg font-medium mt-6 mx-auto px-6 py-2 rounded-md hover:bg-blue-50 transition-colors"
+                  className="block text-blue-600 text-sm font-medium mt-4 mx-auto px-4 py-1 rounded-md hover:bg-blue-50 transition-colors cursor-pointer"
                 >
                   Show less education entries
                 </button>
@@ -990,30 +987,20 @@ function Profile() {
     };
   }, [isDragging, handleTouchEnd]);
 
-  {
-    /*Banner Image*/
-  }
-
-  const [imageUrl, setImageUrl] = useState("/api/placeholder/800/200"); // Default placeholder
+  const [imageUrl, setImageUrl] = useState("/api/placeholder/800/200");
   const fileInputRef = useRef(null);
 
   const handleEditClick = () => {
-    // Trigger the hidden file input when edit button is clicked
     fileInputRef.current.click();
   };
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (file) {
-      // Create a URL for the selected image file
       const newImageUrl = URL.createObjectURL(file);
       setImageUrl(newImageUrl);
     }
   };
-
-  {
-    /*Portfolio*/
-  }
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [newPortfolio, setNewPortfolio] = useState({
@@ -1032,7 +1019,7 @@ function Profile() {
     setShowAddModal(false);
     setNewPortfolio({
       title: "",
-      image: "/api/placeholder/300/200", // Reset image to placeholder
+      image: "/api/placeholder/300/200",
     });
     setPreviewImage(null);
   };
@@ -1049,13 +1036,11 @@ function Profile() {
     const file = e.target.files[0];
     if (!file) return;
 
-    // Check file type
     if (!file.type.startsWith("image/")) {
       alert("Please upload an image file");
       return;
     }
 
-    // Create preview
     const reader = new FileReader();
     reader.onload = (event) => {
       setPreviewImage(event.target.result);
@@ -1073,42 +1058,39 @@ function Profile() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!newPortfolio.title.trim()) return; // Don't submit if the title is empty
+    if (!newPortfolio.title.trim()) return;
 
     const newItem = {
       id: portfolioItems.length + 1,
       title: newPortfolio.title,
-      image: previewImage || newPortfolio.image, // Use preview image or fallback to default
+      image: previewImage || newPortfolio.image,
     };
 
     setPortfolioItems([...portfolioItems, newItem]);
-    handleCloseModal(); // Close modal after adding the item
+    handleCloseModal();
   };
 
   return (
     <div className="flex flex-col min-h-screen">
-      <div className="flex flex-row flex-grow">
+      <div className="flex flex-row flex-grow ">
         <div className="h-screen sticky top-0">
           <Sidebar />
         </div>
-        <div className="flex-grow transition-all">
+        <div className="flex-grow transition-all overflow-x-hidden">
           <div className="flex-grow overflow-y-auto">
             <Header />
-            <div className="p-4">
+            <div className="p-2">
               <div className="flex">
-                <div className="w-3/4 p-4">
+                <div className="w-3/4 p-2">
                   {/* Header Section */}
                   <div className="flex justify-between items-center">
-                    <div className="w-full bg-white rounded-lg overflow-hidden shadow-sm">
-                      <div className="relative h-48 w-full">
-                        {/* Banner Image */}
+                    <div className="w-full bg-white rounded-md overflow-hidden shadow-sm">
+                      <div className="relative h-36 w-full">
                         <img
                           src={imageUrl}
                           alt="Banner"
                           className="w-full h-full object-cover"
                         />
-
-                        {/* Hidden File Input */}
                         <input
                           type="file"
                           ref={fileInputRef}
@@ -1117,16 +1099,16 @@ function Profile() {
                           className="hidden"
                         />
                         <div
-                          className="absolute top-3 right-3 text-white rounded p-1 cursor-pointer"
+                          className="absolute top-2 right-2 text-white rounded p-1 cursor-pointer"
                           onClick={handleEditClick}
                         >
                           <EditButton />
                         </div>
                       </div>
 
-                      <div className="px-6 pt-4 pb-6 relative">
-                        <div className="absolute -top-10 left-6">
-                          <div className="w-30 h-30 rounded-full bg-blue-500 border-4 border-white overflow-hidden">
+                      <div className="px-4 pt-2 pb-4 relative">
+                        <div className="absolute -top-8 left-4">
+                          <div className="w-20 h-20 rounded-full bg-blue-500 border-4 border-white overflow-hidden">
                             <img
                               src="/api/placeholder/80/80"
                               alt="Profile"
@@ -1136,7 +1118,7 @@ function Profile() {
                         </div>
 
                         {isEditingHeader ? (
-                          <form onSubmit={handleHeaderSubmit} className="mt-18">
+                          <form onSubmit={handleHeaderSubmit} className="mt-14">
                             <EditableInput
                               label="Name"
                               value={profileData.name}
@@ -1171,31 +1153,31 @@ function Profile() {
                               <button
                                 type="button"
                                 onClick={() => setIsEditingHeader(false)}
-                                className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 cursor-pointer"
+                                className="px-3 py-1.5 text-xs text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 cursor-pointer"
                               >
                                 Cancel
                               </button>
                               <button
                                 type="submit"
-                                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 cursor-pointer"
+                                className="px-3 py-1.5 text-xs bg-blue-500 text-white rounded-md hover:bg-blue-600 cursor-pointer"
                               >
                                 Save
                               </button>
                             </div>
                           </form>
                         ) : (
-                          <div className="flex justify-between items-center ml-35">
+                          <div className="flex justify-between items-center ml-20">
                             <div>
-                              <h1 className="text-2xl font-bold text-gray-800">
+                              <h1 className="text-xl font-bold text-gray-800">
                                 {profileData.name}
                               </h1>
-                              <p className="text-xl text-gray-500 mt-1">
+                              <p className="text-sm text-gray-500 mt-1">
                                 {profileData.title}
                               </p>
-                              <div className="flex items-center mt-2 text-gray-500 text-xl">
+                              <div className="flex items-center mt-1 text-gray-500 text-sm">
                                 <svg
                                   xmlns="http://www.w3.org/2000/svg"
-                                  className="h-4 w-4 mr-1"
+                                  className="h-3 w-3 mr-1"
                                   fill="none"
                                   viewBox="0 0 24 24"
                                   stroke="currentColor"
@@ -1215,10 +1197,10 @@ function Profile() {
                                 </svg>
                                 <span>{profileData.location}</span>
                               </div>
-                              <div className="flex items-center mt-3 px-3 py-1 bg-green-50 text-green-600 text-md border border-green-200">
+                              <div className="flex items-center mt-2 px-2 py-0.5 bg-green-50 text-green-600 text-xs border border-green-200">
                                 <svg
                                   xmlns="http://www.w3.org/2000/svg"
-                                  className="h-4 w-4 mr-1"
+                                  className="h-3 w-3 mr-1"
                                   viewBox="0 0 20 20"
                                   fill="currentColor"
                                 >
@@ -1228,13 +1210,13 @@ function Profile() {
                                     clipRule="evenodd"
                                   />
                                 </svg>
-                                <span className="uppercase text-md font-medium tracking-wide">
+                                <span className="uppercase text-xs font-medium tracking-wide">
                                   {profileData.availability}
                                 </span>
                               </div>
                             </div>
                             <button
-                              className="border border-blue-400 text-blue-500 px-4 py-1 text-lg hover:bg-blue-50 -mt-18 cursor-pointer"
+                              className="border border-blue-400 text-blue-500 px-3 py-0.5 text-sm hover:bg-blue-50 -mt-14 cursor-pointer"
                               onClick={() => setIsEditingHeader(true)}
                             >
                               Edit Profile
@@ -1246,14 +1228,14 @@ function Profile() {
                   </div>
 
                   {/* About Section */}
-                  <div className="flex justify-between items-center mt-6">
-                    <div className="bg-white shadow-md rounded-lg p-6 border border-gray-200 w-full">
+                  <div className="flex justify-between items-center mt-4">
+                    <div className="bg-white shadow-sm rounded-md p-4 border border-gray-200 w-full">
                       {isEditingAbout ? (
                         <form onSubmit={handleAboutSubmit}>
-                          <h2 className="text-xl font-bold text-gray-900 mb-4">
+                          <h2 className="text-lg font-bold text-gray-900 mb-3">
                             {profileData.about.title}
                           </h2>
-                          <div className="mb-4">
+                          <div className="mb-3">
                             <textarea
                               value={profileData.about.description}
                               onChange={(e) =>
@@ -1265,8 +1247,8 @@ function Profile() {
                                   },
                                 })
                               }
-                              className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-700 text-lg"
-                              rows={6}
+                              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-700"
+                              rows={4}
                               placeholder="Write something about yourself..."
                             />
                           </div>
@@ -1274,13 +1256,13 @@ function Profile() {
                             <button
                               type="button"
                               onClick={() => setIsEditingAbout(false)}
-                              className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 cursor-pointer"
+                              className="px-3 py-1.5 text-xs text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 cursor-pointer"
                             >
                               Cancel
                             </button>
                             <button
                               type="submit"
-                              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 cursor-pointer"
+                              className="px-3 py-1.5 text-xs bg-blue-500 text-white rounded-md hover:bg-blue-600 cursor-pointer"
                             >
                               Save
                             </button>
@@ -1289,18 +1271,17 @@ function Profile() {
                       ) : (
                         <>
                           <div className="flex justify-between items-center">
-                            <h2 className="text-xl font-bold text-gray-900">
+                            <h2 className="text-lg font-bold text-gray-900">
                               {profileData.about.title}
                             </h2>
                             <EditButton
                               onClick={() => setIsEditingAbout(true)}
-                              className="cursor-pointer"
                             />
                           </div>
-                          <p className="text-lg text-gray-700 mt-4 leading-relaxed">
+                          <p className="text-sm text-gray-700 mt-3 leading-relaxed">
                             {profileData.about.description}
                           </p>
-                          <p className="text-lg text-gray-600 mt-4 leading-relaxed">
+                          <p className="text-sm text-gray-600 mt-3 leading-relaxed">
                             {profileData.about.experience}
                           </p>
                         </>
@@ -1309,22 +1290,22 @@ function Profile() {
                   </div>
 
                   {/* Experience Section */}
-                  <div className="flex justify-between items-center mt-6">
+                  <div className="flex justify-between items-center mt-4">
                     <ExperienceList experiences={experiencesData} />
                   </div>
 
                   {/* Education Section */}
-                  <div className="flex justify-between items-center mt-6">
+                  <div className="flex justify-between items-center mt-4">
                     <EducationList educations={educationsData} />
                   </div>
 
                   {/* Skills Section */}
-                  <div className="flex justify-between items-center mt-6 shadow-lg">
-                    <div className="border border-gray-200 p-4 rounded-md w-full">
+                  <div className="flex justify-between items-center mt-4 shadow-sm">
+                    <div className="border border-gray-200 p-3 rounded-md w-full">
                       {isEditingSkills ? (
                         <form onSubmit={handleSkillsSubmit}>
-                          <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                          <div className="mb-3">
+                            <label className="block text-xs font-medium text-gray-700 mb-1">
                               Skills (comma-separated)
                             </label>
                             <input
@@ -1338,20 +1319,20 @@ function Profile() {
                                     .map((skill) => skill.trim()),
                                 })
                               }
-                              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                              className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                             />
                           </div>
                           <div className="flex justify-end gap-2">
                             <button
                               type="button"
                               onClick={() => setIsEditingSkills(false)}
-                              className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 cursor-pointer"
+                              className="px-3 py-1.5 text-xs text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 cursor-pointer"
                             >
                               Cancel
                             </button>
                             <button
                               type="submit"
-                              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 cursor-pointer"
+                              className="px-3 py-1.5 text-xs bg-blue-500 text-white rounded-md hover:bg-blue-600 cursor-pointer"
                             >
                               Save
                             </button>
@@ -1360,16 +1341,12 @@ function Profile() {
                       ) : (
                         <>
                           <div className="flex justify-between items-center mb-2">
-                            <h2 className="text-2xl font-semibold text-gray-900">
+                            <h2 className="text-lg font-semibold text-gray-900">
                               Skills
                             </h2>
                             <div className="flex gap-2">
-                              {/* <button className="text-blue-600 text-3xl font-semibold border border-gray-300 px-2 hover:bg-blue-100 transition cursor-pointer">
-                <span className="relative -top-1">+</span>
-              </button> */}
                               <EditButton
                                 onClick={() => setIsEditingSkills(true)}
-                                className="cursor-pointer"
                               />
                             </div>
                           </div>
@@ -1377,7 +1354,7 @@ function Profile() {
                             {profileData.skills.map((skill, index) => (
                               <span
                                 key={index}
-                                className="px-3 py-1 bg-blue-50 text-blue-600 rounded-md text-lg font-medium basis-[calc(25%-8px)] text-center"
+                                className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-md text-xs font-medium basis-[calc(25%-8px)] text-center"
                               >
                                 {skill}
                               </span>
@@ -1389,36 +1366,36 @@ function Profile() {
                   </div>
 
                   {/* Portfolio Section */}
-                  <div className="w-full max-w-4xl bg-white rounded-lg shadow-lg mt-6 border border-gray-100 p-6 overflow-hidden">
-                    <div className="flex justify-between items-center mb-6">
-                      <h2 className="text-xl font-semibold text-gray-800">
+                  <div className="w-full max-w-4xl bg-white rounded-md shadow-sm mt-4 border border-gray-100 p-4 overflow-hidden">
+                    <div className="flex justify-between items-center mb-4">
+                      <h2 className="text-lg font-semibold text-gray-800">
                         Portfolios
                       </h2>
                       <button
                         onClick={handleAddClick}
-                        className="text-blue-600 text-3xl font-semibold border border-gray-300 px-2 hover:bg-blue-100 transition cursor-pointer"
+                        className="text-blue-600 text-xl font-semibold border border-gray-300 px-1.5 hover:bg-blue-100 transition cursor-pointer"
                       >
-                        <span className="relative -top-1">+</span>
+                        <span className="relative -top-0.5">+</span>
                       </button>
                     </div>
 
-                    <div className="relative overflow-hidden mb-6">
-                      <div className="overflow-x-auto scrollbar-hide px-2">
+                    <div className="relative overflow-hidden mb-4">
+                      <div className="overflow-x-auto scrollbar-hide px-1">
                         <div className="flex transition-transform ease-out">
                           {portfolioItems.map((item) => (
                             <div
                               key={item.id}
-                              className="w-64 mr-4 flex-shrink-0 select-none cursor-pointer"
+                              className="w-48 mr-3 flex-shrink-0 select-none cursor-pointer"
                             >
-                              <div className="bg-white rounded-lg overflow-hidden shadow-md mb-3 border border-gray-100 w-64">
+                              <div className="bg-white rounded-md overflow-hidden shadow-sm mb-2 border border-gray-100 w-48">
                                 <img
                                   src={item.image}
                                   alt={item.title}
-                                  className="w-full h-40 object-cover select-none"
+                                  className="w-full h-32 object-cover select-none"
                                   draggable="false"
                                 />
                               </div>
-                              <p className="text-sm text-gray-700 font-medium mb-2 text-center">
+                              <p className="text-xs text-gray-700 font-medium mb-1 text-center">
                                 {item.title}
                               </p>
                             </div>
@@ -1431,9 +1408,9 @@ function Profile() {
                   {/* Add Portfolio Modal */}
                   {showAddModal && (
                     <div className="fixed inset-0 bg-white/30 backdrop-blur-md flex items-center justify-center z-50">
-                      <div className="bg-white rounded-lg p-6 w-full max-w-md">
-                        <div className="flex justify-between items-center mb-4">
-                          <h3 className="text-lg font-semibold">
+                      <div className="bg-white rounded-md p-4 w-full max-w-sm">
+                        <div className="flex justify-between items-center mb-3">
+                          <h3 className="text-md font-semibold">
                             Add New Portfolio
                           </h3>
                           <button
@@ -1445,8 +1422,8 @@ function Profile() {
                         </div>
 
                         <form onSubmit={handleSubmit}>
-                          <div className="mb-4">
-                            <label className="block text-gray-700 text-sm font-medium mb-2">
+                          <div className="mb-3">
+                            <label className="block text-gray-700 text-xs font-medium mb-1">
                               Portfolio Title
                             </label>
                             <input
@@ -1454,35 +1431,35 @@ function Profile() {
                               name="title"
                               value={newPortfolio.title}
                               onChange={handleInputChange}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
                               placeholder="Enter portfolio title"
                               required
                             />
                           </div>
 
-                          <div className="mb-6">
-                            <label className="block text-gray-700 text-sm font-medium mb-2">
+                          <div className="mb-4">
+                            <label className="block text-gray-700 text-xs font-medium mb-1">
                               Portfolio Image
                             </label>
                             <div
                               onClick={handleImageClick}
-                              className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center cursor-pointer hover:border-blue-500 transition"
+                              className="border-2 border-dashed border-gray-300 rounded-md p-3 text-center cursor-pointer hover:border-blue-500 transition"
                             >
                               {previewImage ? (
                                 <div className="relative">
                                   <img
                                     src={previewImage}
                                     alt="Preview"
-                                    className="max-h-48 mx-auto rounded"
+                                    className="max-h-40 mx-auto rounded"
                                   />
-                                  <p className="text-xs text-gray-500 mt-2">
+                                  <p className="text-xs text-gray-500 mt-1">
                                     Click to change image
                                   </p>
                                 </div>
                               ) : (
-                                <div className="py-8">
+                                <div className="py-6">
                                   <svg
-                                    className="mx-auto h-12 w-12 text-gray-400"
+                                    className="mx-auto h-8 w-8 text-gray-400"
                                     stroke="currentColor"
                                     fill="none"
                                     viewBox="0 0 48 48"
@@ -1494,10 +1471,10 @@ function Profile() {
                                       strokeLinejoin="round"
                                     />
                                   </svg>
-                                  <p className="mt-1 text-sm text-gray-600">
+                                  <p className="mt-1 text-xs text-gray-600">
                                     Click to upload an image
                                   </p>
-                                  <p className="mt-1 text-xs text-gray-500">
+                                  <p className="mt-1 text-2xs text-gray-500">
                                     PNG, JPG, GIF up to 10MB
                                   </p>
                                 </div>
@@ -1512,17 +1489,17 @@ function Profile() {
                             </div>
                           </div>
 
-                          <div className="flex justify-end space-x-3">
+                          <div className="flex justify-end space-x-2">
                             <button
                               type="button"
                               onClick={handleCloseModal}
-                              className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 cursor-pointer"
+                              className="px-3 py-1.5 text-xs text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 cursor-pointer"
                             >
                               Cancel
                             </button>
                             <button
                               type="submit"
-                              className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 cursor-pointer"
+                              className="px-3 py-1.5 text-xs text-white bg-blue-600 rounded-md hover:bg-blue-700 cursor-pointer"
                             >
                               Add Portfolio
                             </button>
@@ -1534,11 +1511,11 @@ function Profile() {
                 </div>
 
                 {/* Right Sidebar */}
-                <div className="w-1/4 p-4">
+                <div className="w-1/4 p-2">
                   {/* Additional Details Card */}
-                  <div className="bg-white border border-gray-200 mb-4 shadow-sm overflow-hidden">
+                  <div className="bg-white border border-gray-200 mb-3 shadow-sm overflow-hidden">
                     {isEditingDetails ? (
-                      <div className="p-4">
+                      <div className="p-3">
                         <form onSubmit={handleDetailsSubmit}>
                           <EditableInput
                             label="Email"
@@ -1583,13 +1560,13 @@ function Profile() {
                             <button
                               type="button"
                               onClick={() => setIsEditingDetails(false)}
-                              className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 cursor-pointer"
+                              className="px-3 py-1.5 text-xs text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 cursor-pointer"
                             >
                               Cancel
                             </button>
                             <button
                               type="submit"
-                              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 cursor-pointer"
+                              className="px-3 py-1.5 text-xs bg-blue-500 text-white rounded-md hover:bg-blue-600 cursor-pointer"
                             >
                               Save
                             </button>
@@ -1598,21 +1575,20 @@ function Profile() {
                       </div>
                     ) : (
                       <>
-                        <div className="flex justify-between items-center px-4 py-3">
-                          <h2 className="font-medium text-base text-gray-800">
+                        <div className="flex justify-between items-center px-3 py-2">
+                          <h2 className="font-medium text-sm text-gray-800">
                             Additional Details
                           </h2>
                           <EditButton
                             onClick={() => setIsEditingDetails(true)}
-                            className="cursor-pointer"
                           />
                         </div>
-                        <div className="px-4 py-3">
-                          <div className="flex mb-3">
-                            <div className="w-6 mr-3 text-gray-400">
+                        <div className="px-3 py-2">
+                          <div className="flex mb-2">
+                            <div className="w-5 mr-2 text-gray-400">
                               <svg
-                                width="20"
-                                height="20"
+                                width="16"
+                                height="16"
                                 viewBox="0 0 24 24"
                                 fill="none"
                                 xmlns="http://www.w3.org/2000/svg"
@@ -1634,20 +1610,20 @@ function Profile() {
                               </svg>
                             </div>
                             <div>
-                              <div className="text-sm text-gray-500 mb-0.5">
+                              <div className="text-xs text-gray-500 mb-0.5">
                                 Email
                               </div>
-                              <div className="text-gray-800 text-sm">
+                              <div className="text-gray-800 text-xs">
                                 {profileData.details.email}
                               </div>
                             </div>
                           </div>
 
-                          <div className="flex mb-3">
-                            <div className="w-6 mr-3 text-gray-400">
+                          <div className="flex mb-2">
+                            <div className="w-5 mr-2 text-gray-400">
                               <svg
-                                width="20"
-                                height="20"
+                                width="16"
+                                height="16"
                                 viewBox="0 0 24 24"
                                 fill="none"
                                 xmlns="http://www.w3.org/2000/svg"
@@ -1662,20 +1638,20 @@ function Profile() {
                               </svg>
                             </div>
                             <div>
-                              <div className="text-sm text-gray-500 mb-0.5">
+                              <div className="text-xs text-gray-500 mb-0.5">
                                 Phone
                               </div>
-                              <div className="text-gray-800 text-sm">
+                              <div className="text-gray-800 text-xs">
                                 {profileData.details.phone}
                               </div>
                             </div>
                           </div>
 
                           <div className="flex">
-                            <div className="w-6 mr-3 text-gray-400">
+                            <div className="w-5 mr-2 text-gray-400">
                               <svg
-                                width="20"
-                                height="20"
+                                width="16"
+                                height="16"
                                 viewBox="0 0 24 24"
                                 fill="none"
                                 xmlns="http://www.w3.org/2000/svg"
@@ -1704,10 +1680,10 @@ function Profile() {
                               </svg>
                             </div>
                             <div>
-                              <div className="text-sm text-gray-500 mb-0.5">
+                              <div className="text-xs text-gray-500 mb-0.5">
                                 Languages
                               </div>
-                              <div className="text-gray-800 text-sm">
+                              <div className="text-gray-800 text-xs">
                                 {profileData.details.languages}
                               </div>
                             </div>
@@ -1718,9 +1694,9 @@ function Profile() {
                   </div>
 
                   {/* Social Links Card */}
-                  <div className="bg-white border border-gray-200 mb-4 shadow-sm overflow-hidden">
+                  <div className="bg-white border border-gray-200 mb-3 shadow-sm overflow-hidden">
                     {isEditingSocial ? (
-                      <div className="p-4">
+                      <div className="p-3">
                         <form onSubmit={handleSocialSubmit}>
                           <EditableInput
                             label="Instagram"
@@ -1765,13 +1741,13 @@ function Profile() {
                             <button
                               type="button"
                               onClick={() => setIsEditingSocial(false)}
-                              className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 cursor-pointer"
+                              className="px-3 py-1.5 text-xs text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 cursor-pointer"
                             >
                               Cancel
                             </button>
                             <button
                               type="submit"
-                              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 cursor-pointer"
+                              className="px-3 py-1.5 text-xs bg-blue-500 text-white rounded-md hover:bg-blue-600 cursor-pointer"
                             >
                               Save
                             </button>
@@ -1780,21 +1756,20 @@ function Profile() {
                       </div>
                     ) : (
                       <>
-                        <div className="flex justify-between items-center px-4 py-3">
-                          <h2 className="font-medium text-base text-gray-800">
+                        <div className="flex justify-between items-center px-3 py-2">
+                          <h2 className="font-medium text-sm text-gray-800">
                             Social Links
                           </h2>
                           <EditButton
                             onClick={() => setIsEditingSocial(true)}
-                            className="cursor-pointer"
                           />
                         </div>
-                        <div className="px-4 py-3">
-                          <div className="flex mb-3">
-                            <div className="w-6 mr-3 text-gray-400">
+                        <div className="px-3 py-2">
+                          <div className="flex mb-2">
+                            <div className="w-5 mr-2 text-gray-400">
                               <svg
-                                width="20"
-                                height="20"
+                                width="16"
+                                height="16"
                                 viewBox="0 0 24 24"
                                 fill="none"
                                 xmlns="http://www.w3.org/2000/svg"
@@ -1823,23 +1798,23 @@ function Profile() {
                               </svg>
                             </div>
                             <div>
-                              <div className="text-sm text-gray-500 mb-0.5">
+                              <div className="text-xs text-gray-500 mb-0.5">
                                 Instagram
                               </div>
                               <a
                                 href={`https://${profileData.social.instagram}`}
-                                className="text-blue-500 text-sm cursor-pointer"
+                                className="text-blue-500 text-xs cursor-pointer"
                               >
                                 {profileData.social.instagram}
                               </a>
                             </div>
                           </div>
 
-                          <div className="flex mb-3">
-                            <div className="w-6 mr-3 text-gray-400">
+                          <div className="flex mb-2">
+                            <div className="w-5 mr-2 text-gray-400">
                               <svg
-                                width="20"
-                                height="20"
+                                width="16"
+                                height="16"
                                 viewBox="0 0 24 24"
                                 fill="none"
                                 xmlns="http://www.w3.org/2000/svg"
@@ -1854,12 +1829,12 @@ function Profile() {
                               </svg>
                             </div>
                             <div>
-                              <div className="text-sm text-gray-500 mb-0.5">
+                              <div className="text-xs text-gray-500 mb-0.5">
                                 Twitter
                               </div>
                               <a
                                 href={`https://${profileData.social.twitter}`}
-                                className="text-blue-500 text-sm cursor-pointer"
+                                className="text-blue-500 text-xs cursor-pointer"
                               >
                                 {profileData.social.twitter}
                               </a>
@@ -1867,10 +1842,10 @@ function Profile() {
                           </div>
 
                           <div className="flex">
-                            <div className="w-6 mr-3 text-gray-400">
+                            <div className="w-5 mr-2 text-gray-400">
                               <svg
-                                width="20"
-                                height="20"
+                                width="16"
+                                height="16"
                                 viewBox="0 0 24 24"
                                 fill="none"
                                 xmlns="http://www.w3.org/2000/svg"
@@ -1899,12 +1874,12 @@ function Profile() {
                               </svg>
                             </div>
                             <div>
-                              <div className="text-sm text-gray-500 mb-0.5">
+                              <div className="text-xs text-gray-500 mb-0.5">
                                 Website
                               </div>
                               <a
                                 href={`https://${profileData.social.website}`}
-                                className="text-blue-500 text-sm cursor-pointer"
+                                className="text-blue-500 text-xs cursor-pointer"
                               >
                                 {profileData.social.website}
                               </a>

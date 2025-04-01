@@ -176,49 +176,48 @@ const Dashboard = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <div className="flex flex-row flex-grow">
-        <div className="h-screen sticky top-0 ">
+        <div className="h-screen sticky top-0">
           <Sidebar />
         </div>
         <div className="flex-grow transition-all">
           <div className="flex-grow overflow-y-auto">
             <Header />
             <div className="">
-              {/*Part 1*/}
-              <div className="flex justify-between items-center py-6 px-9">
+              {/*Part 1 - Header section with reduced text sizes and padding*/}
+              <div className="flex justify-between items-center py-4 px-6">
                 <div>
-                  <h1 className="text-4xl font-semibold text-black-900">
+                  <h1 className="text-2xl font-semibold text-black-900">
                     Good morning, Jake
                   </h1>
-                  <p className="text-gray-500 mt-2 text-xl">
+                  <p className="text-gray-500 mt-1 text-base">
                     Here is what's happening with your job search applications
                     from July 19 - July 25.
                   </p>
                 </div>
-                <div className="flex items-center border-2 border-gray-300 px-4 py-2 cursor-pointer mr-4">
-                  <span className="text-gray-700 font-semibold">
+                <div className="flex items-center border-2 border-gray-300 px-3 py-1 cursor-pointer mr-3">
+                  <span className="text-gray-700 font-semibold text-sm">
                     Jul 19 - Jul 25
                   </span>
-                  <CalendarIcon className="w-4 h-4 text-blue-500 ml-2" />
+                  <CalendarIcon className="w-3 h-3 text-blue-500 ml-2" />
                 </div>
               </div>
 
-              {/*Part 2*/}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 px-9">
-                <div className="grid gap-3 max-w-[258px] ">
+              {/*Part 2 - Stats cards with fixed layout*/}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 px-6 py-3">
+                {/* First column - Total Jobs and Interviewed Cards */}
+                <div className="flex flex-col space-y-4">
                   {/* Total Jobs Applied Card */}
-                  <div className="bg-white rounded-sm border border-gray-200 shadow-md p-4 flex justify-between items-center w-[300px] h-[150px] cursor-pointer">
+                  <div className="bg-white rounded-sm border border-gray-200 shadow-md p-4 flex justify-between items-center h-[120px] w-full cursor-pointer">
                     <div>
-                      <p className="text-xl font-bold text-black-500 mb-4">
+                      <p className="text-base font-bold text-black-500 mb-2">
                         Total Jobs Applied
                       </p>
-                      <h2 className="text-6xl font-bold text-gray-900 mt-1">
-                        45
-                      </h2>
+                      <h2 className="text-5xl font-bold text-gray-900">45</h2>
                     </div>
-                    <div className="text-gray-300 mt-20">
+                    <div className="text-gray-300">
                       <svg
-                        width="88"
-                        height="68"
+                        width="70"
+                        height="54"
                         viewBox="0 0 88 68"
                         fill="none"
                         xmlns="http://www.w3.org/2000/svg"
@@ -252,19 +251,17 @@ const Dashboard = () => {
                   </div>
 
                   {/* Interviewed Card */}
-                  <div className="bg-white rounded-sm border border-gray-200 shadow-md p-4 flex justify-between items-center w-[300px] h-[150px] cursor-pointer">
+                  <div className="bg-white rounded-sm border border-gray-200 shadow-md p-4 flex justify-between items-center h-[120px] w-full cursor-pointer">
                     <div>
-                      <p className="text-xl font-bold text-black-500 mb-4">
+                      <p className="text-base font-bold text-black-500 mb-2">
                         Interviewed
                       </p>
-                      <h2 className="text-6xl font-bold text-gray-900 mt-1">
-                        18
-                      </h2>
+                      <h2 className="text-5xl font-bold text-gray-900">18</h2>
                     </div>
-                    <div className="text-gray-300 mt-20">
+                    <div className="text-gray-300">
                       <svg
-                        width="88"
-                        height="68"
+                        width="70"
+                        height="54"
                         viewBox="0 0 88 68"
                         fill="none"
                         xmlns="http://www.w3.org/2000/svg"
@@ -306,29 +303,24 @@ const Dashboard = () => {
                   </div>
                 </div>
 
-                {/* Job Applied */}
-                <div
-                  className="bg-white rounded-lg shadow-md p-6 flex flex-col border border-gray-200 cursor-pointer"
-                  style={{ width: "380px", height: "320px" }}
-                >
-                  <h3 className="text-black-900 text-xl font-bold mb-4">
+                {/* Job Applied Status Card */}
+                <div className="bg-white rounded-lg shadow-md p-4 flex flex-col border border-gray-200 h-[260px] w-full cursor-pointer">
+                  <h3 className="text-lg font-bold text-gray-800 mb-3">
                     Jobs Applied Status
                   </h3>
 
                   <div className="flex items-center">
                     {/* Pie Chart */}
-                    <div className="relative mb-4">
-                      <PieChart width={180} height={180}>
-                        {" "}
-                        {/* Size increased */}
+                    <div className="relative mb-3">
+                      <PieChart width={150} height={150}>
                         <Pie
                           data={data}
                           dataKey="value"
                           nameKey="name"
                           cx="50%"
                           cy="50%"
-                          outerRadius={80}
-                          innerRadius={50}
+                          outerRadius={65}
+                          innerRadius={40}
                         >
                           {data.map((entry, index) => (
                             <Cell key={`cell-${index}`} fill={entry.color} />
@@ -338,62 +330,53 @@ const Dashboard = () => {
                     </div>
 
                     {/* Legend */}
-                    <div className="flex flex-col items-start px-6">
-                      {" "}
-                      {/* Increased padding */}
-                      <div className="flex items-center mb-3">
-                        {" "}
-                        {/* Increased margin */}
-                        <span className="w-4 h-4 bg-[#3B8BEB] rounded-sm mr-3"></span>{" "}
-                        {/* Bigger size */}
-                        <span className="text-base text-gray-900 font-medium">
-                          {" "}
-                          {/* Bigger text */}
+                    <div className="flex flex-col items-start px-4">
+                      <div className="flex items-center mb-2">
+                        <span className="w-3 h-3 bg-[#3B8BEB] rounded-sm mr-2"></span>
+                        <span className="text-sm text-gray-900 font-medium">
                           60% Unsuitable
                         </span>
                       </div>
                       <div className="flex items-center">
-                        <span className="w-4 h-4 bg-gray-300 rounded-sm mr-3"></span>{" "}
-                        {/* Bigger size */}
-                        <span className="text-base text-gray-500 font-medium">
-                          {" "}
-                          {/* Bigger text */}
+                        <span className="w-3 h-3 bg-gray-300 rounded-sm mr-2"></span>
+                        <span className="text-sm text-gray-500 font-medium">
                           40% Interviewed
                         </span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="">
-                    <button className="text-[#3B8BEB] text-lg font-semibold flex items-center hover:underline cursor-pointer">
+                  <div className="mt-auto">
+                    <button className="text-[#3B8BEB] text-base font-semibold flex items-center hover:underline cursor-pointer">
                       View All Applications <span className="ml-1">→</span>
                     </button>
                   </div>
                 </div>
 
-                <div className="bg-white rounded-lg shadow-lg w-96 overflow-hidden cursor-pointer">
+                {/* Upcoming Interviews Card */}
+                <div className="bg-white rounded-lg shadow-lg w-full overflow-hidden cursor-pointer">
                   {/* Header Section */}
-                  <div className="p-4 border-b border-gray-200">
-                    <h3 className="font-bold text-gray-800 text-xl">
+                  <div className="p-3 border-b border-gray-200">
+                    <h3 className="font-bold text-gray-800 text-lg">
                       Upcoming Interviews
                     </h3>
                   </div>
 
                   {/* Date Section */}
-                  <div className="p-4 font-medium text-gray-700 border-b border-gray-200 flex justify-between items-center">
-                    <span className="text-xl font-semibold">
+                  <div className="p-3 font-medium text-gray-700 border-b border-gray-200 flex justify-between items-center">
+                    <span className="text-base font-semibold">
                       {currentDateIndex === 1 ? "Today, " : ""}
                       {currentDate}
                     </span>
-                    <div className="flex gap-2">
+                    <div className="flex gap-1">
                       <button
                         className="p-1 text-gray-500 hover:text-gray-700 cursor-pointer"
                         onClick={goToPrevDate}
                         disabled={currentDateIndex === 0}
                       >
                         <svg
-                          width="20"
-                          height="20"
+                          width="16"
+                          height="16"
                           viewBox="0 0 24 24"
                           fill="none"
                           stroke="currentColor"
@@ -410,8 +393,8 @@ const Dashboard = () => {
                         }
                       >
                         <svg
-                          width="20"
-                          height="20"
+                          width="16"
+                          height="16"
                           viewBox="0 0 24 24"
                           fill="none"
                           stroke="currentColor"
@@ -424,38 +407,38 @@ const Dashboard = () => {
                   </div>
 
                   {/* Time Slots */}
-                  <div className="p-4 space-y-3">
+                  <div className="p-3 space-y-2">
                     {events.map((event, index) => (
                       <div
                         key={index}
-                        className="border-b border-gray-200 flex items-start gap-3 mt-3"
+                        className="border-b border-gray-200 flex items-start gap-2 mt-2"
                       >
                         {/* Time label */}
-                        <div className="text-gray-600 font-medium w-24 self-center">
+                        <div className="text-gray-600 font-medium w-20 self-center text-sm">
                           {event.time}
                         </div>
 
                         {/* Interview details if available */}
                         {event.name ? (
-                          <div className="flex-1 p-2 bg-blue-50 rounded-lg border border-blue-100 flex items-center mb-3 cursor-pointer">
+                          <div className="flex-1 p-2 bg-blue-50 rounded-lg border border-blue-100 flex items-center mb-2 cursor-pointer">
                             <img
                               src={event.image}
                               alt="Profile"
-                              className="w-8 h-8 rounded-full bg-blue-200 mr-3"
+                              className="w-6 h-6 rounded-full bg-blue-200 mr-2"
                             />
                             <div>
-                              <div className="font-semibold text-gray-800">
+                              <div className="font-semibold text-gray-800 text-sm">
                                 {event.name}
                               </div>
                               {event.role && (
-                                <div className="text-sm text-gray-500">
+                                <div className="text-xs text-gray-500">
                                   {event.role}
                                 </div>
                               )}
                             </div>
                           </div>
                         ) : (
-                          <div className="flex-1 border-t border-gray-200 my-2"></div>
+                          <div className="flex-1 border-t border-gray-200 my-1"></div>
                         )}
                       </div>
                     ))}
@@ -463,68 +446,68 @@ const Dashboard = () => {
                 </div>
               </div>
 
-              {/*Part 3*/}
-              <div className="w-[94%] border border-gray-200 rounded-md ml-9">
-                {/* Header */}
-                <div className="p-8 pb-6 border-b border-gray-200">
-                  <h2 className="text-2xl font-bold text-gray-800">
+              {/*Part 3 - Recent Applications with reduced spacing*/}
+              <div className="w-[95%] border border-gray-200 rounded-md ml-6 mt-6 mb-6">
+                {/* Header - reduced padding */}
+                <div className="p-5 pb-4 border-b border-gray-200">
+                  <h2 className="text-xl font-bold text-gray-800">
                     Recent Applications History
                   </h2>
                 </div>
 
-                <div className="px-6">
+                <div className="px-4">
                   {applications.map((app) => (
                     <div
                       key={app.id}
-                      className={`flex items-center justify-between py-4 px-6 ${app.bgColor} mt-4 mb-4 cursor-pointer`}
+                      className={`flex items-center justify-between py-3 px-4 ${app.bgColor} mt-3 mb-3 cursor-pointer`}
                     >
                       {/* Left Section: Icon & Job Details */}
-                      <div className="flex items-center space-x-4">
-                        <div className="w-12 h-12">{app.icon}</div>
+                      <div className="flex items-center space-x-3">
+                        <div className="w-10 h-10">{app.icon}</div>
                         <div>
-                          <h3 className="text-lg font-extrabold text-gray-800">
+                          <h3 className="text-base font-extrabold text-gray-800">
                             {app.position}
                           </h3>
-                          <p className="text-gray-500 text-sm">
+                          <p className="text-gray-500 text-xs">
                             {app.company} • {app.location} • Full-Time
                           </p>
                         </div>
                       </div>
 
-                      {/* Center Section: Date Applied (Aligned Center) */}
+                      {/* Center Section: Date Applied */}
                       <div className="flex flex-col items-center">
-                        <p className="text-gray-600 text-sm font-bold">
+                        <p className="text-gray-600 text-xs font-bold">
                           Date Applied
                         </p>
-                        <p className="text-gray-800 text-sm">
+                        <p className="text-gray-800 text-xs">
                           {app.dateApplied}
                         </p>
                       </div>
 
                       {/* Right Section: Status & More Options */}
-                      <div className="flex items-center space-x-6">
+                      <div className="flex items-center space-x-4">
                         <div
-                          className={`px-4 py-1 rounded-full text-sm font-medium border ${app.statusColor}`}
+                          className={`px-3 py-1 rounded-full text-xs font-medium border ${app.statusColor}`}
                         >
                           {app.status}
                         </div>
 
                         <button className="text-gray-400 cursor-pointer">
-                          <MoreHorizontal size={22} />
+                          <MoreHorizontal size={18} />
                         </button>
                       </div>
                     </div>
                   ))}
                 </div>
 
-                {/* View all link */}
-                <div className="flex justify-center py-4 mb-3">
+                {/* View all link - reduced spacing */}
+                <div className="flex justify-center py-3 mb-2">
                   <a
                     href="/applications"
-                    className="flex items-center text-sm text-blue-500 font-medium cursor-pointer"
+                    className="flex items-center text-xs text-blue-500 font-medium cursor-pointer"
                   >
                     View all applications history
-                    <ArrowRight size={16} className="ml-2" />
+                    <ArrowRight size={14} className="ml-1" />
                   </a>
                 </div>
               </div>

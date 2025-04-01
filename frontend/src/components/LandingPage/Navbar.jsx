@@ -14,12 +14,12 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="flex justify-between items-center px-32 py-6 shadow-md">
+    <nav className="flex justify-between items-center px-32 py-5 shadow-md">
       <div className="flex items-center">
         <img src={logo} alt="Logo" className="h-10 mr-12" />
       </div>
       <div className="flex-grow flex justify-center">
-        <ul className="flex space-x-16 text-lg font-medium">
+        <ul className="flex space-x-10 text-md font-medium">
           {navItems.map((item) => (
             <li key={item.path}>
               <Link
