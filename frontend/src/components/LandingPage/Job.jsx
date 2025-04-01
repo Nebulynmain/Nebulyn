@@ -187,7 +187,7 @@ const Job = () => {
   };
 
   return (
-    <div className="p-30">
+    <div className="p-20">
       <h2 className="text-5xl font-bold text-center text-black">
         Featured Jobs
       </h2>
@@ -271,10 +271,10 @@ const Job = () => {
 
               {/* Buttons */}
               <div className="flex justify-between mt-6 gap-4 p-2">
-                <button className="border-2 border-black font-semibold px-5 py-2 rounded-md text-black text-sm w-full hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer">
+                <button className="border-2 border-black font-semibold px-3 py-2 rounded-md text-black text-sm w-full hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer">
                   View details
                 </button>
-                <button className="border-2 border-black font-semibold bg-green-600 text-white px-5 py-2 rounded-md text-sm w-full hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer">
+                <button className="border-2 border-black font-semibold bg-green-600 text-white px-3 py-2 rounded-md text-sm w-full hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer">
                   Apply now
                 </button>
               </div>

@@ -238,44 +238,43 @@ const allJobs = [
 
 const JobCardGrid = ({ job }) => {
   return (
-    <div className="border border-gray-400 shadow-md p-6 bg-white w-[400px] h-[260px] flex flex-col justify-between relative cursor-pointer hover:shadow-lg transition-shadow">
-      <div className="absolute top-4 right-4 text-blue-500 text-sm font-medium bg-[#F8F8FD]">
+    <div className="border border-gray-200 shadow-sm p-4 bg-white w-[260px] h-[180px] flex flex-col justify-between relative cursor-pointer hover:shadow-md transition-shadow">
+      <div className="absolute top-4 right-4 text-blue-500 text-xs font-medium bg-[#F8F8FD] px-1 py-0.5 rounded">
         {job.jobCount || "7"} Jobs
       </div>
 
-      <div className="flex flex-col space-y-2">
+      <div className="flex flex-col space-y-0.5">
         {/* Logo and company name */}
-        <div className="flex flex-col space-y-3">
-          <div className="bg-gradient-to-r from-purple-500 to-blue-500 w-12 h-12 rounded-lg flex items-center justify-center text-white text-xl font-bold">
+        <div className="flex flex-col space-y-1">
+          <div className="bg-gradient-to-r from-purple-500 to-blue-500 w-6 h-6 rounded flex items-center justify-center text-white text-xs font-bold">
             {job.logo ? (
               <img
                 src={job.logo}
                 alt={job.company}
-                className="w-full h-full rounded-lg object-cover"
+                className="w-full h-full rounded object-cover"
               />
             ) : (
               job.company.charAt(0)
             )}
           </div>
-          <h2 className="text-lg font-bold text-gray-900">{job.company}</h2>
+          <h2 className="text-xs font-semibold text-gray-900">{job.company}</h2>
         </div>
 
         {/* Description text */}
-        <p className="mt-2 text-gray-600 text-sm leading-relaxed">
-          {job.description ||
-            "This is a software platform for starting and running internet businesses. Millions of businesses rely on this company's software tools."}
+        <p className="text-gray-600 text-xs leading-tight line-clamp-2">
+          {job.description || "A software platform for businesses worldwide."}
         </p>
       </div>
 
       {/* Tags at the bottom */}
-      <div className="mt-4 flex flex-wrap gap-2">
-        {(job.tags || ["Business", "Payment gateway"]).map((tag, index) => (
+      <div className="mt-1 flex flex-wrap gap-0.5">
+        {(job.tags || ["Business", "Payment"]).map((tag, index) => (
           <span
             key={index}
-            className={`text-xs px-4 py-1.5 rounded-full ${
+            className={`text-[10px] px-1.5 py-0.5 rounded-full ${
               index === 0
-                ? " text-teal-700 border border-teal-300"
-                : " text-blue-500 border border-blue-500"
+                ? "text-teal-700 border border-teal-300"
+                : "text-blue-500 border border-blue-500"
             }`}
           >
             {tag}
@@ -288,14 +287,14 @@ const JobCardGrid = ({ job }) => {
 
 const JobCardList = ({ job }) => {
   return (
-    <div className="border border-gray-400 shadow-md p-6 bg-white w-full flex items-start gap-6 relative cursor-pointer hover:shadow-lg transition-shadow">
+    <div className="border border-gray-200 shadow-sm p-2 bg-white w-full flex items-start gap-2 relative cursor-pointer hover:shadow-md transition-shadow">
       {/* Logo */}
-      <div className="bg-gradient-to-r from-purple-500 to-blue-500 w-12 h-12 rounded-lg flex items-center justify-center text-white text-xl font-bold">
+      <div className="bg-gradient-to-r from-purple-500 to-blue-500 w-8 h-8 rounded flex items-center justify-center text-white text-xs font-bold">
         {job.logo ? (
           <img
             src={job.logo}
             alt={job.company}
-            className="w-full h-full rounded-lg object-cover"
+            className="w-full h-full rounded object-cover"
           />
         ) : (
           job.company.charAt(0)
@@ -304,27 +303,27 @@ const JobCardList = ({ job }) => {
 
       {/* Content */}
       <div className="flex-1">
-        <div className="flex justify-between items-start">
-          <h2 className="text-lg font-bold text-gray-900">{job.company}</h2>
-          <div className="text-blue-500 text-sm font-medium bg-[#F8F8FD] px-2 py-1">
+        <div className="flex justify-between items-center">
+          <h2 className="text-xs font-semibold text-gray-900">{job.company}</h2>
+          <div className="text-blue-500 text-xs font-medium bg-[#F8F8FD] px-1.5 py-0.5 rounded">
             {job.jobCount || "7"} Jobs
           </div>
         </div>
 
-        <p className="text-gray-600 text-sm leading-relaxed mt-2 mb-3">
+        <p className="text-gray-600 text-xs leading-tight mt-0.5 mb-1 line-clamp-2">
           {job.description ||
-            "This is a software platform for starting and running internet businesses. Millions of businesses rely on this company's software tools."}
+            "A software platform for starting and running businesses."}
         </p>
 
-        {/* Tags directly below description */}
-        <div className="flex flex-wrap gap-2">
-          {(job.tags || ["Business", "Payment gateway"]).map((tag, index) => (
+        {/* Tags */}
+        <div className="flex flex-wrap gap-0.5">
+          {(job.tags || ["Business", "Payment"]).map((tag, index) => (
             <span
               key={index}
-              className={`text-xs px-4 py-1.5 rounded-full ${
+              className={`text-[10px] px-1.5 py-0.5 rounded-full ${
                 index === 0
-                  ? " text-teal-700 border border-teal-300"
-                  : " text-blue-500 border border-blue-500"
+                  ? "text-teal-700 border border-teal-300"
+                  : "text-blue-500 border border-blue-500"
               }`}
             >
               {tag}
@@ -478,21 +477,21 @@ const Companies = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <div className="flex flex-row flex-grow">
-        <div className="h-screen sticky top-0 ">
+        <div className="h-screen sticky top-0">
           <Sidebar />
         </div>
         <div className="flex-grow transition-all">
           <Header />
-          <div className="">
+          <div>
             {/*Part 1*/}
-            <div className="p-6 relative border-b border-gray-300">
-              <div className="bg-white shadow-sm p-6 border border-gray-200 flex items-center space-x-4">
-                <Search className="text-black w-10 h-10 pr-2" />
-                <div className="flex-1 flex items-center border-b border-gray-300 pb-3 w-1/2">
+            <div className="p-3 relative border-b border-gray-300">
+              <div className="bg-white shadow-sm p-4 border border-gray-200 flex items-center space-x-3">
+                <Search className="text-black w-6 h-6" />
+                <div className="flex-1 flex items-center border-b border-gray-300 pb-2 w-1/2">
                   <input
                     type="text"
                     placeholder="Job title or keyword"
-                    className="w-full outline-none text-lg text-gray-700 py-3"
+                    className="w-full outline-none text-base text-gray-700 py-2"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
@@ -502,25 +501,25 @@ const Companies = () => {
                   .
                 </div>
 
-                <MapPin className="text-black w-10 h-10 pr-2" />
-                <div className="flex-1 flex items-center border-b border-gray-300 pb-3 w-1/2 relative">
+                <MapPin className="text-black w-6 h-6" />
+                <div className="flex-1 flex items-center border-b border-gray-300 pb-2 w-1/2 relative">
                   <input
                     type="text"
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
                     onClick={() => setDropdownOpen(!dropdownOpen)}
-                    className="w-full outline-none text-gray-700 cursor-pointer py-3"
+                    className="w-full outline-none text-gray-700 cursor-pointer py-2 text-base"
                   />
                   <ChevronDown
-                    className="text-gray-400 text-lg absolute right-2 cursor-pointer"
+                    className="text-gray-400 w-4 h-4 absolute right-2 cursor-pointer"
                     onClick={() => setDropdownOpen(!dropdownOpen)}
                   />
                   {dropdownOpen && (
-                    <ul className="absolute top-full left-0 w-full bg-white border border-gray-200 shadow-md mt-2 rounded-md overflow-hidden z-20">
+                    <ul className="absolute top-full left-0 w-full bg-white border border-gray-200 shadow-md mt-1 rounded-md overflow-hidden z-20">
                       {locations.map((loc, index) => (
                         <li
                           key={index}
-                          className="p-3 hover:bg-gray-100 cursor-pointer"
+                          className="p-2 hover:bg-gray-100 cursor-pointer text-sm"
                           onClick={() => {
                             setLocation(loc);
                             setDropdownOpen(false);
@@ -534,64 +533,63 @@ const Companies = () => {
                 </div>
 
                 <button
-                  className="bg-blue-600 text-white px-10 py-4 font-medium text-lg cursor-pointer hover:bg-blue-700"
+                  className="bg-blue-600 text-white px-6 py-2 font-medium text-sm cursor-pointer"
                   onClick={handleSearch}
                 >
                   Search
                 </button>
               </div>
 
-              <p className="text-gray-500 mt-3 text-lg">
+              <p className="text-gray-500 mt-2 text-sm">
                 Popular:{" "}
-                <span className="text-gray-500 text-lg">
-                  {popularJobs.map((job, index) => (
-                    <span
-                      key={index}
-                      className="cursor-pointer hover:text-blue-500"
-                      onClick={() => setSearchTerm(job)}
-                    >
-                      {job}
-                      {index < popularJobs.length - 1 ? ", " : ""}
-                    </span>
-                  ))}
-                </span>
+                {popularJobs.map((job, index) => (
+                  <span
+                    key={index}
+                    className="text-gray-500 text-sm cursor-pointer hover:text-blue-500"
+                    onClick={() => handlePopularJobClick(job)}
+                  >
+                    {job}
+                    {index < popularJobs.length - 1 ? ", " : ""}
+                  </span>
+                ))}
               </p>
             </div>
+
             {/*Part 2*/}
-            <div className="flex p-6">
-              <div className="w-1/3 p-4 bg-white">
+            <div className="flex p-3">
+              <div className="w-1/3 p-2 bg-white">
                 {/* Industry Filter */}
                 <div>
                   <div
                     className="flex justify-between items-center cursor-pointer"
                     onClick={() => setIsIndustryOpen(!isIndustryOpen)}
                   >
-                    <h2 className="text-xl font-semibold text-gray-900">
+                    <h2 className="text-base font-semibold text-gray-900">
                       Industry
                     </h2>
                     {isIndustryOpen ? (
-                      <ChevronUp className="text-gray-500 w-6 h-6" />
+                      <ChevronUp className="text-gray-500 w-4 h-4" />
                     ) : (
-                      <ChevronDown className="text-gray-500 w-6 h-6" />
+                      <ChevronDown className="text-gray-500 w-4 h-4" />
                     )}
                   </div>
 
                   {isIndustryOpen && (
-                    <div className="mt-4 space-y-4">
+                    <div className="mt-2 space-y-2">
                       {industries.map((industry, index) => (
                         <label
                           key={index}
-                          className="flex items-center space-x-4 text-gray-800 text-lg cursor-pointer"
+                          className="flex items-center space-x-2 text-gray-800 text-sm cursor-pointer"
                         >
                           <input
                             type="checkbox"
-                            className="w-6 h-6 text-blue-600 border-gray-500 rounded focus:ring-0 cursor-pointer"
+                            className="w-4 h-4 text-blue-600 border-gray-500 rounded focus:ring-0 cursor-pointer"
                             checked={selectedIndustries.includes(industry.name)}
                             onChange={() => handleIndustryChange(industry.name)}
                           />
                           <span>
                             {industry.name}{" "}
-                            <span className="text-gray-500 text-base">
+                            <span className="text-gray-500 text-xs">
                               ({industry.count})
                             </span>
                           </span>
@@ -604,35 +602,35 @@ const Companies = () => {
                 {/* Company Size Filter */}
                 <div>
                   <div
-                    className="flex justify-between items-center cursor-pointer mt-8"
+                    className="flex justify-between items-center cursor-pointer mt-4"
                     onClick={() => setIsCompanySizeOpen(!isCompanySizeOpen)}
                   >
-                    <h2 className="text-xl font-semibold text-gray-900">
+                    <h2 className="text-base font-semibold text-gray-900">
                       Company Size
                     </h2>
                     {isCompanySizeOpen ? (
-                      <ChevronUp className="text-gray-500 w-6 h-6" />
+                      <ChevronUp className="text-gray-500 w-4 h-4" />
                     ) : (
-                      <ChevronDown className="text-gray-500 w-6 h-6" />
+                      <ChevronDown className="text-gray-500 w-4 h-4" />
                     )}
                   </div>
 
                   {isCompanySizeOpen && (
-                    <div className="mt-4 space-y-4">
+                    <div className="mt-2 space-y-2">
                       {companySizes.map((size, index) => (
                         <label
                           key={index}
-                          className="flex items-center space-x-4 text-gray-800 text-lg cursor-pointer"
+                          className="flex items-center space-x-2 text-gray-800 text-sm cursor-pointer"
                         >
                           <input
                             type="checkbox"
-                            className="w-6 h-6 text-blue-600 border-gray-500 rounded focus:ring-0 cursor-pointer"
+                            className="w-4 h-4 text-blue-600 border-gray-500 rounded focus:ring-0 cursor-pointer"
                             checked={selectedSizes.includes(size.size)}
                             onChange={() => handleSizeChange(size.size)}
                           />
                           <span>
                             {size.size}{" "}
-                            <span className="text-gray-500 text-base">
+                            <span className="text-gray-500 text-xs">
                               ({size.count})
                             </span>
                           </span>
@@ -642,32 +640,32 @@ const Companies = () => {
                   )}
                 </div>
               </div>
-              <div className="w-3/4 p-4">
+
+              <div className="w-3/4 p-2">
                 <div className="flex justify-between items-center">
                   <div>
-                    <h2 className="text-xl font-bold">All Companies</h2>
-                    {/* Dynamic display of results showing start-end of total */}
-                    <p className="text-gray-500">
+                    <h2 className="text-base font-bold">All Companies</h2>
+                    <p className="text-gray-500 text-xs">
                       {filteredJobs.length > 0
                         ? `Showing ${startRange}-${endRange} of ${filteredJobs.length} results`
                         : "No results found"}
                     </p>
                   </div>
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
                     <div className="relative">
                       <button
-                        className="text-gray-600 font-semibold flex items-center cursor-pointer"
+                        className="text-gray-600 text-sm font-semibold flex items-center cursor-pointer"
                         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                       >
                         Sort by: {sortBy}{" "}
-                        <ChevronDown className="ml-1 w-4 h-4" />
+                        <ChevronDown className="ml-1 w-3 h-3" />
                       </button>
                       {isDropdownOpen && (
-                        <div className="absolute top-full mt-1 bg-white shadow-md rounded border border-gray-200 w-40 z-10">
+                        <div className="absolute top-full mt-1 bg-white shadow-md rounded border border-gray-200 w-32 z-10">
                           {sortOptions.map((option, index) => (
                             <button
                               key={index}
-                              className="block w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                              className="block w-full text-left px-2 py-1 text-sm hover:bg-gray-100 cursor-pointer"
                               onClick={() => {
                                 setSortBy(option);
                                 setIsDropdownOpen(false);
@@ -679,37 +677,37 @@ const Companies = () => {
                         </div>
                       )}
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex gap-1">
                       <button
-                        className={`p-2 rounded cursor-pointer ${
+                        className={`p-1 rounded cursor-pointer ${
                           view === "grid"
                             ? "bg-blue-500 text-white"
                             : "text-gray-600 hover:bg-gray-200"
                         }`}
                         onClick={() => setView("grid")}
                       >
-                        <Grid className="w-5 h-5" />
+                        <Grid className="w-4 h-4" />
                       </button>
                       <button
-                        className={`p-2 rounded cursor-pointer ${
+                        className={`p-1 rounded cursor-pointer ${
                           view === "list"
                             ? "bg-blue-500 text-white"
                             : "text-gray-600 hover:bg-gray-200"
                         }`}
                         onClick={() => setView("list")}
                       >
-                        <List className="w-5 h-5" />
+                        <List className="w-4 h-4" />
                       </button>
                     </div>
                   </div>
                 </div>
 
                 {filteredJobs.length === 0 ? (
-                  <div className="mt-6 text-center p-10 bg-gray-100 rounded">
-                    <p className="text-xl text-gray-600">
+                  <div className="mt-3 text-center p-4 bg-gray-100 rounded">
+                    <p className="text-base text-gray-600">
                       No companies match your search criteria.
                     </p>
-                    <p className="text-gray-500 mt-2">
+                    <p className="text-gray-500 text-sm mt-1">
                       Try adjusting your filters or search terms.
                     </p>
                   </div>
@@ -717,7 +715,7 @@ const Companies = () => {
                   <>
                     {/* Grid View */}
                     {view === "grid" && (
-                      <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6 justify-center">
+                      <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3 justify-center">
                         {currentJobs.map((job) => (
                           <JobCardGrid key={job.id} job={job} />
                         ))}
@@ -726,7 +724,7 @@ const Companies = () => {
 
                     {/* List View */}
                     {view === "list" && (
-                      <div className="mt-6 flex flex-col gap-4">
+                      <div className="mt-3 flex flex-col gap-2">
                         {currentJobs.map((job) => (
                           <JobCardList key={job.id} job={job} />
                         ))}
@@ -735,9 +733,9 @@ const Companies = () => {
 
                     {/* Pagination */}
                     {totalPages > 1 && (
-                      <div className="flex justify-center items-center mt-8 gap-2">
+                      <div className="flex justify-center items-center mt-4 gap-1">
                         <button
-                          className="px-3 py-1 text-gray-600 rounded hover:bg-gray-200 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+                          className="px-2 py-1 text-xs text-gray-600 rounded hover:bg-gray-200 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
                           onClick={() =>
                             setCurrentPage((prev) => Math.max(prev - 1, 1))
                           }
@@ -748,7 +746,7 @@ const Companies = () => {
                         {[...Array(totalPages)].map((_, index) => (
                           <button
                             key={index}
-                            className={`px-3 py-1 rounded cursor-pointer ${
+                            className={`px-2 py-1 text-xs rounded cursor-pointer ${
                               currentPage === index + 1
                                 ? "bg-blue-500 text-white"
                                 : "text-gray-600 hover:bg-gray-200"
@@ -759,7 +757,7 @@ const Companies = () => {
                           </button>
                         ))}
                         <button
-                          className="px-3 py-1 text-gray-600 rounded hover:bg-gray-200 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+                          className="px-2 py-1 text-xs text-gray-600 rounded hover:bg-gray-200 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
                           onClick={() =>
                             setCurrentPage((prev) =>
                               Math.min(prev + 1, totalPages)

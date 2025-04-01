@@ -31,10 +31,10 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="w-80 h-screen bg-[#F8F8FD] border-r border-gray-200 flex flex-col p-4 relative overflow-hidden">
+    <div className="w-60 h-screen bg-[#F8F8FD] border-r border-gray-200 flex flex-col p-3 relative overflow-hidden">
       {/* Logo */}
-      <div className="flex justify-center p-3">
-        <h1 className="text-3xl font-bold text-black-800 mb-6 relative z-10">
+      <div className="flex justify-center p-2">
+        <h1 className="text-2xl font-bold text-black-800 mb-4 relative z-10">
           Nebulyn
         </h1>
       </div>
@@ -45,96 +45,93 @@ const Sidebar = () => {
           <li>
             <Link
               to="/dashboard"
-              className={`flex items-center px-4 py-3 rounded-lg relative ${
+              className={`flex items-center px-3 py-2 rounded-md text-sm relative ${
                 isActive("/dashboard")
-                  ? "bg-[#E8F0FE] text-[#3B8BEB] font-medium before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:h-8 before:w-1.5 before:bg-[#3B8BEB] before:rounded-full"
+                  ? "bg-[#E8F0FE] text-[#3B8BEB] font-medium before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:h-6 before:w-1.5 before:bg-[#3B8BEB] before:rounded-full"
                   : "text-gray-600 hover:bg-gray-100"
               }`}
             >
-              <Home size={20} className="mr-3" /> Dashboard
+              <Home size={18} className="mr-2" /> Dashboard
             </Link>
           </li>
           <li>
             <Link
               to="/applications"
-              className={`flex items-center px-4 py-3 rounded-lg relative ${
+              className={`flex items-center px-3 py-2 rounded-md text-sm relative ${
                 isActive("/applications")
-                  ? "bg-[#E8F0FE] text-[#3B8BEB] font-medium before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:h-8 before:w-1.5 before:bg-[#3B8BEB] before:rounded-full"
+                  ? "bg-[#E8F0FE] text-[#3B8BEB] font-medium before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:h-6 before:w-1.5 before:bg-[#3B8BEB] before:rounded-full"
                   : "text-gray-600 hover:bg-gray-100"
               }`}
             >
-              <FileText size={20} className="mr-3" /> My Applications
+              <FileText size={18} className="mr-2" /> My Applications
             </Link>
           </li>
           <li>
             <Link
               to="/jobs"
-              className={`flex items-center px-4 py-3 rounded-lg relative ${
+              className={`flex items-center px-3 py-2 rounded-md text-sm relative ${
                 isActive("/jobs") || isActive("/description")
-                  ? "bg-[#E8F0FE] text-[#3B8BEB] font-medium before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:h-8 before:w-1.5 before:bg-[#3B8BEB] before:rounded-full"
+                  ? "bg-[#E8F0FE] text-[#3B8BEB] font-medium before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:h-6 before:w-1.5 before:bg-[#3B8BEB] before:rounded-full"
                   : "text-gray-600 hover:bg-gray-100"
               }`}
             >
-              <Search size={20} className="mr-3" /> Find Jobs
+              <Search size={18} className="mr-2" /> Find Jobs
             </Link>
           </li>
-
           <li>
             <Link
               to="/companies"
-              className={`flex items-center px-4 py-3 rounded-lg relative ${
+              className={`flex items-center px-3 py-2 rounded-md text-sm relative ${
                 isActive("/companies")
-                  ? "bg-[#E8F0FE] text-[#3B8BEB] font-medium before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:h-8 before:w-1.5 before:bg-[#3B8BEB] before:rounded-full"
+                  ? "bg-[#E8F0FE] text-[#3B8BEB] font-medium before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:h-6 before:w-1.5 before:bg-[#3B8BEB] before:rounded-full"
                   : "text-gray-600 hover:bg-gray-100"
               }`}
             >
-              <Briefcase size={20} className="mr-3" /> Browse Companies
+              <Briefcase size={18} className="mr-2" /> Browse Companies
             </Link>
           </li>
           <li>
             <Link
               to="/profile"
-              className={`flex items-center px-4 py-3 rounded-lg relative ${
+              className={`flex items-center px-3 py-2 rounded-md text-sm relative ${
                 isActive("/profile")
-                  ? "bg-[#E8F0FE] text-[#3B8BEB] font-medium before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:h-8 before:w-1.5 before:bg-[#3B8BEB] before:rounded-full"
+                  ? "bg-[#E8F0FE] text-[#3B8BEB] font-medium before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:h-6 before:w-1.5 before:bg-[#3B8BEB] before:rounded-full"
                   : "text-gray-600 hover:bg-gray-100"
               }`}
             >
-              <User size={20} className="mr-3" /> My Public Profile
+              <User size={18} className="mr-2" /> My Public Profile
             </Link>
           </li>
         </ul>
 
         {/* Settings */}
-        <div className="border-t border-blue-500 pt-4 relative z-10 mt-4">
-          <div className=" ml-4 p-3">
-            <h1 className="text-md font-bold text-gray-400 mb-1 relative z-10">
-              SETTINGS
-            </h1>
+        <div className="border-t border-blue-500 pt-3 relative z-10 mt-3">
+          <div className="ml-3 p-2">
+            <h1 className="text-xs font-bold text-gray-400 mb-1">SETTINGS</h1>
           </div>
           <ul className="space-y-1">
             <li>
               <Link
                 to="/settings"
-                className={`flex items-center px-4 py-3 rounded-lg relative ${
+                className={`flex items-center px-3 py-2 rounded-md text-sm relative ${
                   isActive("/settings")
-                    ? "bg-[#E8F0FE] text-[#3B8BEB] font-medium before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:h-8 before:w-1.5 before:bg-[#3B8BEB] before:rounded-full"
+                    ? "bg-[#E8F0FE] text-[#3B8BEB] font-medium before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:h-6 before:w-1.5 before:bg-[#3B8BEB] before:rounded-full"
                     : "text-gray-600 hover:bg-gray-100"
                 }`}
               >
-                <Settings size={20} className="mr-3" /> Settings
+                <Settings size={18} className="mr-2" /> Settings
               </Link>
             </li>
             <li>
               <Link
                 to="/help"
-                className={`flex items-center px-4 py-3 rounded-lg relative ${
+                className={`flex items-center px-3 py-2 rounded-md text-sm relative ${
                   isActive("/help")
-                    ? "bg-[#E8F0FE] text-[#3B8BEB] font-medium before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:h-8 before:w-1.5 before:bg-[#3B8BEB] before:rounded-full"
+                    ? "bg-[#E8F0FE] text-[#3B8BEB] font-medium before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:h-6 before:w-1.5 before:bg-[#3B8BEB] before:rounded-full"
                     : "text-gray-600 hover:bg-gray-100"
                 }`}
               >
-                <HelpCircle size={20} className="mr-3" /> Help Center
+                <HelpCircle size={18} className="mr-2" /> Help Center
               </Link>
             </li>
           </ul>
@@ -142,30 +139,30 @@ const Sidebar = () => {
       </nav>
 
       {/* Profile Section with Logout Dropdown */}
-      <div className="absolute bottom-6 left-4 z-10">
+      <div className="absolute bottom-4 left-3 z-10">
         <div
-          className="flex items-center space-x-3 cursor-pointer p-2 rounded-lg hover:bg-gray-100"
+          className="flex items-center space-x-2 cursor-pointer p-2 rounded-md hover:bg-gray-100"
           onClick={toggleLogout}
         >
           <img
-            src="https://via.placeholder.com/40"
+            src="https://via.placeholder.com/36"
             alt="Profile"
-            className="w-12 h-12 rounded-full border"
+            className="w-10 h-10 rounded-full border"
           />
           <div>
-            <p className="text-lg font-bold text-gray-800">Jake Gyll</p>
-            <p className="text-sm text-gray-500">jakegyll@email.com</p>
+            <p className="text-sm font-bold text-gray-800">Jake Gyll</p>
+            <p className="text-xs text-gray-500">jakegyll@email.com</p>
           </div>
         </div>
 
         {/* Logout Dropdown */}
         {showLogout && (
-          <div className="absolute bottom-20 left-0 w-full bg-white shadow-lg rounded-lg p-2 border border-gray-200 transition-all duration-300">
+          <div className="absolute bottom-16 left-0 w-full bg-white shadow-lg rounded-md p-2 border border-gray-200 transition-all duration-300">
             <button
               onClick={handleLogout}
-              className="flex items-center w-full px-4 py-3 text-red-600 hover:bg-gray-100 rounded-lg cursor-pointer"
+              className="flex items-center w-full px-3 py-2 text-red-600 hover:bg-gray-100 rounded-md text-sm"
             >
-              <LogOut size={20} className="mr-3" /> Logout
+              <LogOut size={18} className="mr-2" /> Logout
             </button>
           </div>
         )}

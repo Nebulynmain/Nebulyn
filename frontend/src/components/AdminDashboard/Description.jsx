@@ -109,16 +109,16 @@ const InfoCard = ({ title, link, description, images }) => {
             S
           </div>
           <div>
-            <h2 className="text-2xl font-bold"> {title} </h2>
+            <h2 className="text-xl font-bold"> {title} </h2>
             <a
               href={link}
-              className="text-blue-500 text-lg font-medium mt-1 block"
+              className="text-blue-500 text-md font-medium mt-1 block"
             >
               Read more about {title} →
             </a>
           </div>
         </div>
-        <p className=" text-lg text-gray-600 mt-3">{description}</p>
+        <p className=" text-md text-gray-600 mt-3">{description}</p>
       </div>
 
       {/* Right Section: Fixed Layout with Bigger Main Image */}
@@ -165,7 +165,7 @@ const Companies = () => {
           <Header />
           <div className="">
             {/*Part 1*/}
-            <div className="flex justify-between items-center py-6 px-9">
+            <div className="flex justify-between items-center py-3 px-4">
               <div className="w-full max-w-8xl mx-auto">
                 {/* Container with angled background lines */}
                 <div className="relative">
@@ -183,21 +183,21 @@ const Companies = () => {
                   </div>
 
                   {/* Main card container with proper spacing */}
-                  <div className="relative py-16 px-10">
-                    <div className="bg-white border border-blue-200 rounded-md shadow-md flex justify-between items-center p-8">
+                  <div className="relative py-8 px-5">
+                    <div className="bg-white border border-blue-200 rounded-md shadow-md flex justify-between items-center p-4">
                       {/* Left side with logo and text */}
                       <div className="flex items-center">
                         {/* Purple logo */}
-                        <div className="bg-indigo-500 w-16 h-16 flex items-center justify-center rounded-lg text-white font-bold text-3xl mr-6 cursor-pointer">
+                        <div className="bg-indigo-500 w-10 h-10 flex items-center justify-center rounded-lg text-white font-bold text-xl mr-4 cursor-pointer">
                           S
                         </div>
 
                         {/* Job details */}
                         <div className="cursor-pointer">
-                          <h2 className="text-2xl font-bold text-gray-900">
+                          <h2 className="text-lg font-bold text-gray-900">
                             Social Media Assistant
                           </h2>
-                          <p className="text-gray-700 text-lg">
+                          <p className="text-gray-700 text-base">
                             Stripe • Paris, France • Full-Time
                           </p>
                         </div>
@@ -206,11 +206,11 @@ const Companies = () => {
                       {/* Right side with share and apply button */}
                       <div className="flex items-center">
                         {/* Share icon */}
-                        <div className="mr-6 border border-gray-300 rounded-full p-3 flex items-center justify-center cursor-pointer hover:bg-gray-100">
+                        <div className="mr-4 border border-gray-300 rounded-full p-2 flex items-center justify-center cursor-pointer hover:bg-gray-100">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
-                            width="20"
-                            height="20"
+                            width="16"
+                            height="16"
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
@@ -238,7 +238,7 @@ const Companies = () => {
                         </div>
 
                         {/* Apply button */}
-                        <button className="bg-blue-500 hover:bg-blue-600 text-white text-lg font-semibold py-3 px-8 rounded-lg cursor-pointer">
+                        <button className="bg-blue-500 hover:bg-blue-600 text-white text-base font-semibold py-2 px-6 rounded-lg cursor-pointer">
                           Apply
                         </button>
                       </div>
@@ -248,28 +248,30 @@ const Companies = () => {
               </div>
             </div>
             {/*Part 2*/}
-            <div class="flex p-6">
-              <div className="w-3/4 p-6 bg-white">
+            <div className="flex p-4">
+              <div className="w-3/4 p-4 bg-white">
                 {/* Description Section */}
-                <div className="mb-8">
-                  <h2 className="text-xl font-bold text-gray-800 mb-4">
+                <div className="mb-4">
+                  <h2 className="text-lg font-bold text-gray-800 mb-2">
                     Description
                   </h2>
-                  <p className="text-lg text-gray-600">{jobData.description}</p>
+                  <p className="text-base text-gray-600">
+                    {jobData.description}
+                  </p>
                 </div>
 
                 {/* Responsibilities Section */}
-                <div className="mb-8">
-                  <h2 className="text-xl font-bold text-gray-800 mb-4">
+                <div className="mb-4">
+                  <h2 className="text-lg font-bold text-gray-800 mb-2">
                     Responsibilities
                   </h2>
-                  <ul className="space-y-3">
+                  <ul className="space-y-2">
                     {jobData.responsibilities.map((item, index) => (
                       <li key={index} className="flex items-start">
-                        <div className="flex-shrink-0 h-6 w-6 rounded-full flex items-center justify-center mt-1.5 mr-3">
+                        <div className="flex-shrink-0 h-5 w-5 rounded-full flex items-center justify-center mt-1 mr-2">
                           <svg
-                            width="120"
-                            height="120"
+                            width="80"
+                            height="80"
                             viewBox="0 0 100 100"
                             fill="none"
                             xmlns="http://www.w3.org/2000/svg"
@@ -291,24 +293,24 @@ const Companies = () => {
                             />
                           </svg>
                         </div>
-                        <span className="text-lg text-gray-600">{item}</span>
+                        <span className="text-base text-gray-600">{item}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
 
                 {/* Who You Are Section */}
-                <div className="mb-8">
-                  <h2 className="text-xl font-bold text-gray-800 mb-4">
+                <div className="mb-4">
+                  <h2 className="text-lg font-bold text-gray-800 mb-2">
                     Who You Are
                   </h2>
-                  <ul className="space-y-3">
+                  <ul className="space-y-2">
                     {jobData.whoYouAre.map((item, index) => (
                       <li key={index} className="flex items-start">
-                        <div className="flex-shrink-0 h-6 w-6 rounded-full flex items-center justify-center mt-1.5 mr-3">
+                        <div className="flex-shrink-0 h-5 w-5 rounded-full flex items-center justify-center mt-1 mr-2">
                           <svg
-                            width="120"
-                            height="120"
+                            width="80"
+                            height="80"
                             viewBox="0 0 100 100"
                             fill="none"
                             xmlns="http://www.w3.org/2000/svg"
@@ -330,7 +332,7 @@ const Companies = () => {
                             />
                           </svg>
                         </div>
-                        <span className="text-lg text-gray-600">{item}</span>
+                        <span className="text-base text-gray-600">{item}</span>
                       </li>
                     ))}
                   </ul>
@@ -338,16 +340,16 @@ const Companies = () => {
 
                 {/* Nice-To-Haves Section */}
                 <div>
-                  <h2 className="text-xl font-bold text-gray-800 mb-4">
+                  <h2 className="text-lg font-bold text-gray-800 mb-2">
                     Nice-To-Haves
                   </h2>
-                  <ul className="space-y-3">
+                  <ul className="space-y-2">
                     {jobData.niceToHaves.map((item, index) => (
                       <li key={index} className="flex items-start">
-                        <div className="flex-shrink-0 h-6 w-6 rounded-full flex items-center justify-center mt-1.5 mr-3">
+                        <div className="flex-shrink-0 h-5 w-5 rounded-full flex items-center justify-center mt-1 mr-2">
                           <svg
-                            width="120"
-                            height="120"
+                            width="80"
+                            height="80"
                             viewBox="0 0 100 100"
                             fill="none"
                             xmlns="http://www.w3.org/2000/svg"
@@ -369,24 +371,24 @@ const Companies = () => {
                             />
                           </svg>
                         </div>
-                        <span className="text-lg text-gray-600">{item}</span>
+                        <span className="text-base text-gray-600">{item}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
               </div>
 
-              <div className="w-1/4 p-6">
-                <div className="bg-white p-4">
+              <div className="w-1/4 p-4">
+                <div className="bg-white p-3">
                   {/* About this role */}
-                  <h2 className="text-xl font-bold text-gray-800 mb-6">
+                  <h2 className="text-lg font-bold text-gray-800 mb-4">
                     About this role
                   </h2>
 
-                  <div className="bg-gray-50 p-5 rounded-lg mb-8">
+                  <div className="bg-gray-50 p-3 rounded-lg mb-4">
                     {/* Progress stats */}
-                    <div className="mb-5">
-                      <div className="flex justify-between text-base mb-2">
+                    <div className="mb-3">
+                      <div className="flex justify-between text-sm mb-2">
                         <span className="text-gray-800 font-semibold">
                           {sampleJobData.applied || 0} applied
                         </span>
@@ -394,14 +396,14 @@ const Companies = () => {
                           of {sampleJobData.capacity || 0} capacity
                         </span>
                       </div>
-                      <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
+                      <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
                         <div
                           className="h-full bg-green-500 rounded-full"
                           style={{
                             width: `$
-                              {((sampleJobData.applied || 0) /
-                                (sampleJobData.capacity || 1)) *
-                              100}%`,
+                          {((sampleJobData.applied || 0) /
+                            (sampleJobData.capacity || 1)) *
+                          100}%`,
                           }}
                         ></div>
                       </div>
@@ -409,7 +411,7 @@ const Companies = () => {
                   </div>
 
                   {/* Job details */}
-                  <div className="space-y-4 py-2">
+                  <div className="space-y-2 py-1">
                     {[
                       {
                         label: "Apply Before",
@@ -424,7 +426,7 @@ const Companies = () => {
                     ].map((item, index) => (
                       <div
                         key={index}
-                        className="flex justify-between text-base font-medium"
+                        className="flex justify-between text-sm font-medium"
                       >
                         <span className="text-gray-600">{item.label}</span>
                         <span className="text-gray-900">
@@ -433,7 +435,7 @@ const Companies = () => {
                       </div>
                     ))}
                   </div>
-                  <div className="border-b border-gray-300 text-transparent mb-6">
+                  <div className="border-b border-gray-300 text-transparent mb-3">
                     .
                   </div>
                   {/* Categories & Required Skills */}
@@ -451,28 +453,28 @@ const Companies = () => {
                       textColor: "text-blue-600",
                     },
                   ].map((section, idx) => (
-                    <div key={idx} className="mb-8">
-                      <h3 className="text-xl font-semibold text-gray-800 mb-4">
+                    <div key={idx} className="mb-4">
+                      <h3 className="text-base font-semibold text-gray-800 mb-2">
                         {section.title}
                       </h3>
-                      <div className="flex flex-wrap gap-3">
+                      <div className="flex flex-wrap gap-2">
                         {section.data.length > 0 ? (
                           section.data.map((item, index) => (
                             <span
                               key={index}
-                              className={`${section.bgColor} ${section.textColor} px-4 py-2 rounded-full text-base font-medium cursor-pointer hover:opacity-90`}
+                              className={`${section.bgColor} ${section.textColor} px-3 py-1 rounded-full text-sm font-medium cursor-pointer hover:opacity-90`}
                             >
                               {item}
                             </span>
                           ))
                         ) : (
-                          <span className="text-gray-500 text-base">
+                          <span className="text-gray-500 text-sm">
                             No {section.title.toLowerCase()} available
                           </span>
                         )}
                       </div>
                       {idx === 0 && (
-                        <div className="border-b border-gray-300 mt-10"></div>
+                        <div className="border-b border-gray-300 mt-5"></div>
                       )}
                     </div>
                   ))}
@@ -480,41 +482,41 @@ const Companies = () => {
               </div>
             </div>
             {/*Part 3*/}
-            <div className="py-8 px-6 bg-white border-t border-gray-300">
-              <div className="text-left mb-10 px-9">
-                <h2 className="text-3xl font-bold text-gray-900">
+            <div className="py-4 px-4 bg-white border-t border-gray-300">
+              <div className="text-left mb-5 px-4">
+                <h2 className="text-xl font-bold text-gray-900">
                   Perks & Benefits
                 </h2>
-                <p className="text-gray-600">
+                <p className="text-gray-600 text-sm">
                   This job comes with several perks and benefits
                 </p>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 max-w-6xl mx-auto">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 max-w-6xl mx-auto">
                 {perksData.map((perk, index) => (
                   <div
                     key={index}
-                    className="flex flex-col items-left text-left p-6 transition duration-300 cursor-pointer hover:bg-gray-50 rounded-lg"
+                    className="flex flex-col items-left text-left p-3 transition duration-300 cursor-pointer hover:bg-gray-50 rounded-lg"
                   >
-                    <div className="mb-4">{perk.icon}</div>
-                    <h3 className="text-xl font-semibold mb-2 text-gray-900">
+                    <div className="mb-2">{perk.icon}</div>
+                    <h3 className="text-base font-semibold mb-1 text-gray-900">
                       {perk.title}
                     </h3>
-                    <p className="text-gray-600">{perk.description}</p>
+                    <p className="text-gray-600 text-sm">{perk.description}</p>
                   </div>
                 ))}
               </div>
             </div>
             {/*Part 4*/}
-            <div className="p-8 border-t border-gray-500">
+            <div className=" border-t border-gray-500">
               <InfoCard
-                logo="https://via.placeholder.com/40" // Replace with actual logo
+                logo="https://via.placeholder.com/30" // Reduced from 40
                 title="Stripe"
                 link="#"
                 description="Stripe is a technology company that builds economic infrastructure for the internet..."
                 images={[
-                  "https://via.placeholder.com/150",
-                  "https://via.placeholder.com/150",
-                  "https://via.placeholder.com/150",
+                  "https://via.placeholder.com/120", // Reduced from 150
+                  "https://via.placeholder.com/120",
+                  "https://via.placeholder.com/120",
                 ]}
               />
             </div>

@@ -55,40 +55,40 @@ const Header = () => {
   const title = pathToTitle[location.pathname];
 
   return (
-    <header className="bg-white border-b border-gray-200 flex items-center justify-between p-6">
-      {/* Dynamic Page Title */}
-      <h1 className="text-4xl -mt-2 font-bold text-gray-900">
+    <header className="bg-white border-b border-gray-200 flex items-center justify-between p-4">
+      {/* Dynamic Page Title - Smaller */}
+      <h1 className="text-2xl font-bold text-gray-900">
         {title === "Job Description" ? (
           <a
             href="/jobs"
-            className="font-bold   cursor-pointer flex items-center"
+            className="font-bold cursor-pointer flex items-center"
           >
-            <span className="text-5xl font-extrabold -mt-3">←</span> {title}
+            <span className="text-3xl font-extrabold -mt-1">←</span> {title}
           </a>
         ) : (
           title
         )}
       </h1>
 
-      <div className="flex items-center space-x-8 px-4 py-2">
-        {/* Back to Homepage Button */}
+      <div className="flex items-center space-x-4 px-2 py-1">
+        {/* Back to Homepage Button - Smaller */}
         <Link
           to="/"
-          className="border border-blue-700 text-blue-700 px-4 py-2 font-semibold hover:bg-blue-50 w-full text-center block"
+          className="border border-blue-700 text-blue-700 px-3 py-1 text-sm font-semibold hover:bg-blue-50 w-full text-center block"
         >
           Back to homepage
         </Link>
 
-        {/* Notification Icon with Badge */}
+        {/* Notification Icon with Badge - Smaller */}
         <div className="relative">
           {/* Notification Icon */}
           <div
             className="relative cursor-pointer"
             onClick={() => setOpen(!open)}
           >
-            <FaBell className="text-gray-700 w-7 h-7" /> {/* Bigger icon */}
-            <span className="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></span>{" "}
-            {/* Bigger badge */}
+            <FaBell className="text-gray-700 w-5 h-5" /> {/* Smaller icon */}
+            <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>{" "}
+            {/* Smaller badge */}
           </div>
 
           {/* Overlay (Greyish Fade Background) */}
@@ -99,33 +99,33 @@ const Header = () => {
             ></div>
           )}
 
-          {/* Dropdown Panel */}
+          {/* Dropdown Panel - Smaller */}
           {open && (
-            <div className="absolute right-0 mt-4 w-[34rem] bg-white shadow-2xl border-gray-100 rounded-lg border p-8 z-50">
+            <div className="absolute right-0 mt-2 w-80 bg-white shadow-2xl border-gray-100 rounded-lg border p-4 z-50">
               {/* Header */}
-              <div className="flex justify-between items-center border-gray-300 border-b pb-4 mb-4">
-                <h2 className="text-xl font-bold">Notifications</h2>{" "}
-                <button className="text-blue-600 text-base hover:underline cursor-pointer">
+              <div className="flex justify-between items-center border-gray-300 border-b pb-2 mb-2">
+                <h2 className="text-base font-bold">Notifications</h2>
+                <button className="text-blue-600 text-xs hover:underline cursor-pointer">
                   Mark all as read
                 </button>
               </div>
 
               {/* Notification Items */}
-              <div className="space-y-5">
+              <div className="space-y-3">
                 {notifications.map((notification) => (
                   <div
                     key={notification.id}
-                    className="flex items-start gap-5 border-b border-gray-300 p-5 -mt-4 cursor-pointer hover:bg-gray-50"
+                    className="flex items-start gap-3 border-b border-gray-300 p-3 -mt-2 cursor-pointer hover:bg-gray-50"
                   >
                     {/* Avatar */}
                     <img
                       src={notification.avatar}
                       alt="User"
-                      className="w-14 h-14 rounded-full cursor-pointer" // Bigger avatar with cursor-pointer
+                      className="w-8 h-8 rounded-full cursor-pointer" // Smaller avatar
                     />
                     {/* Content */}
                     <div className="flex-1">
-                      <p className="text-base">
+                      <p className="text-sm">
                         <strong className="cursor-pointer hover:underline">
                           {notification.name}
                         </strong>{" "}
@@ -135,7 +135,7 @@ const Header = () => {
                       {/* Status Badge (New / Shortlisted) */}
                       {notification.status && (
                         <span
-                          className={`text-xs font-semibold px-2 py-1 rounded-full inline-block mt-1 cursor-pointer ${
+                          className={`text-xs font-semibold px-1.5 py-0.5 rounded-full inline-block mt-1 cursor-pointer ${
                             notification.status === "New"
                               ? "bg-yellow-100 text-yellow-600 border border-yellow-400"
                               : "bg-green-100 text-green-600 border border-green-400"
@@ -146,24 +146,24 @@ const Header = () => {
                       )}
 
                       {notification.role && (
-                        <div className="border-l-4 border-blue-500 pl-4 mt-3 bg-gray-100 p-3 rounded-sm cursor-pointer hover:bg-gray-200">
-                          <p className="text-base font-semibold">
+                        <div className="border-l-3 border-blue-500 pl-2 mt-2 bg-gray-100 p-2 rounded-sm cursor-pointer hover:bg-gray-200">
+                          <p className="text-sm font-semibold">
                             {notification.status}
                           </p>
-                          <p className="text-sm text-gray-500">
+                          <p className="text-xs text-gray-500">
                             {notification.role}
                           </p>
-                          <p className="text-sm font-medium">
+                          <p className="text-xs font-medium">
                             {notification.date}{" "}
                             <span className="text-gray-400">|</span>{" "}
                             {notification.timeSlot}
                           </p>
-                          <p className="text-sm text-gray-500">
+                          <p className="text-xs text-gray-500">
                             {notification.email}
                           </p>
                         </div>
                       )}
-                      <p className="text-sm text-gray-400 mt-2">
+                      <p className="text-xs text-gray-400 mt-1">
                         {notification.time}
                       </p>
                     </div>

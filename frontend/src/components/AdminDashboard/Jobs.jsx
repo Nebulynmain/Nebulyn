@@ -289,15 +289,15 @@ const Jobs = () => {
         <div className="flex-grow transition-all">
           <Header />
           <div className="">
-            {/*Part 1 - Search Bar*/}
-            <div className="p-6 relative border-b border-gray-300">
-              <div className="bg-white shadow-sm p-6 border border-gray-200 flex items-center space-x-4">
-                <Search className="text-black w-10 h-10 pr-2" />
-                <div className="flex-1 flex items-center border-b border-gray-300 pb-3 w-1/2">
+            {/*Part 1 - Search Bar - Reduced padding and input sizes*/}
+            <div className="p-3 relative border-b border-gray-300">
+              <div className="bg-white shadow-sm p-4 border border-gray-200 flex items-center space-x-3">
+                <Search className="text-black w-6 h-6" />
+                <div className="flex-1 flex items-center border-b border-gray-300 pb-2 w-1/2">
                   <input
                     type="text"
                     placeholder="Job title or keyword"
-                    className="w-full outline-none text-lg text-gray-700 py-3"
+                    className="w-full outline-none text-base text-gray-700 py-2"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
@@ -307,25 +307,25 @@ const Jobs = () => {
                   .
                 </div>
 
-                <MapPin className=" text-black w-10 h-10 pr-2" />
-                <div className="flex-1 flex items-center border-b border-gray-300 pb-3 w-1/2 relative">
+                <MapPin className="text-black w-6 h-6" />
+                <div className="flex-1 flex items-center border-b border-gray-300 pb-2 w-1/2 relative">
                   <input
                     type="text"
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
                     onClick={() => setDropdownOpen(!dropdownOpen)}
-                    className="w-full outline-none text-gray-700 cursor-pointer py-3"
+                    className="w-full outline-none text-gray-700 cursor-pointer py-2 text-base"
                   />
                   <ChevronDown
-                    className="text-gray-400 text-lg absolute right-2 cursor-pointer"
+                    className="text-gray-400 w-4 h-4 absolute right-2 cursor-pointer"
                     onClick={() => setDropdownOpen(!dropdownOpen)}
                   />
                   {dropdownOpen && (
-                    <ul className="absolute top-full left-0 w-full bg-white border border-gray-200 shadow-md mt-2 rounded-md overflow-hidden z-20">
+                    <ul className="absolute top-full left-0 w-full bg-white border border-gray-200 shadow-md mt-1 rounded-md overflow-hidden z-20">
                       {locations.map((loc, index) => (
                         <li
                           key={index}
-                          className="p-3 hover:bg-gray-100 cursor-pointer"
+                          className="p-2 hover:bg-gray-100 cursor-pointer text-sm"
                           onClick={() => {
                             setLocation(loc);
                             setDropdownOpen(false);
@@ -339,19 +339,19 @@ const Jobs = () => {
                 </div>
 
                 <button
-                  className="bg-blue-600 text-white px-10 py-4 font-medium text-lg cursor-pointer"
+                  className="bg-blue-600 text-white px-6 py-2 font-medium text-sm cursor-pointer"
                   onClick={handleSearch}
                 >
                   Search
                 </button>
               </div>
 
-              <p className="text-gray-500 mt-3 text-lg">
+              <p className="text-gray-500 mt-2 text-sm">
                 Popular:{" "}
                 {popularJobs.map((job, index) => (
                   <span
                     key={index}
-                    className="text-gray-500 text-lg cursor-pointer hover:text-blue-500"
+                    className="text-gray-500 text-sm cursor-pointer hover:text-blue-500"
                     onClick={() => handlePopularJobClick(job)}
                   >
                     {job}
@@ -360,39 +360,39 @@ const Jobs = () => {
                 ))}
               </p>
             </div>
-            {/*Part 2 - Filters and Results*/}
-            <div className="flex p-6">
-              <div className="w-1/4 p-4 bg-white">
+            {/*Part 2 - Filters and Results - Reduced padding and text sizes*/}
+            <div className="flex p-4">
+              <div className="w-1/4 p-3 bg-white">
                 {/* Type of Employment */}
                 <div
                   className="flex justify-between items-center cursor-pointer"
                   onClick={() => setIsOpen(!isOpen)}
                 >
-                  <h2 className="text-xl font-semibold text-gray-900">
+                  <h2 className="text-base font-semibold text-gray-900">
                     Type of Employment
                   </h2>
                   {isOpen ? (
-                    <ChevronUp className="text-gray-500 w-6 h-6" />
+                    <ChevronUp className="text-gray-500 w-4 h-4" />
                   ) : (
-                    <ChevronDown className="text-gray-500 w-6 h-6" />
+                    <ChevronDown className="text-gray-500 w-4 h-4" />
                   )}
                 </div>
                 {isOpen && (
-                  <div className="mt-4 space-y-4">
+                  <div className="mt-2 space-y-2">
                     {jobTypes.map((job, index) => (
                       <label
                         key={index}
-                        className="flex items-center space-x-4 text-gray-800 text-lg cursor-pointer"
+                        className="flex items-center space-x-2 text-gray-800 text-sm cursor-pointer"
                       >
                         <input
                           type="checkbox"
-                          className="w-6 h-6 text-blue-600 border-gray-500 rounded focus:ring-0 cursor-pointer"
+                          className="w-4 h-4 text-blue-600 border-gray-500 rounded focus:ring-0 cursor-pointer"
                           checked={selectedJobTypes.includes(job.type)}
                           onChange={() => handleJobTypeChange(job.type)}
                         />
                         <span>
                           {job.type}{" "}
-                          <span className="text-gray-500 text-base">
+                          <span className="text-gray-500 text-xs">
                             ({job.count})
                           </span>
                         </span>
@@ -402,34 +402,34 @@ const Jobs = () => {
                 )}
                 {/* Categories */}
                 <div
-                  className="flex justify-between items-center cursor-pointer mt-8"
+                  className="flex justify-between items-center cursor-pointer mt-4"
                   onClick={() => setCategoriesOpen(!categoriesOpen)}
                 >
-                  <h2 className="text-xl font-semibold text-gray-900">
+                  <h2 className="text-base font-semibold text-gray-900">
                     Categories
                   </h2>
                   {categoriesOpen ? (
-                    <ChevronUp className="text-gray-500 w-6 h-6" />
+                    <ChevronUp className="text-gray-500 w-4 h-4" />
                   ) : (
-                    <ChevronDown className="text-gray-500 w-6 h-6" />
+                    <ChevronDown className="text-gray-500 w-4 h-4" />
                   )}
                 </div>
                 {categoriesOpen && (
-                  <div className="mt-4 space-y-4">
+                  <div className="mt-2 space-y-2">
                     {categories.map((category, index) => (
                       <label
                         key={index}
-                        className="flex items-center space-x-4 text-gray-800 text-lg cursor-pointer"
+                        className="flex items-center space-x-2 text-gray-800 text-sm cursor-pointer"
                       >
                         <input
                           type="checkbox"
-                          className="w-6 h-6 text-blue-600 border-gray-500 rounded focus:ring-0 cursor-pointer"
+                          className="w-4 h-4 text-blue-600 border-gray-500 rounded focus:ring-0 cursor-pointer"
                           checked={selectedCategories.includes(category.name)}
                           onChange={() => handleCategoryChange(category.name)}
                         />
                         <span>
                           {category.name}{" "}
-                          <span className="text-gray-500 text-base">
+                          <span className="text-gray-500 text-xs">
                             ({category.count})
                           </span>
                         </span>
@@ -439,34 +439,34 @@ const Jobs = () => {
                 )}
                 {/* Job Level */}
                 <div
-                  className="flex justify-between items-center cursor-pointer mt-8"
+                  className="flex justify-between items-center cursor-pointer mt-4"
                   onClick={() => setJobLevelOpen(!jobLevelOpen)}
                 >
-                  <h2 className="text-xl font-semibold text-gray-900">
+                  <h2 className="text-base font-semibold text-gray-900">
                     Job Level
                   </h2>
                   {jobLevelOpen ? (
-                    <ChevronUp className="text-gray-500 w-6 h-6" />
+                    <ChevronUp className="text-gray-500 w-4 h-4" />
                   ) : (
-                    <ChevronDown className="text-gray-500 w-6 h-6" />
+                    <ChevronDown className="text-gray-500 w-4 h-4" />
                   )}
                 </div>
                 {jobLevelOpen && (
-                  <div className="mt-4 space-y-4">
+                  <div className="mt-2 space-y-2">
                     {jobLevels.map((level, index) => (
                       <label
                         key={index}
-                        className="flex items-center space-x-4 text-gray-800 text-lg cursor-pointer"
+                        className="flex items-center space-x-2 text-gray-800 text-sm cursor-pointer"
                       >
                         <input
                           type="checkbox"
-                          className="w-6 h-6 text-blue-600 border-gray-500 rounded focus:ring-0 cursor-pointer"
+                          className="w-4 h-4 text-blue-600 border-gray-500 rounded focus:ring-0 cursor-pointer"
                           checked={selectedJobLevels.includes(level.name)}
                           onChange={() => handleJobLevelChange(level.name)}
                         />
                         <span>
                           {level.name}{" "}
-                          <span className="text-gray-500 text-base">
+                          <span className="text-gray-500 text-xs">
                             ({level.count})
                           </span>
                         </span>
@@ -476,34 +476,34 @@ const Jobs = () => {
                 )}
                 {/* Salary Range */}
                 <div
-                  className="flex justify-between items-center cursor-pointer mt-8"
+                  className="flex justify-between items-center cursor-pointer mt-4"
                   onClick={() => setSalaryOpen(!salaryOpen)}
                 >
-                  <h2 className="text-xl font-semibold text-gray-900">
+                  <h2 className="text-base font-semibold text-gray-900">
                     Salary Range
                   </h2>
                   {salaryOpen ? (
-                    <ChevronUp className="text-gray-500 w-6 h-6" />
+                    <ChevronUp className="text-gray-500 w-4 h-4" />
                   ) : (
-                    <ChevronDown className="text-gray-500 w-6 h-6" />
+                    <ChevronDown className="text-gray-500 w-4 h-4" />
                   )}
                 </div>
                 {salaryOpen && (
-                  <div className="mt-4 space-y-4">
+                  <div className="mt-2 space-y-2">
                     {salaryRanges.map((range, index) => (
                       <label
                         key={index}
-                        className="flex items-center space-x-4 text-gray-800 text-lg cursor-pointer"
+                        className="flex items-center space-x-2 text-gray-800 text-sm cursor-pointer"
                       >
                         <input
                           type="checkbox"
-                          className="w-6 h-6 text-blue-600 border-gray-500 rounded focus:ring-0 cursor-pointer"
+                          className="w-4 h-4 text-blue-600 border-gray-500 rounded focus:ring-0 cursor-pointer"
                           checked={selectedSalaryRanges.includes(range.label)}
                           onChange={() => handleSalaryRangeChange(range.label)}
                         />
                         <span>
                           {range.label}{" "}
-                          <span className="text-gray-500 text-base">
+                          <span className="text-gray-500 text-xs">
                             ({range.count})
                           </span>
                         </span>
@@ -512,29 +512,29 @@ const Jobs = () => {
                   </div>
                 )}
               </div>
-              <div className="w-3/4 p-4">
+              <div className="w-3/4 p-3">
                 <div className="flex justify-between items-center">
                   <div>
-                    <h2 className="text-xl font-bold">All Jobs</h2>
-                    <p className="text-gray-500">
+                    <h2 className="text-lg font-bold">All Jobs</h2>
+                    <p className="text-gray-500 text-sm">
                       Showing {filteredJobs.length} results
                     </p>
                   </div>
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-3">
                     <div className="relative">
                       <button
-                        className="text-gray-600 font-semibold flex items-center cursor-pointer"
+                        className="text-gray-600 font-semibold text-sm flex items-center cursor-pointer"
                         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                       >
                         Sort by: {sortBy}{" "}
-                        <ChevronDown className="ml-1 w-4 h-4" />
+                        <ChevronDown className="ml-1 w-3 h-3" />
                       </button>
                       {isDropdownOpen && (
-                        <div className="absolute top-full mt-1 bg-white shadow-md rounded border border-gray-200 w-40">
+                        <div className="absolute top-full mt-1 bg-white shadow-md rounded border border-gray-200 w-36">
                           {sortOptions.map((option, index) => (
                             <button
                               key={index}
-                              className="block w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                              className="block w-full text-left px-3 py-1 text-sm hover:bg-gray-100 cursor-pointer"
                               onClick={() => {
                                 setSortBy(option);
                                 setIsDropdownOpen(false);
@@ -546,26 +546,26 @@ const Jobs = () => {
                         </div>
                       )}
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex gap-1">
                       <button
-                        className={`p-2 rounded cursor-pointer ${
+                        className={`p-1 rounded cursor-pointer ${
                           view === "grid"
                             ? "bg-blue-500 text-white"
                             : "text-gray-600"
                         }`}
                         onClick={() => setView("grid")}
                       >
-                        <Grid className="w-5 h-5" />
+                        <Grid className="w-4 h-4" />
                       </button>
                       <button
-                        className={`p-2 rounded cursor-pointer ${
+                        className={`p-1 rounded cursor-pointer ${
                           view === "list"
                             ? "bg-blue-500 text-white"
                             : "text-gray-600"
                         }`}
                         onClick={() => setView("list")}
                       >
-                        <List className="w-5 h-5" />
+                        <List className="w-4 h-4" />
                       </button>
                     </div>
                   </div>
@@ -573,27 +573,29 @@ const Jobs = () => {
 
                 {/* List View */}
                 {view === "list" && (
-                  <div className="mt-6 space-y-4">
+                  <div className="mt-3 space-y-3">
                     {currentJobs.length > 0 ? (
                       currentJobs.map((job, index) => (
                         <div
                           key={index}
-                          className="bg-white p-4 shadow-md rounded-sm flex justify-between items-center border border-gray-200"
+                          className="bg-white p-3 shadow-md rounded-sm flex justify-between items-center border border-gray-200"
                         >
-                          <div className="flex items-center gap-4">
+                          <div className="flex items-center gap-3">
                             <img
                               src={job.logo}
                               alt={job.company}
-                              className="w-10 h-10 rounded-full"
+                              className="w-8 h-8 rounded-full"
                             />
                             <div>
-                              <h3 className="text-lg font-bold">{job.title}</h3>
-                              <p className="text-gray-500">
+                              <h3 className="text-base font-bold">
+                                {job.title}
+                              </h3>
+                              <p className="text-gray-500 text-xs">
                                 {job.company} • {job.location}
                               </p>
-                              <div className="flex gap-2 mt-2">
+                              <div className="flex gap-1 mt-1 flex-wrap">
                                 <span
-                                  className={`text-xs px-3 py-1 rounded-full font-semibold border ${
+                                  className={`text-xs px-2 py-0.5 rounded-full font-semibold border ${
                                     job.jobType === "Full-Time"
                                       ? "bg-green-100 text-green-600 border-green-300"
                                       : job.jobType === "Remote"
@@ -611,7 +613,7 @@ const Jobs = () => {
                                 {job.categories.map((cat, i) => (
                                   <span
                                     key={i}
-                                    className={`text-xs px-3 py-1 rounded-full font-semibold border ${
+                                    className={`text-xs px-2 py-0.5 rounded-full font-semibold border ${
                                       cat === "Marketing"
                                         ? "bg-yellow-100 text-yellow-600 border-yellow-300"
                                         : cat === "Design"
@@ -629,22 +631,22 @@ const Jobs = () => {
                           </div>
                           <div
                             className="text-center"
-                            style={{ width: "150px" }}
+                            style={{ width: "120px" }}
                           >
                             <Link to="/description">
-                              <button className="bg-blue-500 text-white px-4 py-2 rounded-sm w-full cursor-pointer">
+                              <button className="bg-blue-500 text-white px-3 py-1 rounded-sm w-full cursor-pointer text-sm">
                                 Apply
                               </button>
                             </Link>
-                            <p className="text-xs text-gray-500 mt-2 font-medium">
+                            <p className="text-xs text-gray-500 mt-1 font-medium">
                               <span className="text-black font-bold">
                                 {job.applied}
                               </span>{" "}
                               applied of {job.capacity} capacity
                             </p>
-                            <div className="w-full bg-gray-200 h-2 mt-1 rounded-full relative">
+                            <div className="w-full bg-gray-200 h-1.5 mt-1 rounded-full relative">
                               <div
-                                className="bg-blue-500 h-2 rounded-full"
+                                className="bg-blue-500 h-1.5 rounded-full"
                                 style={{
                                   width: `${
                                     (job.applied / job.capacity) * 100
@@ -656,8 +658,8 @@ const Jobs = () => {
                         </div>
                       ))
                     ) : (
-                      <div className="text-center py-8 bg-white shadow-md rounded-sm">
-                        <p className="text-gray-500 text-lg">
+                      <div className="text-center py-6 bg-white shadow-md rounded-sm">
+                        <p className="text-gray-500 text-sm">
                           No jobs found matching your criteria
                         </p>
                       </div>
@@ -667,35 +669,35 @@ const Jobs = () => {
 
                 {/* Grid View */}
                 {view === "grid" && (
-                  <div className="mt-6 grid grid-cols-2 gap-4">
+                  <div className="mt-3 grid grid-cols-2 gap-3">
                     {currentJobs.length > 0 ? (
                       currentJobs.map((job, index) => (
                         <div
                           key={index}
-                          className="bg-white p-4 shadow-md rounded-sm border border-gray-200 flex flex-col"
+                          className="bg-white p-3 shadow-md rounded-sm border border-gray-200 flex flex-col"
                         >
-                          <div className="flex items-center gap-3 mb-3">
+                          <div className="flex items-center gap-2 mb-2">
                             <img
                               src={job.logo}
                               alt={job.company}
-                              className="w-10 h-10 rounded-full"
+                              className="w-7 h-7 rounded-full"
                             />
                             <div>
-                              <h3 className="text-lg font-bold">{job.title}</h3>
-                              <p className="text-gray-500 text-sm">
+                              <h3 className="text-sm font-bold">{job.title}</h3>
+                              <p className="text-gray-500 text-xs">
                                 {job.company}
                               </p>
                             </div>
                           </div>
 
-                          <p className="text-gray-500 text-sm mb-3">
-                            <MapPin className="inline w-4 h-4 mr-1" />
+                          <p className="text-gray-500 text-xs mb-2">
+                            <MapPin className="inline w-3 h-3 mr-1" />
                             {job.location}
                           </p>
 
-                          <div className="flex flex-wrap gap-2 mb-4">
+                          <div className="flex flex-wrap gap-1 mb-2">
                             <span
-                              className={`text-xs px-3 py-1 rounded-full font-semibold border ${
+                              className={`text-xs px-2 py-0.5 rounded-full font-semibold border ${
                                 job.jobType === "Full-Time"
                                   ? "bg-green-100 text-green-600 border-green-300"
                                   : job.jobType === "Remote"
@@ -710,7 +712,7 @@ const Jobs = () => {
                             {job.categories.map((cat, i) => (
                               <span
                                 key={i}
-                                className={`text-xs px-3 py-1 rounded-full font-semibold border ${
+                                className={`text-xs px-2 py-0.5 rounded-full font-semibold border ${
                                   cat === "Marketing"
                                     ? "bg-yellow-100 text-yellow-600 border-yellow-300"
                                     : cat === "Design"
@@ -730,23 +732,23 @@ const Jobs = () => {
                               to="/description"
                               style={{
                                 display: "block",
-                                width: "150px",
+                                width: "100px",
                                 margin: "0 auto",
                               }}
                             >
-                              <button className="bg-blue-500 text-white px-4 py-2 rounded-sm w-full cursor-pointer mb-2">
+                              <button className="bg-blue-500 text-white px-3 py-1 rounded-sm w-full cursor-pointer mb-1 text-xs">
                                 Apply
                               </button>
                             </Link>
-                            <p className="text-xs text-gray-500 mt-2 font-medium">
+                            <p className="text-xs text-gray-500 mt-1 font-medium">
                               <span className="text-black font-bold">
                                 {job.applied}
                               </span>{" "}
                               applied of {job.capacity} capacity
                             </p>
-                            <div className="w-full bg-gray-200 h-2 mt-1 rounded-full relative">
+                            <div className="w-full bg-gray-200 h-1.5 mt-1 rounded-full relative">
                               <div
-                                className="bg-blue-500 h-2 rounded-full"
+                                className="bg-blue-500 h-1.5 rounded-full"
                                 style={{
                                   width: `${
                                     (job.applied / job.capacity) * 100
@@ -758,8 +760,8 @@ const Jobs = () => {
                         </div>
                       ))
                     ) : (
-                      <div className="text-center py-8 col-span-2 bg-white shadow-md rounded-sm">
-                        <p className="text-gray-500 text-lg">
+                      <div className="text-center py-6 col-span-2 bg-white shadow-md rounded-sm">
+                        <p className="text-gray-500 text-sm">
                           No jobs found matching your criteria
                         </p>
                       </div>
@@ -768,9 +770,9 @@ const Jobs = () => {
                 )}
 
                 {/* Pagination */}
-                <div className="flex justify-center items-center mt-6 gap-2">
+                <div className="flex justify-center items-center mt-4 gap-1">
                   <button
-                    className="px-3 py-1 text-gray-600 rounded hover:bg-gray-200 cursor-pointer"
+                    className="px-2 py-1 text-xs text-gray-600 rounded hover:bg-gray-200 cursor-pointer"
                     onClick={() =>
                       setCurrentPage((prev) => Math.max(prev - 1, 1))
                     }
@@ -781,7 +783,7 @@ const Jobs = () => {
                   {[...Array(totalPages)].map((_, index) => (
                     <button
                       key={index}
-                      className={`px-3 py-1 rounded cursor-pointer ${
+                      className={`px-2 py-1 rounded cursor-pointer text-xs ${
                         currentPage === index + 1
                           ? "bg-blue-500 text-white"
                           : "text-gray-600 hover:bg-gray-200"
@@ -792,7 +794,7 @@ const Jobs = () => {
                     </button>
                   ))}
                   <button
-                    className="px-3 py-1 text-gray-600 rounded hover:bg-gray-200 cursor-pointer"
+                    className="px-2 py-1 text-xs text-gray-600 rounded hover:bg-gray-200 cursor-pointer"
                     onClick={() =>
                       setCurrentPage((prev) => Math.min(prev + 1, totalPages))
                     }

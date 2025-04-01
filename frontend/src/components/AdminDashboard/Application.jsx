@@ -280,36 +280,36 @@ const Application = () => {
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
 
     return (
-      <div className="p-4 bg-white rounded-lg">
-        <div className="flex justify-between items-center mb-4">
+      <div className="p-3 bg-white rounded-lg">
+        <div className="flex justify-between items-center mb-3">
           <div>
-            <h2 className="text-xl font-semibold">
+            <h2 className="text-lg font-semibold">
               {tabContent[activeTab].title}
             </h2>
             {tabContent[activeTab].description && (
-              <p className="text-gray-600 mt-1">
+              <p className="text-gray-600 text-xs mt-0.5">
                 {tabContent[activeTab].description}
               </p>
             )}
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-1.5">
             {/* Search Input Field with Icon */}
-            <div className="flex items-center gap-2 border rounded-md px-3 py-1.5">
-              <Search className="w-5 h-5 text-gray-500" />
+            <div className="flex items-center gap-1 border rounded-md px-2 py-1">
+              <Search className="w-4 h-4 text-gray-500" />
               <input
                 type="text"
                 placeholder="Search..."
-                className="outline-none bg-transparent"
+                className="outline-none bg-transparent text-sm w-24"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
 
             {/* Filter Dropdown with Icon */}
-            <div className="flex items-center gap-2 border rounded-md px-3 py-1.5 cursor-pointer">
-              <Filter className="w-5 h-5 text-gray-500" />
+            <div className="flex items-center gap-1 border rounded-md px-2 py-1 cursor-pointer">
+              <Filter className="w-4 h-4 text-gray-500" />
               <select
-                className="outline-none bg-transparent cursor-pointer"
+                className="outline-none bg-transparent cursor-pointer text-sm"
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
               >
@@ -328,43 +328,43 @@ const Application = () => {
 
         {filteredApplications.length > 0 ? (
           <div className="overflow-x-auto">
-            <table className="w-full border-collapse bg-white shadow-md rounded-lg border-b border-gray-300">
+            <table className="w-full border-collapse bg-white shadow-sm rounded-lg border-b border-gray-300">
               <thead className="border-b border-gray-300">
-                <tr className="text-gray-600 text-md">
-                  <th className="p-4 text-left">#</th>
-                  <th className="p-4 text-left">Company Name</th>
-                  <th className="p-4 text-left">Roles</th>
-                  <th className="p-4 text-left">Date Applied</th>
-                  <th className="p-4 text-left">Status</th>
+                <tr className="text-gray-600 text-xs">
+                  <th className="p-2 text-left">#</th>
+                  <th className="p-2 text-left">Company Name</th>
+                  <th className="p-2 text-left">Roles</th>
+                  <th className="p-2 text-left">Date Applied</th>
+                  <th className="p-2 text-left">Status</th>
                 </tr>
               </thead>
               <tbody>
                 {paginatedApplications.map((item, index) => (
                   <tr
                     key={item.id}
-                    className={`text-black-500 text-md ${
+                    className={`text-black-500 text-xs ${
                       index % 2 !== 0 ? "bg-blue-50" : ""
                     }`}
                   >
-                    <td className="p-4">{startIndex + index + 1}</td>
-                    <td className="p-4 flex items-center gap-2 cursor-pointer">
+                    <td className="p-2">{startIndex + index + 1}</td>
+                    <td className="p-2 flex items-center gap-1.5 cursor-pointer">
                       <img
                         src={item.logo}
                         alt={item.company}
-                        className="w-6 h-6 rounded-full"
+                        className="w-5 h-5 rounded-full"
                       />
                       {item.company}
                     </td>
-                    <td className="p-4 cursor-pointer">{item.role}</td>
-                    <td className="p-4">{item.date}</td>
-                    <td className="p-4">
+                    <td className="p-2 cursor-pointer">{item.role}</td>
+                    <td className="p-2">{item.date}</td>
+                    <td className="p-2">
                       <span
-                        className={`px-3 py-1 rounded-full text-xs font-semibold ${item.color} cursor-pointer`}
+                        className={`px-2 py-0.5 rounded-full text-xs font-semibold ${item.color} cursor-pointer`}
                       >
                         {item.status}
                       </span>
                     </td>
-                    <td className="p-4 text-black-400 text-2xl cursor-pointer">
+                    <td className="p-2 text-black-400 text-lg cursor-pointer">
                       ...
                     </td>
                   </tr>
@@ -373,8 +373,8 @@ const Application = () => {
             </table>
           </div>
         ) : (
-          <div className="text-center py-10 bg-gray-50 rounded-lg">
-            <p className="text-gray-500">
+          <div className="text-center py-6 bg-gray-50 rounded-lg">
+            <p className="text-gray-500 text-sm">
               {tabContent[activeTab].emptyMessage}
             </p>
           </div>
@@ -382,8 +382,8 @@ const Application = () => {
 
         {/* Pagination - Only show if we have applications and more than one page */}
         {filteredApplications.length > 0 && getTotalPages() > 0 && (
-          <div className="flex justify-between items-center mt-6">
-            <div className="text-gray-500 text-sm">
+          <div className="flex justify-between items-center mt-4">
+            <div className="text-gray-500 text-xs">
               Showing {startIndex + 1} to{" "}
               {Math.min(
                 startIndex + ITEMS_PER_PAGE,
@@ -392,9 +392,9 @@ const Application = () => {
               of {filteredApplications.length} entries
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
               <button
-                className={`px-3 py-2 rounded-lg border cursor-pointer ${
+                className={`px-2 py-1 rounded-md border cursor-pointer text-xs ${
                   currentPage === 1
                     ? "bg-gray-100 text-gray-400 cursor-not-allowed"
                     : "hover:bg-gray-100 text-gray-700"
@@ -407,7 +407,7 @@ const Application = () => {
               {getPaginationNumbers().map((page, index) => (
                 <button
                   key={index}
-                  className={`px-3 py-2 rounded-lg ${
+                  className={`px-2 py-1 rounded-md text-xs ${
                     page === "..."
                       ? "cursor-default"
                       : page === currentPage
@@ -423,7 +423,7 @@ const Application = () => {
                 </button>
               ))}
               <button
-                className={`px-3 py-2 rounded-lg border cursor-pointer ${
+                className={`px-2 py-1 rounded-md border cursor-pointer text-xs ${
                   currentPage === getTotalPages()
                     ? "bg-gray-100 text-gray-400 cursor-not-allowed"
                     : "hover:bg-gray-100 text-gray-700"
@@ -448,29 +448,30 @@ const Application = () => {
         </div>
         <div className="flex-grow transition-all">
           <Header />
-          {/*Part 1*/}
-          <div className="flex justify-between items-center py-6 px-9">
+          {/*Part 1 - Header section*/}
+          <div className="flex justify-between items-center py-4 px-6">
             <div>
-              <h1 className="text-4xl font-semibold text-black-900">
+              <h1 className="text-2xl font-semibold text-black-900">
                 Keep it up, Jake
               </h1>
-              <p className="text-gray-500 mt-2 text-xl">
+              <p className="text-gray-500 text-sm">
                 Here is job applications status from July 19 - July 25.
               </p>
             </div>
-            <div className="flex items-center border-2 border-gray-300 px-4 py-2 cursor-pointer mr-4">
-              <span className="text-gray-700 font-semibold">
+            <div className="flex items-center border border-gray-300 px-3 py-1 cursor-pointer mr-2">
+              <span className="text-gray-700 text-sm font-semibold">
                 Jul 19 - Jul 25
               </span>
-              <CalendarIcon className="w-4 h-4 text-blue-500 ml-2" />
+              <CalendarIcon className="w-3 h-3 text-blue-500 ml-2" />
             </div>
           </div>
+
           {/*Part 2 - Notification that can be closed*/}
-          <div className={`px-7 ${notificationVisible ? "mb-8" : "mb-0"}`}>
+          <div className={`px-5 ${notificationVisible ? "mb-4" : "mb-0"}`}>
             {notificationVisible && (
-              <div className="bg-blue-50 flex justify-between items-start p-3 max-w-8xl mx-auto shadow-md min-h-[110px]">
-                <div className="flex items-start gap-4">
-                  <div className="relative w-12 h-12">
+              <div className="bg-blue-50 flex justify-between items-start p-2 max-w-8xl mx-auto shadow-sm min-h-[80px]">
+                <div className="flex items-start gap-3">
+                  <div className="relative w-10 h-10">
                     {/* Topmost SVG */}
                     <svg
                       width="21"
@@ -588,10 +589,10 @@ const Application = () => {
 
                   {/* Text Content */}
                   <div>
-                    <h2 className="text-blue-600 font-semibold text-lg">
+                    <h2 className="text-blue-600 font-semibold text-sm">
                       New Feature
                     </h2>
-                    <p className="text-gray-700 text-base">
+                    <p className="text-gray-700 text-xs">
                       You can request a follow-up 7 days after applying for a
                       job if the application status is in review.
                       <br /> Only one follow-up is allowed per job.
@@ -604,20 +605,21 @@ const Application = () => {
                   onClick={() => setNotificationVisible(false)}
                   className="text-gray-500 hover:text-gray-700 cursor-pointer"
                 >
-                  <X size={22} />
+                  <X size={18} />
                 </button>
               </div>
             )}
           </div>
-          {/*Part 3*/}
+
+          {/*Part 3 - Tabs section*/}
           <div>
             {/* Tabs */}
-            <div className="flex justify-between items-center py-4 px-6">
-              <div className="border-b border-gray-300 flex space-x-6 text-lg w-full">
+            <div className="flex justify-between items-center py-2 px-4">
+              <div className="border-b border-gray-300 flex space-x-4 text-base w-full">
                 {tabData.map((tab) => (
                   <button
                     key={tab.id}
-                    className={`pb-3 border-b-4 px-4 cursor-pointer ${
+                    className={`pb-2 border-b-2 px-3 cursor-pointer ${
                       activeTab === tab.id
                         ? "border-blue-500 font-semibold text-blue-600"
                         : "border-transparent text-gray-500"
@@ -625,13 +627,13 @@ const Application = () => {
                     onClick={() => setActiveTab(tab.id)}
                   >
                     {tab.name}{" "}
-                    <span className="text-gray-500">({tab.count})</span>
+                    <span className="text-gray-500 text-sm">({tab.count})</span>
                   </button>
                 ))}
               </div>
             </div>
 
-            <div className="p-4">{renderTabContent()}</div>
+            <div className="p-3">{renderTabContent()}</div>
           </div>
         </div>
       </div>

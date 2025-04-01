@@ -26,7 +26,7 @@ const Category = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="max-w-7xl mx-auto py-16 ">
+    <div className="max-w-6xl mx-auto py-16 ">
       <div className="flex justify-between items-center mb-12">
         <h2 className="text-5xl font-bold text-gray-900">
           <span className="text-[#3B8BEB]">Explore by</span> category
