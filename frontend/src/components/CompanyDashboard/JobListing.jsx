@@ -1,10 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { CalendarIcon } from "lucide-react";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
-
 import { ChevronRight, Filter, ChevronLeft } from "lucide-react";
-
 import { useNavigate } from "react-router-dom";
 
 const jobData = [
@@ -82,11 +80,20 @@ const JobListing = () => {
     jobType: null,
   });
 
+  // Filter jobs based on active filters
+  const filteredJobs = jobData.filter((job) => {
+    if (activeFilters.status && job.status !== activeFilters.status)
+      return false;
+    if (activeFilters.jobType && job.jobType !== activeFilters.jobType)
+      return false;
+    return true;
+  });
+
   // Calculate pagination
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = jobData.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(jobData.length / itemsPerPage);
+  const currentItems = filteredJobs.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredJobs.length / itemsPerPage);
 
   // Handle pagination
   const goToNextPage = () => {
@@ -122,6 +129,11 @@ const JobListing = () => {
     navigate("/job-applicant", { state: { jobData: job } });
   };
 
+  const resetFilters = () => {
+    setActiveFilters({ status: null, jobType: null });
+    setCurrentPage(1);
+  };
+
   return (
     <div className="flex flex-col min-h-screen">
       <div className="flex flex-row flex-grow">
@@ -130,56 +142,68 @@ const JobListing = () => {
         </div>
         <div className="flex-grow transition-all">
           <Header />
-          <div className="">
-            {/*Part 1*/}
-            <div className="flex justify-between items-center py-6 px-9">
+          <div className="p-4">
+            {/* Header Section */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
               <div>
-                <h1 className="text-4xl font-semibold text-black-900">
+                <h1 className="text-2xl font-semibold text-gray-900">
                   Job Listing
                 </h1>
-                <p className="text-gray-500 mt-2 text-xl">
+                <p className="text-gray-500 mt-1 text-sm">
                   Here is your jobs listing status from July 19 - July 25.
                 </p>
               </div>
               <div
-                className="flex items-center border-2 border-gray-300 px-4 py-2 cursor-pointer mr-4"
+                className="flex items-center border border-gray-300 px-3 py-1.5 rounded-md cursor-pointer hover:bg-gray-50 mt-2 md:mt-0"
                 onClick={() => console.log("Calendar clicked")}
               >
-                <span className="text-gray-700 font-semibold">
-                  Jul 19 - Jul 25
-                </span>
+                <span className="text-gray-700 text-sm">Jul 19 - Jul 25</span>
                 <CalendarIcon className="w-4 h-4 text-blue-500 ml-2" />
               </div>
             </div>
-            {/*Part 2*/}
-            <div className="bg-white border border-gray-400 overflow-hidden py-6 px-8 w-[95%] mx-auto">
-              <div className="flex justify-between items-center pb-6 border-b-2 border-gray-400">
-                <h2 className="text-2xl font-bold text-gray-800">Job List</h2>
-                <button
-                  className="flex items-center text-gray-700 hover:text-gray-900 bg-gray-100 px-4 py-2 rounded-md transition-colors cursor-pointer"
-                  onClick={() => console.log("Filters clicked")}
-                >
-                  <Filter className="mr-3 h-6 w-6" />
-                  <span className="font-medium">Filters</span>
-                </button>
+
+            {/* Job List Table */}
+            <div className="bg-white border border-gray-300 rounded-lg overflow-hidden">
+              <div className="flex justify-between items-center p-4 border-b border-gray-300">
+                <h2 className="text-lg font-semibold text-gray-800">
+                  Job List
+                </h2>
+                <div className="flex items-center space-x-2">
+                  {(activeFilters.status || activeFilters.jobType) && (
+                    <button
+                      onClick={resetFilters}
+                      className="text-xs text-blue-500 hover:underline cursor-pointer"
+                    >
+                      Clear filters
+                    </button>
+                  )}
+                  <button
+                    className="flex items-center text-gray-700 hover:text-gray-900 bg-gray-100 px-3 py-1.5 rounded-md text-sm cursor-pointer"
+                    onClick={() => console.log("Filters clicked")}
+                  >
+                    <Filter className="mr-2 h-4 w-4" />
+                    <span>Filters</span>
+                  </button>
+                </div>
               </div>
+
               <div className="overflow-x-auto">
-                <table className="w-full mt-4">
-                  <thead className=" border-b ">
+                <table className="w-full">
+                  <thead className="bg-gray-50">
                     <tr>
                       {[
                         "Roles",
                         "Status",
-                        "Date Posted",
-                        "Due Date",
-                        "Job Type",
+                        "Posted",
+                        "Due",
+                        "Type",
                         "Applicants",
                         "Needs",
                         "",
                       ].map((header) => (
                         <th
                           key={header}
-                          className="p-4 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider"
+                          className="p-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-default"
                         >
                           {header}
                         </th>
@@ -187,113 +211,128 @@ const JobListing = () => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200">
-                    {currentItems.map((job, index) => (
-                      <tr
-                        key={index}
-                        className="hover:bg-gray-50 transition-colors cursor-pointer"
-                        onClick={() => handleRowClick(job)}
-                      >
-                        <td className="p-4 whitespace-nowrap font-medium text-gray-900 text-base">
-                          {job.role}
-                        </td>
-                        <td className="p-4">
-                          <span
-                            className={`px-3 py-1 rounded-full text-sm font-medium cursor-pointer ${
-                              job.status === "Live"
-                                ? "bg-green-100 text-green-800"
-                                : "bg-red-100 text-red-800"
-                            }`}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleStatusFilter(job.status);
-                            }}
-                          >
-                            {job.status}
-                          </span>
-                        </td>
-                        <td className="p-4 text-sm text-gray-600">
-                          {job.datePosted}
-                        </td>
-                        <td className="p-4 text-sm text-gray-600">
-                          {job.dueDate}
-                        </td>
-                        <td className="p-4">
-                          <span
-                            className={`px-3 py-1 rounded-full text-sm font-medium cursor-pointer ${
-                              job.jobType === "Fulltime"
-                                ? "bg-blue-100 text-blue-800"
-                                : "bg-yellow-100 text-yellow-800"
-                            }`}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleJobTypeFilter(job.jobType);
-                            }}
-                          >
-                            {job.jobType}
-                          </span>
-                        </td>
-                        <td className="p-4 text-sm text-gray-600">
-                          {job.applicants}
-                        </td>
-                        <td className="p-4 text-sm text-gray-600">
-                          {job.needs}
-                        </td>
-                        <td className="p-4">
-                          <span
-                            className="cursor-pointer"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              navigate("/job-applicant", {
-                                state: { jobData: job },
-                              });
-                            }}
-                          >
-                            ...
-                          </span>
+                    {currentItems.length > 0 ? (
+                      currentItems.map((job, index) => (
+                        <tr
+                          key={index}
+                          className="hover:bg-gray-50 cursor-pointer"
+                          onClick={() => handleRowClick(job)}
+                        >
+                          <td className="p-3 whitespace-nowrap font-medium text-gray-900 text-sm">
+                            {job.role}
+                          </td>
+                          <td className="p-3">
+                            <span
+                              className={`px-2 py-0.5 rounded-full text-xs font-medium cursor-pointer ${
+                                job.status === "Live"
+                                  ? "bg-green-100 text-green-800 hover:bg-green-200"
+                                  : "bg-red-100 text-red-800 hover:bg-red-200"
+                              }`}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleStatusFilter(job.status);
+                              }}
+                            >
+                              {job.status}
+                            </span>
+                          </td>
+                          <td className="p-3 text-xs text-gray-600">
+                            {job.datePosted}
+                          </td>
+                          <td className="p-3 text-xs text-gray-600">
+                            {job.dueDate}
+                          </td>
+                          <td className="p-3">
+                            <span
+                              className={`px-2 py-0.5 rounded-full text-xs font-medium cursor-pointer ${
+                                job.jobType === "Fulltime"
+                                  ? "bg-blue-100 text-blue-800 hover:bg-blue-200"
+                                  : "bg-yellow-100 text-yellow-800 hover:bg-yellow-200"
+                              }`}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleJobTypeFilter(job.jobType);
+                              }}
+                            >
+                              {job.jobType}
+                            </span>
+                          </td>
+                          <td className="p-3 text-xs text-gray-600">
+                            {job.applicants.toLocaleString()}
+                          </td>
+                          <td className="p-3 text-xs text-gray-600">
+                            {job.needs}
+                          </td>
+                          <td className="p-3">
+                            <span
+                              className="text-gray-400 hover:text-gray-600 cursor-pointer"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                navigate("/job-applicant", {
+                                  state: { jobData: job },
+                                });
+                              }}
+                            >
+                              ...
+                            </span>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td
+                          colSpan="8"
+                          className="p-4 text-center text-sm text-gray-500"
+                        >
+                          No jobs found matching your filters
                         </td>
                       </tr>
-                    ))}
+                    )}
                   </tbody>
                 </table>
               </div>
-              <div className="flex justify-between items-center p-6 border-t border-gray-100">
-                <div className="text-sm text-gray-600 flex items-center">
+
+              {/* Pagination */}
+              <div className="flex flex-col sm:flex-row justify-between items-center p-3 border-t border-gray-200">
+                <div className="flex items-center text-xs text-gray-600 mb-2 sm:mb-0">
                   View
                   <select
-                    className="mx-3 border rounded text-sm p-2 bg-white cursor-pointer"
+                    className="mx-2 border rounded text-xs p-1 bg-white cursor-pointer"
                     value={itemsPerPage}
                     onChange={(e) => {
                       setItemsPerPage(Number(e.target.value));
                       setCurrentPage(1);
                     }}
                   >
+                    <option value={5}>5</option>
                     <option value={10}>10</option>
                     <option value={25}>25</option>
-                    <option value={50}>50</option>
                   </select>
-                  Applicants per page
+                  per page
                 </div>
-                <div className="flex items-center space-x-3">
+                <div className="flex items-center space-x-1">
                   <button
-                    className={`px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center cursor-pointer ${
-                      currentPage === 1 ? "opacity-50" : ""
+                    className={`p-1.5 text-gray-700 hover:bg-gray-100 rounded flex items-center cursor-pointer ${
+                      currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
                     }`}
                     onClick={goToPreviousPage}
                     disabled={currentPage === 1}
                   >
-                    <ChevronLeft className="h-4 w-4 mr-2" />
+                    <ChevronLeft className="h-3.5 w-3.5" />
                   </button>
-                  <span className="text-sm text-gray-700 px-3 py-1 bg-blue-400 rounded cursor-pointer">
-                    {currentPage}
+                  <span className="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded cursor-default">
+                    {currentPage} of {totalPages}
                   </span>
                   <button
-                    className={`px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center cursor-pointer ${
-                      currentPage === totalPages ? "opacity-50" : ""
+                    className={`p-1.5 text-gray-700 hover:bg-gray-100 rounded flex items-center cursor-pointer ${
+                      currentPage === totalPages
+                        ? "opacity-50 cursor-not-allowed"
+                        : ""
                     }`}
                     onClick={goToNextPage}
                     disabled={currentPage === totalPages}
                   >
-                    <ChevronRight className="h-4 w-4 ml-2" />
+                    <ChevronRight className="h-3.5 w-3.5" />
                   </button>
                 </div>
               </div>

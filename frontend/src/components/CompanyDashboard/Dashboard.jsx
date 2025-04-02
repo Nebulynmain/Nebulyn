@@ -180,67 +180,69 @@ const Dashboard = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <div className="flex flex-row flex-grow">
-        <div className="h-screen sticky top-0 ">
+        <div className="h-screen sticky top-0">
           <Sidebar />
         </div>
         <div className="flex-grow transition-all">
           <Header />
           <div className="">
-            {/*Part 1*/}
-            <div className="flex justify-between items-center py-6 px-9">
+            {/*Part 1 - Reduced text sizes*/}
+            <div className="flex justify-between items-center py-4 px-6">
               <div>
-                <h1 className="text-4xl font-semibold text-black-900">
+                <h1 className="text-3xl font-semibold text-black-900">
                   Good morning, Maria
                 </h1>
-                <p className="text-gray-500 mt-2 text-xl">
+                <p className="text-gray-500 mt-1 text-base">
                   Here is your job listings statistic report from July 19 - July
                   25.
                 </p>
               </div>
-              <div className="flex items-center border-2 border-gray-300 px-4 py-2 cursor-pointer mr-4">
-                <span className="text-gray-700 font-semibold">
+              <div className="flex items-center border-2 border-gray-300 px-3 py-1 cursor-pointer mr-4">
+                <span className="text-gray-700 font-semibold text-sm">
                   Jul 19 - Jul 25
                 </span>
-                <CalendarIcon className="w-4 h-4 text-blue-500 ml-2" />
+                <CalendarIcon className="w-3 h-3 text-blue-500 ml-2" />
               </div>
             </div>
-            {/*Part 2*/}
-            <div className="flex justify-between items-center py-4 px-6">
+
+            {/*Part 2 - Reduced card height and padding*/}
+            <div className="flex justify-between items-center py-3 px-2">
               {cards.map((card, index) => (
                 <div
                   key={index}
-                  className={`flex items-center justify-between ${card.color} text-white p-8 w-1/3 h-28 shadow-md mx-2 cursor-pointer`}
+                  className={`flex items-center justify-between ${card.color} text-white p-4 w-1/3 h-20 shadow-md mx-2 cursor-pointer`}
                 >
                   <div>
-                    <p className="text-4xl font-bold">{card.number}</p>
-                    <p className="text-base">{card.text}</p>
+                    <p className="text-3xl font-bold">{card.number}</p>
+                    <p className="text-sm">{card.text}</p>
                   </div>
-                  <ChevronRight size={24} />
+                  <ChevronRight size={20} />
                 </div>
               ))}
             </div>
-            {/*Part 3*/}
-            <div className="flex p-8">
-              <div className="w-3/4 pr-4 ">
+
+            {/*Part 3 - Reduced chart height and spacing*/}
+            <div className="flex p-4">
+              <div className="w-3/4 pr-4">
                 <div className="bg-white shadow rounded-lg overflow-hidden">
                   {/* Job Statistics Header */}
-                  <div className="p-6 pb-0">
+                  <div className="p-4 pb-0">
                     <div className="flex justify-between items-center">
                       <div>
-                        <h2 className="text-xl font-semibold text-gray-800">
+                        <h2 className="text-lg font-semibold text-gray-800">
                           Job statistics
                         </h2>
-                        <p className="text-sm text-gray-500">
+                        <p className="text-xs text-gray-500">
                           Showing Jobstatistic Jul 19-25
                         </p>
                       </div>
 
-                      {/* Period Tabs - Styled exactly as in image */}
+                      {/* Period Tabs - Made smaller */}
                       <div className="inline-flex rounded-md shadow-sm">
                         {["Week", "Month", "Year"].map((tab) => (
                           <button
                             key={tab}
-                            className={`px-5 py-1.5 text-sm font-medium cursor-pointer ${
+                            className={`px-4 py-1 text-xs font-medium cursor-pointer ${
                               activeTab === tab
                                 ? "bg-blue-500 text-white"
                                 : "bg-blue-100 text-blue-500"
@@ -259,13 +261,13 @@ const Dashboard = () => {
                       </div>
                     </div>
 
-                    {/* Section Tabs */}
-                    <div className="flex mt-4 border-b">
+                    {/* Section Tabs - Reduced size */}
+                    <div className="flex mt-2 border-b">
                       {["Overview", "Jobs View", "Jobs Applied"].map(
                         (section) => (
                           <button
                             key={section}
-                            className={`px-8 py-2 font-medium cursor-pointer ${
+                            className={`px-6 py-1 text-sm font-medium cursor-pointer ${
                               activeSection === section
                                 ? "text-blue-600 border-b-2 border-blue-600"
                                 : "text-gray-500"
@@ -279,15 +281,13 @@ const Dashboard = () => {
                     </div>
                   </div>
 
-                  <div className="p-6 flex flex-col md:flex-row">
-                    {/* Bar Chart - Now larger and more prominent */}
-                    <div className="w-full md:w-3/4 h-80">
-                      {" "}
-                      {/* Increased height and width */}
+                  <div className="p-4 flex flex-col md:flex-row">
+                    {/* Bar Chart - Reduced height */}
+                    <div className="w-full md:w-3/4 h-64">
                       <ResponsiveContainer width="100%" height="100%">
                         <BarChart
                           data={getChartData()}
-                          margin={{ top: 10, right: 10, left: 10, bottom: 30 }}
+                          margin={{ top: 5, right: 5, left: 5, bottom: 20 }}
                         >
                           <XAxis dataKey="day" />
                           <YAxis />
@@ -295,21 +295,21 @@ const Dashboard = () => {
                             content={({ active, payload }) => {
                               if (active && payload && payload.length) {
                                 return (
-                                  <div className="bg-gray-800 text-white p-2 rounded">
-                                    <p className="text-sm font-semibold">
+                                  <div className="bg-gray-800 text-white p-1 rounded">
+                                    <p className="text-xs font-semibold">
                                       {payload[0].payload.day}
                                     </p>
                                     {activeSection === "Overview" && (
                                       <>
                                         <div className="flex items-center my-1">
-                                          <div className="w-3 h-3 bg-blue-500 mr-2"></div>
-                                          <span>
+                                          <div className="w-2 h-2 bg-blue-500 mr-1"></div>
+                                          <span className="text-xs">
                                             Job Applied: {payload[1].value}
                                           </span>
                                         </div>
                                         <div className="flex items-center">
-                                          <div className="w-3 h-3 bg-yellow-400 mr-2"></div>
-                                          <span>
+                                          <div className="w-2 h-2 bg-yellow-400 mr-1"></div>
+                                          <span className="text-xs">
                                             Job View: {payload[0].value}
                                           </span>
                                         </div>
@@ -317,16 +317,16 @@ const Dashboard = () => {
                                     )}
                                     {activeSection === "Jobs View" && (
                                       <div className="flex items-center">
-                                        <div className="w-3 h-3 bg-yellow-400 mr-2"></div>
-                                        <span>
+                                        <div className="w-2 h-2 bg-yellow-400 mr-1"></div>
+                                        <span className="text-xs">
                                           Job View: {payload[0].value}
                                         </span>
                                       </div>
                                     )}
                                     {activeSection === "Jobs Applied" && (
                                       <div className="flex items-center">
-                                        <div className="w-3 h-3 bg-blue-500 mr-2"></div>
-                                        <span>
+                                        <div className="w-2 h-2 bg-blue-500 mr-1"></div>
+                                        <span className="text-xs">
                                           Job Applied: {payload[0].value}
                                         </span>
                                       </div>
@@ -343,20 +343,18 @@ const Dashboard = () => {
                                 dataKey="jobView"
                                 fill="#FBBF24"
                                 name="Job View"
-                                barSize={40}
-                              />{" "}
-                              {/* Increased bar size */}
+                                barSize={30}
+                              />
                               <Bar
                                 dataKey="jobApplied"
                                 fill="#2563EB"
                                 name="Job Applied"
-                                barSize={40}
-                              />{" "}
-                              {/* Increased bar size */}
+                                barSize={30}
+                              />
                               <Legend
                                 verticalAlign="bottom"
-                                height={36}
-                                wrapperStyle={{ paddingTop: "10px" }}
+                                height={30}
+                                wrapperStyle={{ paddingTop: "5px" }}
                               />
                             </>
                           )}
@@ -366,13 +364,12 @@ const Dashboard = () => {
                                 dataKey="jobView"
                                 fill="#FBBF24"
                                 name="Job View"
-                                barSize={40}
-                              />{" "}
-                              {/* Increased bar size */}
+                                barSize={30}
+                              />
                               <Legend
                                 verticalAlign="bottom"
-                                height={36}
-                                wrapperStyle={{ paddingTop: "10px" }}
+                                height={30}
+                                wrapperStyle={{ paddingTop: "5px" }}
                               />
                             </>
                           )}
@@ -382,13 +379,12 @@ const Dashboard = () => {
                                 dataKey="jobApplied"
                                 fill="#2563EB"
                                 name="Job Applied"
-                                barSize={40}
-                              />{" "}
-                              {/* Increased bar size */}
+                                barSize={30}
+                              />
                               <Legend
                                 verticalAlign="bottom"
-                                height={36}
-                                wrapperStyle={{ paddingTop: "10px" }}
+                                height={30}
+                                wrapperStyle={{ paddingTop: "5px" }}
                               />
                             </>
                           )}
@@ -396,27 +392,27 @@ const Dashboard = () => {
                       </ResponsiveContainer>
                     </div>
 
-                    {/* Statistics Cards - Repositioned for better layout */}
-                    <div className="w-full md:w-1/4 mt-4 md:mt-0 md:pl-4 flex flex-col space-y-4">
-                      <div className="bg-gray-100 rounded-lg p-4 relative cursor-pointer">
-                        <p className="text-gray-600 text-sm">Job Views</p>
-                        <p className="text-2xl font-bold">2,342</p>
-                        <p className="text-blue-600 text-sm">
+                    {/* Statistics Cards - More compact */}
+                    <div className="w-full md:w-1/4 mt-2 md:mt-0 md:pl-2 flex flex-col space-y-2">
+                      <div className="bg-gray-100 rounded-lg p-3 relative cursor-pointer">
+                        <p className="text-gray-600 text-xs">Job Views</p>
+                        <p className="text-xl font-bold">2,342</p>
+                        <p className="text-blue-600 text-xs">
                           This Week <span className="font-bold">6.4%</span> 🔼
                         </p>
-                        <div className="absolute top-4 right-4 bg-yellow-100 p-2 rounded-full">
-                          <Eye size={20} className="text-yellow-500" />
+                        <div className="absolute top-3 right-3 bg-yellow-100 p-1 rounded-full">
+                          <Eye size={16} className="text-yellow-500" />
                         </div>
                       </div>
 
-                      <div className="bg-gray-100 rounded-lg p-4 relative cursor-pointer">
-                        <p className="text-gray-600 text-sm">Job Applied</p>
-                        <p className="text-2xl font-bold">654</p>
-                        <p className="text-red-600 text-sm">
+                      <div className="bg-gray-100 rounded-lg p-3 relative cursor-pointer">
+                        <p className="text-gray-600 text-xs">Job Applied</p>
+                        <p className="text-xl font-bold">654</p>
+                        <p className="text-red-600 text-xs">
                           This Week <span className="font-bold">0.5%</span> 🔽
                         </p>
-                        <div className="absolute top-4 right-4 bg-blue-100 p-2 rounded-full">
-                          <FileText size={20} className="text-blue-500" />
+                        <div className="absolute top-3 right-3 bg-blue-100 p-1 rounded-full">
+                          <FileText size={16} className="text-blue-500" />
                         </div>
                       </div>
                     </div>
@@ -424,31 +420,31 @@ const Dashboard = () => {
                 </div>
               </div>
 
-              {/* Right Sidebar */}
-              <div className="w-1/4 space-y-6">
+              {/* Right Sidebar - More compact */}
+              <div className="w-1/4 space-y-3">
                 {/* Job Open Card */}
-                <div className="bg-white shadow rounded-lg p-6 cursor-pointer">
-                  <h3 className="text-lg font-medium text-gray-600">
+                <div className="bg-white shadow rounded-lg p-4 cursor-pointer">
+                  <h3 className="text-base font-medium text-gray-600">
                     Job Open
                   </h3>
-                  <p className="text-5xl font-bold mt-2 text-gray-900">
+                  <p className="text-4xl font-bold mt-1 text-gray-900">
                     {jobOpenings}
                   </p>
-                  <p className="text-gray-500 mt-1">Jobs Opened</p>
+                  <p className="text-gray-500 text-sm mt-1">Jobs Opened</p>
                 </div>
 
                 {/* Applicants Summary Card */}
-                <div className="bg-white shadow rounded-lg p-6 -mt-4 cursor-pointer">
-                  <h3 className="text-lg font-medium text-gray-600">
+                <div className="bg-white shadow rounded-lg p-4 cursor-pointer">
+                  <h3 className="text-base font-medium text-gray-600">
                     Applicants Summary
                   </h3>
-                  <p className="text-5xl font-bold mt-2 text-gray-900">
+                  <p className="text-4xl font-bold mt-1 text-gray-900">
                     {applicants.total}
                   </p>
-                  <p className="text-gray-500 mt-1">Applicants</p>
+                  <p className="text-gray-500 text-sm mt-1">Applicants</p>
 
                   {/* Progress Bar */}
-                  <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden mt-4">
+                  <div className="w-full h-1.5 bg-gray-200 rounded-full overflow-hidden mt-3">
                     <div className="h-full flex">
                       {applicants.categories.map((category, index) => (
                         <div
@@ -466,17 +462,17 @@ const Dashboard = () => {
                   </div>
 
                   {/* Legend */}
-                  <div className="grid grid-cols-1 gap-2 mt-4">
+                  <div className="grid grid-cols-1 gap-1 mt-2">
                     {applicants.categories.map((category, index) => (
                       <div
                         key={index}
                         className="flex items-center cursor-pointer"
                       >
                         <span
-                          className="w-3 h-3 inline-block rounded-sm mr-2"
+                          className="w-2 h-2 inline-block rounded-sm mr-1"
                           style={{ backgroundColor: category.color }}
                         ></span>
-                        <span className="text-gray-600 text-sm">
+                        <span className="text-gray-600 text-xs">
                           {category.name} : {category.count}
                         </span>
                       </div>
@@ -485,17 +481,18 @@ const Dashboard = () => {
                 </div>
               </div>
             </div>
-            {/*Part 4*/}
+
+            {/*Part 4 - Job Updates section with smaller elements*/}
             <div className="w-[95%] mx-auto border border-gray-200 rounded-lg overflow-hidden bg-white shadow-sm">
-              <div className="flex justify-between items-center py-4 px-6 border-b border-gray-200">
-                <h2 className="text-xl font-bold text-gray-800">Job Updates</h2>
+              <div className="flex justify-between items-center py-3 px-4 border-b border-gray-200">
+                <h2 className="text-lg font-bold text-gray-800">Job Updates</h2>
                 <a
                   href="#"
-                  className="text-blue-500 flex items-center cursor-pointer"
+                  className="text-blue-500 flex items-center cursor-pointer text-sm"
                 >
                   View All
                   <svg
-                    className="w-4 h-4 ml-1"
+                    className="w-3 h-3 ml-1"
                     fill="currentColor"
                     viewBox="0 0 20 20"
                   >
@@ -508,21 +505,21 @@ const Dashboard = () => {
                 </a>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 p-3">
                 {jobs.map((job) => (
                   <div
                     key={job.id}
                     className="border border-gray-200 rounded-lg overflow-hidden cursor-pointer"
                   >
-                    <div className="p-4">
-                      <div className="flex items-center mb-4">
+                    <div className="p-3">
+                      <div className="flex items-center mb-2">
                         <div
-                          className={`w-10 h-10 rounded-md flex items-center justify-center bg-${job.color}-100`}
+                          className={`w-8 h-8 rounded-md flex items-center justify-center bg-${job.color}-100`}
                         >
                           <img
                             src={job.logo}
                             alt={job.company}
-                            className="w-6 h-6"
+                            className="w-5 h-5"
                           />
                         </div>
                         <span
@@ -534,18 +531,18 @@ const Dashboard = () => {
                         </span>
                       </div>
 
-                      <h3 className="font-semibold text-gray-800 mb-1">
+                      <h3 className="font-semibold text-gray-800 mb-1 text-sm">
                         {job.title}
                       </h3>
-                      <p className="text-sm text-gray-500 mb-4">
+                      <p className="text-xs text-gray-500 mb-2">
                         {job.company} • {job.location}
                       </p>
 
-                      <div className="flex flex-wrap gap-2 mb-4">
+                      <div className="flex flex-wrap gap-1 mb-2">
                         {job.tags.map((tag, index) => (
                           <span
                             key={index}
-                            className={`text-xs px-3 py-1 rounded-full cursor-pointer ${
+                            className={`text-xs px-2 py-0.5 rounded-full cursor-pointer ${
                               tag === "Marketing"
                                 ? "bg-yellow-100 text-yellow-800"
                                 : tag === "Design"
@@ -559,11 +556,11 @@ const Dashboard = () => {
                       </div>
 
                       <div className="mt-2">
-                        <div className="w-full bg-gray-200 rounded-full h-1.5">
+                        <div className="w-full bg-gray-200 rounded-full h-1">
                           <div
                             className={`${getProgressBarColor(
                               job.color
-                            )} h-1.5 rounded-full`}
+                            )} h-1 rounded-full`}
                             style={{
                               width: `${(job.applied / job.capacity) * 100}%`,
                             }}

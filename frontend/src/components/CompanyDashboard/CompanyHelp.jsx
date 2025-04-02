@@ -31,51 +31,51 @@ const CompanyHelp = () => {
         <div className="flex-grow transition-all">
           <div className="flex-grow overflow-y-auto">
             <Header />
-            <div className="p-4 flex min-h-screen">
+            <div className="p-2 flex min-h-screen">
               {/* Sidebar */}
-              <div className="w-1/4 p-4 bg-white border-r border-gray-200">
+              <div className="w-1/4 p-2 bg-white border-r border-gray-200">
                 {/* Search Box */}
-                <div className="mb-4">
-                  <p className="font-semibold text-lg text-gray-500 mb-8">
+                <div className="mb-2">
+                  <p className="font-semibold text-sm text-gray-500 mb-4">
                     Type your question or search keyword
                   </p>
                   <div className="relative">
                     <input
                       type="text"
                       placeholder="Search"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-sm text-gray-700 pl-10"
+                      className="w-full px-3 py-1 border border-gray-300 rounded-sm text-gray-700 text-xs pl-8"
                     />
-                    <FiSearch className="absolute left-3 top-3 text-gray-400 cursor-pointer" />
+                    <FiSearch className="absolute left-2 top-2 text-gray-400 cursor-pointer w-3 h-3" />
                   </div>
                 </div>
                 {/* Menu Items */}
-                <ul className="space-y-6 mt-4">
-                  <li className="font-semibold text-blue-600 mt-10 cursor-pointer">
+                <ul className="space-y-3 mt-3">
+                  <li className="font-semibold text-blue-600 mt-4 cursor-pointer text-xs">
                     Getting Started
                   </li>
-                  <li className="border-b border-gray-400 pb-5 cursor-pointer">
+                  <li className="border-b border-gray-400 pb-2 cursor-pointer text-xs">
                     My Profile
                   </li>
-                  <li className="border-b border-gray-400 pb-5 cursor-pointer">
+                  <li className="border-b border-gray-400 pb-2 cursor-pointer text-xs">
                     Applying for a job
                   </li>
-                  <li className="border-b border-gray-400 pb-5 cursor-pointer">
+                  <li className="border-b border-gray-400 pb-2 cursor-pointer text-xs">
                     Job Search Tips
                   </li>
-                  <li className="cursor-pointer">Job Alerts</li>
+                  <li className="cursor-pointer text-xs">Job Alerts</li>
                 </ul>
                 {/* Contact Section */}
-                <div className="absolute bottom-6 flex items-center z-10 w-[17.5%]">
-                  <div className="p-6 bg-[#3B8BEB] text-white rounded-lg w-full shadow-lg relative h-[30%] flex flex-col justify-between">
+                <div className="absolute bottom-3 flex items-center z-10 w-[17.5%]">
+                  <div className="p-3 bg-[#3B8BEB] text-white rounded-lg w-full shadow-md relative h-[30%] flex flex-col justify-between">
                     <div>
-                      <p className="font-semibold text-lg leading-tight">
+                      <p className="font-semibold text-xs leading-tight">
                         Didn't find what you were looking for?
                       </p>
-                      <p className="text-sm mt-2">
+                      <p className="text-xs mt-1">
                         Contact our customer service
                       </p>
                     </div>
-                    <button className="w-[50%] mt-3 bg-white text-[#3B8BEB] py-2 rounded-md cursor-pointer font-semibold text-sm shadow">
+                    <button className="w-[50%] mt-2 bg-white text-[#3B8BEB] py-1 px-2 rounded-md cursor-pointer font-semibold text-xs shadow">
                       Contact Us
                     </button>
                   </div>
@@ -83,35 +83,35 @@ const CompanyHelp = () => {
               </div>
 
               {/* Main Content */}
-              <div className="w-3/4 p-6">
+              <div className="w-3/4 p-3">
                 {/* Sorting Section */}
-                <div className="flex items-center justify-start mb-6">
-                  <span className="font-medium text-gray-700 mr-2">
+                <div className="flex items-center justify-start mb-3">
+                  <span className="font-medium text-gray-700 mr-2 text-xs">
                     Sort by:
                   </span>
-                  <select className="border p-2 rounded-md text-gray-700 border-gray-400 cursor-pointer">
+                  <select className="border p-1 rounded-md text-gray-700 border-gray-400 cursor-pointer text-xs">
                     <option>Most relevant</option>
                   </select>
                 </div>
 
                 {/* Articles */}
-                <div className="space-y-4">
+                <div className="space-y-3">
                   {articlesData.map((article, index) => (
                     <div
                       key={index}
-                      className="bg-white border border-gray-300 p-6 rounded-sm shadow-sm relative"
+                      className="bg-white border border-gray-300 p-3 rounded-sm shadow-sm relative"
                     >
                       {/* Title and Three-Dot Menu */}
                       <div className="flex justify-between items-center">
-                        <h3 className="font-bold text-2xl text-gray-900">
+                        <h3 className="font-bold text-base text-gray-900">
                           {article.title}
                         </h3>
-                        <button className="text-black-500 hover:text-gray-700 -mt-2 cursor-pointer">
+                        <button className="text-black-500 hover:text-gray-700 -mt-1 cursor-pointer">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 24 24"
                             fill="currentColor"
-                            className="w-6 h-6"
+                            className="w-4 h-4"
                           >
                             <path
                               fillRule="evenodd"
@@ -123,29 +123,33 @@ const CompanyHelp = () => {
                       </div>
 
                       {/* Content */}
-                      <p className="text-gray-600 text-xl mt-2">
+                      <p className="text-gray-600 text-xs mt-1">
                         {article.content}
                       </p>
-                      <div className="border-b border-gray-400 mt-4"></div>
+                      <div className="border-b border-gray-400 mt-2"></div>
 
                       {/* Feedback Buttons */}
-                      <div className="mt-4 flex items-center space-x-3">
-                        <span className="text-gray-700 text-lg">
+                      <div className="mt-2 flex items-center space-x-2">
+                        <span className="text-gray-700 text-xs">
                           Was this article helpful?
                         </span>
-                        <button className="border px-4 py-1 rounded-sm bg-white border-blue-400 text-gray-700 hover:bg-gray-100 flex items-center space-x-2 cursor-pointer">
+                        <button className="border px-2 py-0.5 rounded-sm bg-white border-blue-400 text-gray-700 hover:bg-gray-100 flex items-center space-x-1 cursor-pointer">
                           <ThumbsUp
-                            size={16}
+                            size={12}
                             className="text-blue-400 font-bold"
                           />
-                          <span className="text-blue-400 font-bold">Yes</span>
+                          <span className="text-blue-400 font-bold text-xs">
+                            Yes
+                          </span>
                         </button>
-                        <button className="border px-4 py-1 rounded-sm bg-white border-blue-400 text-gray-700 hover:bg-gray-100 flex items-center space-x-2 cursor-pointer">
+                        <button className="border px-2 py-0.5 rounded-sm bg-white border-blue-400 text-gray-700 hover:bg-gray-100 flex items-center space-x-1 cursor-pointer">
                           <ThumbsDown
-                            size={16}
+                            size={12}
                             className="text-blue-400 font-bold"
                           />
-                          <span className="text-blue-400 font-bold">No</span>
+                          <span className="text-blue-400 font-bold text-xs">
+                            No
+                          </span>
                         </button>
                       </div>
                     </div>
