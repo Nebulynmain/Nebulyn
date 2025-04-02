@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
 import { Search, Filter, Star, ChevronLeft, ChevronRight } from "lucide-react";
@@ -103,8 +103,6 @@ const Applicant = () => {
   const [selectedCandidates, setSelectedCandidates] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectAll, setSelectAll] = useState(false);
-
-  // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const [applicantsPerPage, setApplicantsPerPage] = useState(10);
 
@@ -125,12 +123,10 @@ const Applicant = () => {
     }
   };
 
-  // Filtering applicants based on search input
   const filteredCandidates = candidates.filter((candidate) =>
     candidate.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Pagination logic
   const indexOfLastApplicant = currentPage * applicantsPerPage;
   const indexOfFirstApplicant = indexOfLastApplicant - applicantsPerPage;
   const currentApplicants = filteredCandidates.slice(
@@ -138,13 +134,9 @@ const Applicant = () => {
     indexOfLastApplicant
   );
 
-  // Change page
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
-  // Calculate total pages
   const totalPages = Math.ceil(filteredCandidates.length / applicantsPerPage);
 
-  // Define the order of hiring stages for consistent display
   const stageOrder = [
     "Shortlisted",
     "Interview",
@@ -153,7 +145,6 @@ const Applicant = () => {
     "Declined",
   ];
 
-  // Group candidates by hiring stage for pipeline view
   const stageGroups = {
     Shortlisted: filteredCandidates.filter(
       (c) => c.hiringStage === "Shortlisted"
@@ -166,7 +157,6 @@ const Applicant = () => {
     Declined: filteredCandidates.filter((c) => c.hiringStage === "Declined"),
   };
 
-  // Get stage background color
   const getStageColor = (stage) => {
     switch (stage) {
       case "Shortlisted":
@@ -184,7 +174,6 @@ const Applicant = () => {
     }
   };
 
-  // Get stage text color
   const getStageTextColor = (stage) => {
     switch (stage) {
       case "Shortlisted":
@@ -202,48 +191,51 @@ const Applicant = () => {
     }
   };
 
-  // Get star color for ratings
   const getStarColor = (score) => {
     return score > 0 ? "text-yellow-500" : "text-gray-400";
   };
 
-  // Candidate card for pipeline view
   const CandidateCard = ({ candidate }) => (
-    <div className="bg-white p-4 rounded-lg shadow mb-3 border border-gray-200">
-      <div className="flex items-center mb-3">
-        <div className="w-10 h-10 flex-shrink-0">
+    <div
+      className="bg-white p-2 rounded-md shadow-sm border border-gray-200 mb-2 cursor-pointer hover:shadow-md transition-shadow"
+      onClick={() => navigate("/applicant-detail")}
+    >
+      <div className="flex items-center mb-1">
+        <div className="w-7 h-7 flex-shrink-0">
           <img
             src={candidate.image}
             alt={candidate.name}
             className="w-full h-full rounded-full border object-cover"
           />
         </div>
-        <div className="ml-3 min-w-0">
-          <h3 className="font-medium text-gray-900 truncate">
+        <div className="ml-2 min-w-0">
+          <h3 className="text-xs font-medium text-gray-900 truncate">
             {candidate.name}
           </h3>
-          <p className="text-sm text-gray-500 truncate">{candidate.jobRole}</p>
+          <p className="text-[0.65rem] text-gray-500 truncate">
+            {candidate.jobRole}
+          </p>
         </div>
       </div>
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center text-[0.65rem]">
         <div className="flex items-center">
           <Star
-            className={getStarColor(candidate.score)}
+            className={`${getStarColor(candidate.score)} h-3 w-3`}
             fill={candidate.score > 0 ? "#FACC15" : "none"}
-            size={16}
           />
-          <span className="ml-1 text-gray-900 font-medium">
-            {candidate.score}
-          </span>
+          <span className="ml-0.5 text-gray-900">{candidate.score}</span>
         </div>
-        <span className="text-sm text-gray-500">{candidate.appliedDate}</span>
+        <span className="text-gray-500">{candidate.appliedDate}</span>
       </div>
-      <div className="mt-3 flex justify-center">
+      <div className="mt-1">
         <button
-          className="w-full px-3 py-1 cursor-pointer border border-blue-500 bg-[#E9EBFD] text-blue-500 text-sm rounded hover:bg-blue-100 transition-colors"
-          onClick={() => navigate("/applicant-detail")}
+          className="w-full px-1 py-0.5 text-[0.65rem] border border-blue-500 bg-[#E9EBFD] text-blue-500 rounded hover:bg-blue-100 transition-colors cursor-pointer"
+          onClick={(e) => {
+            e.stopPropagation();
+            navigate("/applicant-detail");
+          }}
         >
-          See Application
+          View
         </button>
       </div>
     </div>
@@ -258,89 +250,85 @@ const Applicant = () => {
         <div className="flex-grow transition-all w-full">
           <Header />
           <div className="container mx-auto">
-            {/* Header Section */}
-            <div className="flex flex-col md:flex-row md:justify-between md:items-center p-4 md:p-6">
-              <h2 className="text-2xl md:text-3xl font-semibold text-gray-800 mb-4 md:mb-0">
-                Total Applicants:{" "}
+            <div className="flex flex-col md:flex-row md:justify-between md:items-center p-2 md:p-3">
+              <h2 className="text-lg md:text-xl font-semibold text-gray-800 mb-2 md:mb-0">
+                Applicants:{" "}
                 <span className="font-bold">{filteredCandidates.length}</span>
               </h2>
-              <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
-                {/* Search Input */}
-                <div className="relative w-full md:w-auto">
-                  <Search className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+              <div className="flex flex-col md:flex-row items-start md:items-center gap-2">
+                <div className="relative w-full md:w-40">
+                  <Search className="absolute left-2 top-2 h-3.5 w-3.5 text-gray-400" />
                   <input
                     type="text"
-                    placeholder="Search Applicants"
-                    className="w-full md:w-64 pl-10 pr-5 py-2 md:py-3 text-base border rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    placeholder="Search"
+                    className="w-full pl-7 pr-2 py-1.5 text-xs border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-text"
                     value={searchTerm}
                     onChange={(e) => {
                       setSearchTerm(e.target.value);
-                      setCurrentPage(1); // Reset to first page when searching
+                      setCurrentPage(1);
                     }}
                   />
                 </div>
 
-                {/* Filter Button */}
-                <button className="flex items-center gap-2 px-5 py-2 md:py-3 border rounded-lg hover:bg-gray-100 text-base w-full md:w-auto justify-center md:justify-start cursor-pointer">
-                  <Filter className="h-5 w-5" /> Filter
+                <button className="flex items-center gap-1 px-2 py-1.5 border rounded-md hover:bg-gray-100 text-xs cursor-pointer">
+                  <Filter className="h-3.5 w-3.5" /> Filter
                 </button>
 
-                {/* Vertical Divider */}
-                <div className="hidden md:block border-l h-8 mx-1"></div>
+                <div className="hidden md:block border-l h-5 mx-1"></div>
 
-                {/* View Toggle Buttons */}
-                <div className="flex bg-blue-100 p-2 rounded-lg w-full md:w-auto mt-4 md:mt-0">
+                <div className="flex bg-blue-100 p-0.5 rounded-md">
                   <button
-                    className={`w-40 h-12 px-6 py-2 rounded-md text-blue-600 text-base cursor-pointer ${
+                    className={`w-28 h-7 px-2 py-0.5 rounded-sm text-blue-600 text-xs cursor-pointer ${
                       view === "pipeline"
-                        ? "bg-white shadow"
+                        ? "bg-white shadow-sm"
                         : "hover:bg-blue-200"
                     }`}
                     onClick={() => setView("pipeline")}
                   >
-                    Pipeline View
+                    Pipeline
                   </button>
                   <button
-                    className={`w-40 h-12 px-6 py-2 rounded-md text-blue-600 text-base cursor-pointer ${
-                      view === "table" ? "bg-white shadow" : "hover:bg-blue-200"
+                    className={`w-28 h-7 px-2 py-0.5 rounded-sm text-blue-600 text-xs cursor-pointer ${
+                      view === "table"
+                        ? "bg-white shadow-sm"
+                        : "hover:bg-blue-200"
                     }`}
                     onClick={() => setView("table")}
                   >
-                    Table View
+                    Table
                   </button>
                 </div>
               </div>
             </div>
 
-            {/* Table View */}
             {view === "table" && (
-              <div className="overflow-x-auto px-4 md:px-6">
-                <table className="min-w-full border-collapse border border-gray-200 rounded-lg overflow-hidden">
-                  <thead className="bg-white text-gray-500 uppercase text-sm border-b border-gray-200">
+              <div className="overflow-x-auto px-3 md:px-4">
+                <table className="min-w-full border-collapse border border-gray-200 rounded-md overflow-hidden text-sm">
+                  <thead className="bg-white text-gray-600 uppercase border-b border-gray-200">
                     <tr>
-                      <th className="p-3 md:p-4 text-left">
+                      <th className="p-2 text-left">
                         <input
                           type="checkbox"
-                          className="form-checkbox text-blue-500 border-gray-300 rounded-md cursor-pointer"
+                          className="form-checkbox text-blue-500 border-gray-300 rounded cursor-pointer h-4 w-4"
                           checked={selectAll}
                           onChange={handleSelectAll}
                         />
                       </th>
                       {[
-                        "Full Name",
+                        "Name",
                         "Score",
-                        "Hiring Stage",
-                        "Applied Date",
-                        "Job Role",
+                        "Stage",
+                        "Applied",
+                        "Role",
                         "Action",
                       ].map((header) => (
                         <th
                           key={header}
-                          className="p-3 md:p-4 text-left font-medium"
+                          className="p-2 text-left font-medium cursor-pointer hover:bg-gray-50"
                         >
-                          <div className="flex items-center space-x-2 cursor-pointer">
+                          <div className="flex items-center space-x-1">
                             <span>{header}</span>
-                            <span className="text-xs">▲▼</span>
+                            <span className="text-xs opacity-50">▲▼</span>
                           </div>
                         </th>
                       ))}
@@ -352,87 +340,72 @@ const Applicant = () => {
                       currentApplicants.map((candidate) => (
                         <tr
                           key={candidate.id}
-                          className="border-t hover:bg-gray-50"
+                          className="border-t hover:bg-gray-50 cursor-pointer"
+                          onClick={() => navigate("/applicant-detail")}
                         >
-                          <td className="p-3 md:p-4">
+                          <td
+                            className="p-2"
+                            onClick={(e) => e.stopPropagation()}
+                          >
                             <input
                               type="checkbox"
-                              className="form-checkbox text-blue-500 cursor-pointer"
+                              className="form-checkbox text-blue-500 cursor-pointer h-4 w-4"
                               checked={selectedCandidates.includes(
                                 candidate.id
                               )}
                               onChange={() => handleSelect(candidate.id)}
                             />
                           </td>
-                          <td className="p-3 md:p-4">
-                            <div className="flex items-center space-x-3">
+                          <td className="p-2">
+                            <div className="flex items-center space-x-2">
                               <img
                                 src={candidate.image}
                                 alt={candidate.name}
-                                className="w-8 h-8 rounded-full border object-cover"
+                                className="w-6 h-6 rounded-full border object-cover"
                               />
                               <span className="font-medium text-gray-900">
                                 {candidate.name}
                               </span>
                             </div>
                           </td>
-                          <td className="p-3 md:p-4">
+                          <td className="p-2">
                             <div className="flex items-center space-x-1">
                               <Star
-                                className={getStarColor(candidate.score)}
+                                className={`${getStarColor(
+                                  candidate.score
+                                )} h-4 w-4`}
                                 fill={candidate.score > 0 ? "#FACC15" : "none"}
-                                size={16}
                               />
-                              <span className="text-gray-900 font-medium">
-                                {candidate.score}
-                              </span>
+                              <span>{candidate.score}</span>
                             </div>
                           </td>
-                          <td className="p-3 md:p-4">
+                          <td className="p-2">
                             <span
-                              className={`px-3 py-1 rounded-full text-sm font-medium 
-                ${
-                  candidate.hiringStage === "Interview"
-                    ? "text-yellow-600 bg-yellow-100"
-                    : ""
-                }
-                ${
-                  candidate.hiringStage === "Shortlisted"
-                    ? "text-blue-600 bg-blue-100"
-                    : ""
-                }
-                ${
-                  candidate.hiringStage === "Declined"
-                    ? "text-red-600 bg-red-100"
-                    : ""
-                }
-                ${
-                  candidate.hiringStage === "Hired"
-                    ? "text-green-600 bg-green-100"
-                    : ""
-                }
-                ${
-                  candidate.hiringStage === "Interviewed"
-                    ? "text-blue-600 bg-blue-100"
-                    : ""
-                }`}
+                              className={`px-2 py-1 rounded-full text-xs font-medium 
+                      ${getStageTextColor(candidate.hiringStage)} 
+                      ${getStageColor(candidate.hiringStage)}`}
                             >
                               {candidate.hiringStage}
                             </span>
                           </td>
-                          <td className="p-3 md:p-4">
+                          <td className="p-2 text-gray-600">
                             {candidate.appliedDate}
                           </td>
-                          <td className="p-3 md:p-4">{candidate.jobRole}</td>
-                          <td className="p-3 md:p-4">
+                          <td className="p-2 text-gray-600">
+                            {candidate.jobRole}
+                          </td>
+                          <td className="p-2">
                             <button
-                              className="px-3 py-1 md:px-4 md:py-2 border border-blue-500 bg-[#E9EBFD] text-blue-500 rounded text-sm cursor-pointer"
-                              onClick={() => navigate("/applicant-detail")}
+                              className="px-2 py-1 text-xs border border-blue-500 bg-[#E9EBFD] text-blue-500 rounded cursor-pointer hover:bg-blue-100"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                navigate("/applicant-detail");
+                              }}
                             >
-                              See Application
+                              View
                             </button>
                           </td>
-                          <td className="p-4 text-gray-600 text-lg cursor-pointer">
+                          <td className="p-2 text-gray-600 cursor-pointer hover:bg-gray-100 rounded">
                             ...
                           </td>
                         </tr>
@@ -441,7 +414,7 @@ const Applicant = () => {
                       <tr>
                         <td
                           colSpan="7"
-                          className="p-4 text-center text-gray-500"
+                          className="p-3 text-center text-gray-500 text-sm"
                         >
                           No matching applicants found
                         </td>
@@ -452,30 +425,28 @@ const Applicant = () => {
               </div>
             )}
 
-            {/* Pipeline View */}
             {view === "pipeline" && (
-              <div className="p-4">
-                {/* Responsive Pipeline Grid Layout */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+              <div className="p-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-2">
                   {stageOrder.map((stage) => (
-                    <div key={stage} className="bg-white rounded-lg shadow">
+                    <div key={stage} className="bg-white rounded-md shadow-sm">
                       <div
-                        className={`p-3 rounded-t-lg ${getStageColor(stage)}`}
+                        className={`p-1.5 rounded-t-md ${getStageColor(stage)}`}
                       >
                         <div className="flex justify-between items-center">
                           <h3
-                            className={`font-medium ${getStageTextColor(
+                            className={`text-xs font-medium ${getStageTextColor(
                               stage
                             )}`}
                           >
                             {stage}
                           </h3>
-                          <span className="bg-white px-2 py-1 rounded-full text-sm font-medium text-gray-700">
+                          <span className="bg-white px-1 py-0.5 rounded-full text-[0.65rem] font-medium text-gray-700">
                             {stageGroups[stage].length}
                           </span>
                         </div>
                       </div>
-                      <div className="p-3 max-h-96 overflow-y-auto">
+                      <div className="p-1.5 max-h-[calc(100vh-250px)] overflow-y-auto">
                         {stageGroups[stage].length > 0 ? (
                           stageGroups[stage].map((candidate) => (
                             <CandidateCard
@@ -484,7 +455,7 @@ const Applicant = () => {
                             />
                           ))
                         ) : (
-                          <div className="text-center py-8 text-gray-500">
+                          <div className="text-center py-3 text-gray-500 text-[0.65rem]">
                             No candidates
                           </div>
                         )}
@@ -495,109 +466,75 @@ const Applicant = () => {
               </div>
             )}
 
-            {/* Pagination - Only show for table view */}
             {view === "table" && (
-              <div className="flex flex-col md:flex-row justify-between items-center p-4 md:p-6">
-                <div className="flex items-center space-x-2 mb-4 md:mb-0">
-                  <span>View</span>
+              <div className="flex flex-col md:flex-row justify-between items-center p-2 md:p-3 text-xs">
+                <div className="flex items-center space-x-1.5 mb-2 md:mb-0">
+                  <span>Show</span>
                   <select
                     value={applicantsPerPage}
                     onChange={(e) => {
                       setApplicantsPerPage(Number(e.target.value));
-                      setCurrentPage(1); // Reset to first page
+                      setCurrentPage(1);
                     }}
-                    className="border rounded-md px-2 py-1 cursor-pointer"
+                    className="border rounded px-1 py-0.5 cursor-pointer"
                   >
                     <option value={10}>10</option>
                     <option value={20}>20</option>
                     <option value={50}>50</option>
                   </select>
-                  <span>Applicants per page</span>
+                  <span>per page</span>
                 </div>
-                <div className="flex items-center space-x-1 md:space-x-2 overflow-x-auto w-full md:w-auto justify-center">
+                <div className="flex items-center space-x-1">
                   <button
                     onClick={() =>
                       setCurrentPage((prev) => Math.max(prev - 1, 1))
                     }
                     disabled={currentPage === 1}
-                    className={`p-2 border rounded-md ${
+                    className={`p-1 border rounded ${
                       currentPage === 1
                         ? "text-gray-300 cursor-not-allowed"
                         : "hover:bg-gray-100 cursor-pointer"
                     }`}
                   >
-                    <ChevronLeft size={16} />
+                    <ChevronLeft size={12} />
                   </button>
-                  {totalPages <= 5 ? (
-                    [...Array(totalPages)].map((_, index) => (
+                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                    let pageNum;
+                    if (totalPages <= 5) {
+                      pageNum = i + 1;
+                    } else if (currentPage <= 3) {
+                      pageNum = i + 1;
+                    } else if (currentPage >= totalPages - 2) {
+                      pageNum = totalPages - 4 + i;
+                    } else {
+                      pageNum = currentPage - 2 + i;
+                    }
+                    return (
                       <button
-                        key={index + 1}
-                        onClick={() => paginate(index + 1)}
-                        className={`px-3 py-1 md:px-4 md:py-2 border rounded-md cursor-pointer ${
-                          currentPage === index + 1
+                        key={pageNum}
+                        onClick={() => paginate(pageNum)}
+                        className={`px-2 py-0.5 border rounded ${
+                          currentPage === pageNum
                             ? "bg-blue-500 text-white"
-                            : "hover:bg-gray-100"
+                            : "hover:bg-gray-100 cursor-pointer"
                         }`}
                       >
-                        {index + 1}
+                        {pageNum}
                       </button>
-                    ))
-                  ) : (
-                    // Show limited pagination buttons for many pages
-                    <>
-                      {currentPage > 1 && (
-                        <button
-                          onClick={() => paginate(1)}
-                          className="px-3 py-1 md:px-4 md:py-2 border rounded-md hover:bg-gray-100 cursor-pointer"
-                        >
-                          1
-                        </button>
-                      )}
-                      {currentPage > 2 && <span className="px-1">...</span>}
-                      {currentPage > 1 && (
-                        <button
-                          onClick={() => paginate(currentPage - 1)}
-                          className="px-3 py-1 md:px-4 md:py-2 border rounded-md hover:bg-gray-100 cursor-pointer"
-                        >
-                          {currentPage - 1}
-                        </button>
-                      )}
-                      <button className="px-3 py-1 md:px-4 md:py-2 border rounded-md bg-blue-500 text-white cursor-pointer">
-                        {currentPage}
-                      </button>
-                      {currentPage < totalPages && (
-                        <button
-                          onClick={() => paginate(currentPage + 1)}
-                          className="px-3 py-1 md:px-4 md:py-2 border rounded-md hover:bg-gray-100 cursor-pointer"
-                        >
-                          {currentPage + 1}
-                        </button>
-                      )}
-                      {currentPage < totalPages - 1 && (
-                        <span className="px-1">...</span>
-                      )}
-                      {currentPage < totalPages && (
-                        <button
-                          onClick={() => paginate(totalPages)}
-                          className="px-3 py-1 md:px-4 md:py-2 border rounded-md hover:bg-gray-100 cursor-pointer"
-                        >
-                          {totalPages}
-                        </button>
-                      )}
-                    </>
-                  )}
+                    );
+                  })}
                   <button
                     onClick={() =>
                       setCurrentPage((prev) => Math.min(prev + 1, totalPages))
                     }
                     disabled={currentPage === totalPages}
-                    className={`p-2 border rounded-md ${
+                    className={`p-1 border rounded ${
                       currentPage === totalPages
                         ? "text-gray-300 cursor-not-allowed"
                         : "hover:bg-gray-100 cursor-pointer"
                     }`}
                   >
-                    <ChevronRight size={16} />
+                    <ChevronRight size={12} />
                   </button>
                 </div>
               </div>
