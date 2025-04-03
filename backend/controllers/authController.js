@@ -56,6 +56,21 @@ export const login = async (req, res) => {
     }
 };
 
+export const getProfile = async (req, res) => {
+    try {
+        const user = await User.findById(req.id).select("-password");
+        
+        if (!user) {
+            return res.status(404).json({ ok: false, message: "User not found", data: null });
+        }
+        
+        return res.status(200).json({ ok: true, message: "User profile retrieved successfully", data: user });
+    } catch (error) {
+        console.error("Error retrieving profile", error);
+        return res.status(500).json({ ok: false, message: "Internal server error", data: null });
+    }
+};
+
 export const logout = async (req, res) => {
     try {
         return res.status(200).cookie("token", "", { maxAge: 0 }).json({

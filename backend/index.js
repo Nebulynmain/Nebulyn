@@ -12,7 +12,18 @@ const app = express();
 
 dotenv.config();
 const PORT = process.env.PORT || 8000 ;
-app.use(cors());
+
+// Configure CORS
+const corsOptions = {
+  origin: 'http://localhost:5173', // Frontend URL
+  credentials: true, // Allow cookies to be sent with requests
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allowed HTTP methods
+  allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
+  exposedHeaders: ['set-cookie'], // Headers that the frontend can read
+  maxAge: 86400 // Cache preflight request results for 24 hours (in seconds)
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(cookieParser());

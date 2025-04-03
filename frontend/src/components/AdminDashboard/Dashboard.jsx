@@ -4,8 +4,12 @@ import Sidebar from "./Sidebar";
 import Header from "./Header";
 import { MoreHorizontal, ArrowRight } from "lucide-react";
 import { PieChart, Pie, Cell } from "recharts";
+import { API_URL } from "../../App";
+import axios from "axios";
+import { format, parseISO, startOfMonth, endOfMonth } from "date-fns";
 
-const data = [
+// Dummy data for fallback
+const dummyData = [
   { name: "Unsuitable", value: 60, color: "#3B82F6" }, // Blue color
   { name: "Interviewed", value: 40, color: "#E2E8F0" }, // Gray color
 ];
@@ -114,41 +118,165 @@ const applications = [
 ];
 
 const Dashboard = () => {
-  const interviewsByDate = {
-    "25 November": [
-      { time: "10:00 AM", name: "", role: "", image: "" },
-      { time: "10:30 AM", name: "", role: "", image: "" },
-      {
-        time: "11:00 AM",
-        name: "Lisa Garcia",
-        role: "Senior Developer",
-        image: "/api/placeholder/32/32",
-      },
-    ],
-    "26 November": [
-      { time: "10:00 AM", name: "", role: "", image: "" },
-      {
-        time: "10:30 AM",
-        name: "Joe Bartmann",
-        role: "HR Manager at Divvy",
-        image: "https://via.placeholder.com/32",
-      },
-      { time: "11:00 AM", name: "", role: "", image: "" },
-    ],
-    "27 November": [
-      {
-        time: "10:00 AM",
-        name: "Michael Chen",
-        role: "Product Manager",
-        image: "/api/placeholder/32/32",
-      },
-      { time: "10:30 AM", name: "", role: "", image: "" },
-      { time: "11:00 AM", name: "", role: "", image: "" },
-    ],
-  };
-
-  // State for current date
+  // State for data from API
+  const [user, setUser] = useState(null);
+  const [applications, setApplications] = useState([]);
+  const [totalJobs, setTotalJobs] = useState(0);
+  const [interviewCount, setInterviewCount] = useState(0);
+  const [dateRange, setDateRange] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [chartData, setChartData] = useState(dummyData);
+  
+  // State for current date in the interviews calendar
   const [currentDate, setCurrentDate] = useState("26 November");
+  const [interviewsByDate, setInterviewsByDate] = useState({});
+
+  // Fetch user data on component mount
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/auth/profile`, {
+          withCredentials: true
+        });
+        
+        if (response.data.ok) {
+          setUser(response.data.data);
+        } else {
+          setError("Failed to fetch user data");
+        }
+      } catch (err) {
+        console.error("Error fetching user:", err);
+        setError("Error fetching user data");
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
+  // Fetch applications data
+  useEffect(() => {
+    const fetchApplications = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(`${API_URL}/application/user`, {
+          withCredentials: true
+        });
+        
+        if (response.data.ok) {
+          const appData = response.data.data;
+          setApplications(appData);
+          
+          // Calculate stats
+          setTotalJobs(appData.length);
+          
+          // Count interviews
+          const interviewCount = appData.filter(app => 
+            app.status === "Interview" || app.status === "Shortlisted"
+          ).length;
+          setInterviewCount(interviewCount);
+          
+          // Set date range
+          if (appData.length > 0) {
+            const now = new Date();
+            const start = startOfMonth(now);
+            const end = endOfMonth(now);
+            setDateRange(`${format(start, 'MMM dd')} - ${format(end, 'MMM dd')}`);
+          }
+          
+          // Prepare chart data
+          const interviewed = appData.filter(app => 
+            app.status === "Interview" || app.status === "Shortlisted" || app.status === "Hired"
+          ).length;
+          
+          const unsuitable = appData.filter(app => 
+            app.status === "Rejected" || app.status === "In Review"
+          ).length;
+          
+          if (appData.length > 0) {
+            const interviewedPercentage = Math.round((interviewed / appData.length) * 100);
+            const unsuitablePercentage = 100 - interviewedPercentage;
+            
+            setChartData([
+              { name: "Unsuitable", value: unsuitablePercentage, color: "#3B82F6" },
+              { name: "Interviewed", value: interviewedPercentage, color: "#E2E8F0" },
+            ]);
+          }
+          
+          // Process interview dates
+          processInterviewDates(appData);
+        } else {
+          setError("Failed to fetch applications");
+        }
+      } catch (err) {
+        console.error("Error fetching applications:", err);
+        setError("Error fetching application data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchApplications();
+  }, []);
+  
+  // Process interview dates from applications
+  const processInterviewDates = (applications) => {
+    const interviews = {};
+    
+    // Get applications with interview status
+    const interviewApps = applications.filter(app => 
+      app.status === "Interview" || app.status === "Shortlisted"
+    );
+    
+    // Group by date
+    interviewApps.forEach(app => {
+      // This is a placeholder as we don't have actual interview dates in the model
+      // In a real implementation, you'd use the actual interview date field
+      const interviewDate = format(parseISO(app.createdAt || app.appliedAt), 'dd MMMM');
+      
+      if (!interviews[interviewDate]) {
+        interviews[interviewDate] = [];
+      }
+      
+      // Create a time slot (this is a placeholder)
+      const hours = Math.floor(Math.random() * 8) + 9; // 9 AM to 5 PM
+      const minutes = Math.random() > 0.5 ? '00' : '30';
+      const time = `${hours}:${minutes} ${hours >= 12 ? 'PM' : 'AM'}`;
+      
+      interviews[interviewDate].push({
+        time,
+        name: app.job ? app.job.jobTitle : 'Unknown Position',
+        role: app.job ? `at ${app.job.company?.companyName || 'Unknown Company'}` : '',
+        image: "/api/placeholder/32/32",
+      });
+    });
+    
+    // If no interviews, use dummy data
+    if (Object.keys(interviews).length === 0) {
+      interviews["26 November"] = [
+        { time: "10:00 AM", name: "", role: "", image: "" },
+        { time: "10:30 AM", name: "Joe Bartmann", role: "HR Manager at Divvy", image: "https://via.placeholder.com/32" },
+        { time: "11:00 AM", name: "", role: "", image: "" },
+      ];
+      interviews["25 November"] = [
+        { time: "10:00 AM", name: "", role: "", image: "" },
+        { time: "10:30 AM", name: "", role: "", image: "" },
+        { time: "11:00 AM", name: "Lisa Garcia", role: "Senior Developer", image: "/api/placeholder/32/32" },
+      ];
+      interviews["27 November"] = [
+        { time: "10:00 AM", name: "Michael Chen", role: "Product Manager", image: "/api/placeholder/32/32" },
+        { time: "10:30 AM", name: "", role: "", image: "" },
+        { time: "11:00 AM", name: "", role: "", image: "" },
+      ];
+    }
+    
+    setInterviewsByDate(interviews);
+    
+    // Set current date to first date with interviews
+    if (Object.keys(interviews).length > 0) {
+      setCurrentDate(Object.keys(interviews)[0]);
+    }
+  };
 
   // Get available dates in array format
   const availableDates = Object.keys(interviewsByDate);
@@ -187,16 +315,16 @@ const Dashboard = () => {
               <div className="flex justify-between items-center py-4 px-6">
                 <div>
                   <h1 className="text-2xl font-semibold text-black-900">
-                    Good morning, Jake
+                    Good morning, {user ? user.fullName.split(" ")[0] : "User"}
                   </h1>
                   <p className="text-gray-500 mt-1 text-base">
                     Here is what's happening with your job search applications
-                    from July 19 - July 25.
+                    from {dateRange || "this month"}.
                   </p>
                 </div>
                 <div className="flex items-center border-2 border-gray-300 px-3 py-1 cursor-pointer mr-3">
                   <span className="text-gray-700 font-semibold text-sm">
-                    Jul 19 - Jul 25
+                    {dateRange || "This Month"}
                   </span>
                   <CalendarIcon className="w-3 h-3 text-blue-500 ml-2" />
                 </div>
@@ -212,7 +340,9 @@ const Dashboard = () => {
                       <p className="text-base font-bold text-black-500 mb-2">
                         Total Jobs Applied
                       </p>
-                      <h2 className="text-5xl font-bold text-gray-900">45</h2>
+                      <h2 className="text-5xl font-bold text-gray-900">
+                        {loading ? "..." : totalJobs}
+                      </h2>
                     </div>
                     <div className="text-gray-300">
                       <svg
@@ -256,7 +386,9 @@ const Dashboard = () => {
                       <p className="text-base font-bold text-black-500 mb-2">
                         Interviewed
                       </p>
-                      <h2 className="text-5xl font-bold text-gray-900">18</h2>
+                      <h2 className="text-5xl font-bold text-gray-900">
+                        {loading ? "..." : interviewCount}
+                      </h2>
                     </div>
                     <div className="text-gray-300">
                       <svg
@@ -314,7 +446,7 @@ const Dashboard = () => {
                     <div className="relative mb-3">
                       <PieChart width={150} height={150}>
                         <Pie
-                          data={data}
+                          data={chartData}
                           dataKey="value"
                           nameKey="name"
                           cx="50%"
@@ -322,7 +454,7 @@ const Dashboard = () => {
                           outerRadius={65}
                           innerRadius={40}
                         >
-                          {data.map((entry, index) => (
+                          {chartData.map((entry, index) => (
                             <Cell key={`cell-${index}`} fill={entry.color} />
                           ))}
                         </Pie>
@@ -334,13 +466,13 @@ const Dashboard = () => {
                       <div className="flex items-center mb-2">
                         <span className="w-3 h-3 bg-[#3B8BEB] rounded-sm mr-2"></span>
                         <span className="text-sm text-gray-900 font-medium">
-                          60% Unsuitable
+                          {chartData[0].value}% Unsuitable
                         </span>
                       </div>
                       <div className="flex items-center">
                         <span className="w-3 h-3 bg-gray-300 rounded-sm mr-2"></span>
                         <span className="text-sm text-gray-500 font-medium">
-                          40% Interviewed
+                          {chartData[1].value}% Interviewed
                         </span>
                       </div>
                     </div>
@@ -446,6 +578,13 @@ const Dashboard = () => {
                 </div>
               </div>
 
+              {/* Show error message if there's an error */}
+              {error && (
+                <div className="bg-red-100 text-red-800 p-3 mx-6 my-2 rounded-md">
+                  {error}
+                </div>
+              )}
+
               {/*Part 3 - Recent Applications with reduced spacing*/}
               <div className="w-[95%] border border-gray-200 rounded-md ml-6 mt-6 mb-6">
                 {/* Header - reduced padding */}
@@ -455,50 +594,135 @@ const Dashboard = () => {
                   </h2>
                 </div>
 
-                <div className="px-4">
-                  {applications.map((app) => (
-                    <div
-                      key={app.id}
-                      className={`flex items-center justify-between py-3 px-4 ${app.bgColor} mt-3 mb-3 cursor-pointer`}
-                    >
-                      {/* Left Section: Icon & Job Details */}
-                      <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10">{app.icon}</div>
-                        <div>
-                          <h3 className="text-base font-extrabold text-gray-800">
-                            {app.position}
-                          </h3>
-                          <p className="text-gray-500 text-xs">
-                            {app.company} • {app.location} • Full-Time
+                {loading ? (
+                  <div className="p-6 text-center text-gray-500">Loading applications...</div>
+                ) : applications.length === 0 ? (
+                  <div className="p-6 text-center text-gray-500">No applications found</div>
+                ) : (
+                  <div className="px-4">
+                    {applications.slice(0, 3).map((app) => (
+                      <div
+                        key={app._id}
+                        className={`flex items-center justify-between py-3 px-4 ${
+                          app.status === "Shortlisted" || app.status === "Hired" ? "bg-blue-50" : ""
+                        } mt-3 mb-3 cursor-pointer`}
+                      >
+                        {/* Left Section: Icon & Job Details */}
+                        <div className="flex items-center space-x-3">
+                          <div className="w-10 h-10">
+                            {app.status === "Hired" ? (
+                              <svg
+                                width="48"
+                                height="48"
+                                viewBox="0 0 48 48"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path
+                                  d="M24 12L12 18V30L24 36L36 30V18L24 12Z"
+                                  fill="#4ADE80"
+                                  stroke="#4ADE80"
+                                  strokeWidth="1.5"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                />
+                                <path
+                                  d="M24 36V24"
+                                  stroke="white"
+                                  strokeWidth="1.5"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                />
+                                <path
+                                  d="M36 18L24 24L12 18"
+                                  stroke="white"
+                                  strokeWidth="1.5"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                />
+                              </svg>
+                            ) : app.status === "Rejected" ? (
+                              <svg
+                                width="48"
+                                height="48"
+                                viewBox="0 0 48 48"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path d="M32 16H24V32H32V16Z" fill="#FF6B6B" />
+                                <path d="M16 16H24V24H16V16Z" fill="#FF6B6B" />
+                                <path d="M16 24H24V32H16V24Z" fill="#FF9F9F" />
+                              </svg>
+                            ) : (
+                              <svg
+                                width="48"
+                                height="48"
+                                viewBox="0 0 48 48"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <circle cx="24" cy="24" r="20" fill="#06B6D4" />
+                                <path
+                                  d="M30 19L24 24L30 29"
+                                  stroke="white"
+                                  strokeWidth="2"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                />
+                                <path
+                                  d="M18 29V19"
+                                  stroke="white"
+                                  strokeWidth="2"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                />
+                              </svg>
+                            )}
+                          </div>
+                          <div>
+                            <h3 className="text-base font-extrabold text-gray-800">
+                              {app.job?.jobTitle || "Unknown Position"}
+                            </h3>
+                            <p className="text-gray-500 text-xs">
+                              {app.job?.company?.companyName || "Unknown Company"} • {app.job?.location || "Unknown Location"} • {app.job?.jobType || "Unknown Type"}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Center Section: Date Applied */}
+                        <div className="flex flex-col items-center">
+                          <p className="text-gray-600 text-xs font-bold">
+                            Date Applied
+                          </p>
+                          <p className="text-gray-800 text-xs">
+                            {app.appliedAt ? format(new Date(app.appliedAt), 'dd MMM yyyy') : format(new Date(app.createdAt), 'dd MMM yyyy')}
                           </p>
                         </div>
-                      </div>
 
-                      {/* Center Section: Date Applied */}
-                      <div className="flex flex-col items-center">
-                        <p className="text-gray-600 text-xs font-bold">
-                          Date Applied
-                        </p>
-                        <p className="text-gray-800 text-xs">
-                          {app.dateApplied}
-                        </p>
-                      </div>
+                        {/* Right Section: Status & More Options */}
+                        <div className="flex items-center space-x-4">
+                          <div
+                            className={`px-3 py-1 rounded-full text-xs font-medium border ${
+                              app.status === "Hired" || app.status === "Shortlisted"
+                                ? "border-blue-300 text-blue-500"
+                                : app.status === "Rejected"
+                                ? "border-red-300 text-red-500"
+                                : app.status === "In Review"
+                                ? "border-amber-300 text-amber-500"
+                                : "border-gray-300 text-gray-500"
+                            }`}
+                          >
+                            {app.status}
+                          </div>
 
-                      {/* Right Section: Status & More Options */}
-                      <div className="flex items-center space-x-4">
-                        <div
-                          className={`px-3 py-1 rounded-full text-xs font-medium border ${app.statusColor}`}
-                        >
-                          {app.status}
+                          <button className="text-gray-400 cursor-pointer">
+                            <MoreHorizontal size={18} />
+                          </button>
                         </div>
-
-                        <button className="text-gray-400 cursor-pointer">
-                          <MoreHorizontal size={18} />
-                        </button>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
 
                 {/* View all link - reduced spacing */}
                 <div className="flex justify-center py-3 mb-2">

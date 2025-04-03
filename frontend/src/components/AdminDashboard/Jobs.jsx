@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
 import {
@@ -8,80 +8,89 @@ import {
   ChevronUp,
   List,
   Grid,
+  Loader,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import axios from "axios";
+import { API_URL } from "../../App";
 
-// Expanded job data for better demonstration
-const initialJobs = [
+// Fallback job data for when API fails
+const fallbackJobs = [
   {
+    id: "fallback1",
     title: "Social Media Assistant",
     company: "Nomad",
     location: "Paris, France",
-    jobType: "Full-Time",
-    categories: ["Marketing", "Design"],
+    type: "Full-Time",
+    category: ["Marketing", "Design"],
     applied: 5,
     capacity: 10,
-    logo: "https://via.placeholder.com/40",
+    logo: null,
     salary: "$1200 - $1500",
     level: "Entry Level",
   },
   {
+    id: "fallback2",
     title: "Brand Designer",
     company: "Dropbox",
     location: "San Francisco, USA",
-    jobType: "Part-Time",
-    categories: ["Design"],
+    type: "Part-Time",
+    category: ["Design"],
     applied: 2,
     capacity: 10,
-    logo: "https://via.placeholder.com/40",
+    logo: null,
     salary: "$2000 - $2500",
     level: "Mid Level",
   },
   {
+    id: "fallback3",
     title: "UI Designer",
     company: "Google",
     location: "Delhi, India",
-    jobType: "Remote",
-    categories: ["Design", "Technology"],
+    type: "Remote",
+    category: ["Design", "Technology"],
     applied: 8,
     capacity: 15,
-    logo: "https://via.placeholder.com/40",
+    logo: null,
     salary: "$1500 - $2000",
     level: "Mid Level",
   },
   {
+    id: "fallback4",
     title: "Marketing Manager",
     company: "Amazon",
     location: "Mumbai, India",
-    jobType: "Full-Time",
-    categories: ["Marketing", "Business"],
+    type: "Full-Time",
+    category: ["Marketing", "Business"],
     applied: 12,
     capacity: 20,
-    logo: "https://via.placeholder.com/40",
+    logo: null,
     salary: "$3000 or above",
     level: "Senior Level",
   },
   {
+    id: "fallback5",
     title: "UX Researcher",
     company: "Microsoft",
     location: "Bangalore, India",
-    jobType: "Internship",
-    categories: ["Design", "Technology"],
+    type: "Internship",
+    category: ["Design", "Technology"],
     applied: 3,
     capacity: 5,
-    logo: "https://via.placeholder.com/40",
+    logo: null,
     salary: "$700 - $1000",
     level: "Entry Level",
   },
   {
+    id: "fallback6",
     title: "Android Developer",
     company: "Netflix",
     location: "Chennai, India",
-    jobType: "Contract",
-    categories: ["Engineering", "Technology"],
+    type: "Contract",
+    category: ["Engineering", "Technology"],
     applied: 7,
     capacity: 10,
-    logo: "https://via.placeholder.com/40",
+    logo: null,
     salary: "$1500 - $2000",
     level: "Mid Level",
   },
@@ -89,7 +98,7 @@ const initialJobs = [
 
 const Jobs = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [location, setLocation] = useState("Delhi, India");
+  const [location, setLocation] = useState("");
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const locations = [
     "Delhi, India",
@@ -101,43 +110,9 @@ const Jobs = () => {
   ];
   const popularJobs = ["UI Designer", "UX Researcher", "Android", "Admin"];
   const [isOpen, setIsOpen] = useState(true);
-  const jobTypes = [
-    { type: "Full-Time", count: 2 },
-    { type: "Part-Time", count: 1 },
-    { type: "Remote", count: 1 },
-    { type: "Internship", count: 1 },
-    { type: "Contract", count: 1 },
-  ];
   const [categoriesOpen, setCategoriesOpen] = useState(true);
   const [jobLevelOpen, setJobLevelOpen] = useState(true);
   const [salaryOpen, setSalaryOpen] = useState(true);
-
-  const categories = [
-    { name: "Design", count: 4 },
-    { name: "Sales", count: 0 },
-    { name: "Marketing", count: 2 },
-    { name: "Business", count: 1 },
-    { name: "Human Resource", count: 0 },
-    { name: "Finance", count: 0 },
-    { name: "Engineering", count: 1 },
-    { name: "Technology", count: 3 },
-  ];
-
-  const jobLevels = [
-    { name: "Entry Level", count: 2 },
-    { name: "Mid Level", count: 3 },
-    { name: "Senior Level", count: 1 },
-    { name: "Director", count: 0 },
-    { name: "VP or Above", count: 0 },
-  ];
-
-  const salaryRanges = [
-    { label: "$700 - $1000", count: 1 },
-    { label: "$1200 - $1500", count: 1 },
-    { label: "$1500 - $2000", count: 2 },
-    { label: "$2000 - $2500", count: 1 },
-    { label: "$3000 or above", count: 1 },
-  ];
 
   const [view, setView] = useState("list");
   const [sortBy, setSortBy] = useState("Relevance");
@@ -146,6 +121,15 @@ const Jobs = () => {
   const jobsPerPage = 5;
   const sortOptions = ["Relevance", "Newest", "Most Applied"];
 
+  // State for API data
+  const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [jobTypes, setJobTypes] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [jobLevels, setJobLevels] = useState([]);
+  const [salaryRanges, setSalaryRanges] = useState([]);
+
   // Filter states
   const [selectedJobTypes, setSelectedJobTypes] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
@@ -153,11 +137,218 @@ const Jobs = () => {
   const [selectedSalaryRanges, setSelectedSalaryRanges] = useState([]);
 
   // Filtered jobs state
-  const [filteredJobs, setFilteredJobs] = useState(initialJobs);
+  const [filteredJobs, setFilteredJobs] = useState([]);
 
-  // Apply all filters
+  // Helper function to count occurrences
+  const countOccurrences = (array, key = null) => {
+    const counts = {};
+    array.forEach(item => {
+      const value = key ? item[key] : item;
+      counts[value] = (counts[value] || 0) + 1;
+    });
+    return counts;
+  };
+
+  // Fetch jobs from backend
   useEffect(() => {
-    let result = initialJobs;
+    const fetchJobs = async () => {
+      try {
+        setLoading(true);
+        console.log("API_URL value:", API_URL);
+        console.log("Fetching jobs from:", `${API_URL}/job/get-job`);
+        
+        const response = await axios.get(`${API_URL}/job/get-job`, {
+          withCredentials: true
+        });
+        
+        console.log("API Response status:", response.status);
+        console.log("Full API Response structure:", {
+          status: response.status,
+          statusText: response.statusText,
+          headers: response.headers,
+          config: response.config,
+          dataType: typeof response.data,
+          hasOk: response.data?.ok !== undefined,
+          hasData: response.data?.data !== undefined,
+          dataLength: Array.isArray(response.data?.data) ? response.data.data.length : 'not an array'
+        });
+        
+        // Deep examine the first item if it exists
+        if (response.data?.data?.[0]) {
+          console.log("First job item keys:", Object.keys(response.data.data[0]));
+          console.log("First job company field:", response.data.data[0].company);
+        }
+        
+        if (response.data.ok) {
+          const jobsData = response.data.data || [];
+          console.log("Raw jobs data:", jobsData);
+          
+          // Transform the job data to match the component's expected structure
+          const transformedJobs = jobsData.map(job => {
+            // Log the current job being processed for debugging
+            console.log("Processing job:", job._id, job.jobTitle);
+            console.log("Job company data:", {
+              companyType: typeof job.company,
+              companyValue: job.company,
+              companyFields: job.company && typeof job.company === 'object' ? Object.keys(job.company) : [],
+              hasCompanyName: job.company?.companyName !== undefined
+            });
+            
+            // Safely extract company details - the API populates the company object
+            const companyName = job.company && typeof job.company === 'object' 
+              ? job.company.companyName || 'Unknown Company'
+              : 'Unknown Company';
+              
+            const companyLogo = job.company && typeof job.company === 'object' && job.company.companyLogo
+              ? job.company.companyLogo
+              : null;
+
+            // Format the salary with dollar sign if it's a number
+            const formattedSalary = typeof job.salary === 'number' 
+              ? `$${job.salary.toLocaleString()}` 
+              : job.salary || 'Competitive';
+              
+            // Create categories from skillsRequired array
+            const categories = Array.isArray(job.skillsRequired) 
+              ? job.skillsRequired.map(skill => skill.trim()).filter(Boolean)
+              : ['General'];
+              
+            // Format the job type and ensure it exists
+            const jobType = job.jobType || 'Full-time';
+              
+            return {
+              id: job._id || `job-${Math.random().toString(36).substr(2, 9)}`,
+              title: job.jobTitle || 'Job Title Not Available',
+              company: companyName,
+              logo: companyLogo,
+              location: job.location || 'Remote',
+              type: jobType,
+              category: categories,
+              level: job.level || 'Entry Level',
+              salary: formattedSalary,
+              status: job.status || 'Live',
+              date: job.createdAt ? new Date(job.createdAt).toLocaleDateString() : 'Recently Posted',
+              jobDescription: job.jobDescription || 'No description available',
+              companyData: job.company || {},
+              applied: Array.isArray(job.applications) ? job.applications.length : 0,
+              capacity: 10
+            };
+          });
+          
+          console.log("Transformed jobs:", transformedJobs);
+          console.log("Sample job object fields:", transformedJobs.length > 0 ? Object.keys(transformedJobs[0]) : []);
+          
+          setJobs(transformedJobs);
+          setFilteredJobs(transformedJobs);
+          
+          // Create job type categories from the data
+          const typesWithCount = countOccurrences(transformedJobs, 'type');
+          setJobTypes(Object.keys(typesWithCount).map(type => ({
+            type,
+            count: typesWithCount[type]
+          })));
+          
+          // Create categories from the data
+          const allCategories = transformedJobs.flatMap(job => job.category);
+          const categoriesWithCount = countOccurrences(allCategories);
+          setCategories(Object.keys(categoriesWithCount).map(name => ({
+            name,
+            count: categoriesWithCount[name]
+          })));
+          
+          // Create job levels from the data
+          const levelsWithCount = countOccurrences(transformedJobs, 'level');
+          setJobLevels(Object.keys(levelsWithCount).map(name => ({
+            name,
+            count: levelsWithCount[name]
+          })));
+          
+          // Create salary ranges from the data
+          const salaryWithCount = countOccurrences(transformedJobs, 'salary');
+          setSalaryRanges(Object.keys(salaryWithCount).map(label => ({
+            label,
+            count: salaryWithCount[label]
+          })));
+        } else {
+          console.error("API returned error:", response.data);
+          setError(`Failed to fetch jobs: ${response.data.message || "Unknown error"}`);
+          
+          // Use fallback data
+          setJobs(fallbackJobs);
+          setFilteredJobs(fallbackJobs);
+          createFilterCategories(fallbackJobs);
+        }
+      } catch (err) {
+        console.error("Error fetching jobs:", err);
+        console.error("Error details:", {
+          message: err.message,
+          status: err.response?.status,
+          statusText: err.response?.statusText,
+          data: err.response?.data
+        });
+        
+        // Set a more descriptive error message
+        let errorMessage = `Error fetching job data: ${err.message}`;
+        if (err.response?.status === 404) {
+          errorMessage = "API endpoint not found (404). Please check if the backend server is running and the endpoint path is correct.";
+        } else if (err.response?.status === 401) {
+          errorMessage = "Unauthorized (401). Please log in to access the job data.";
+        } else if (err.response?.status === 500) {
+          errorMessage = "Server error (500). Please try again later or contact support.";
+        }
+        
+        setError(errorMessage);
+        
+        // Use fallback data
+        setJobs(fallbackJobs);
+        setFilteredJobs(fallbackJobs);
+        createFilterCategories(fallbackJobs);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    // Helper function to create filter categories from fallback data
+    const createFilterCategories = (data) => {
+      // Job types
+      const typesWithCount = countOccurrences(data, 'type');
+      setJobTypes(Object.keys(typesWithCount).map(type => ({
+        type,
+        count: typesWithCount[type]
+      })));
+      
+      // Categories
+      const allCategories = data.flatMap(job => job.category);
+      const categoriesWithCount = countOccurrences(allCategories);
+      setCategories(Object.keys(categoriesWithCount).map(name => ({
+        name,
+        count: categoriesWithCount[name]
+      })));
+      
+      // Job levels
+      const levelsWithCount = countOccurrences(data, 'level');
+      setJobLevels(Object.keys(levelsWithCount).map(name => ({
+        name,
+        count: levelsWithCount[name]
+      })));
+      
+      // Salary ranges
+      const salaryWithCount = countOccurrences(data, 'salary');
+      setSalaryRanges(Object.keys(salaryWithCount).map(label => ({
+        label,
+        count: salaryWithCount[label]
+      })));
+    };
+    
+    fetchJobs();
+  }, []);
+
+  // Calculate filtered jobs with useMemo to avoid unnecessary recalculations
+  const filteredJobsData = useMemo(() => {
+    if (jobs.length === 0) return [];
+    
+    console.log("Calculating filtered jobs:", jobs.length);
+    let result = [...jobs];
 
     // Apply search term filter
     if (searchTerm) {
@@ -165,7 +356,7 @@ const Jobs = () => {
         (job) =>
           job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
           job.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          job.categories.some((cat) =>
+          job.category.some((cat) =>
             cat.toLowerCase().includes(searchTerm.toLowerCase())
           )
       );
@@ -178,13 +369,13 @@ const Jobs = () => {
 
     // Apply job type filter
     if (selectedJobTypes.length > 0) {
-      result = result.filter((job) => selectedJobTypes.includes(job.jobType));
+      result = result.filter((job) => selectedJobTypes.includes(job.type));
     }
 
     // Apply categories filter
     if (selectedCategories.length > 0) {
       result = result.filter((job) =>
-        job.categories.some((category) => selectedCategories.includes(category))
+        job.category.some((category) => selectedCategories.includes(category))
       );
     }
 
@@ -202,15 +393,15 @@ const Jobs = () => {
 
     // Apply sorting
     if (sortBy === "Newest") {
-      // For demo purposes, we'll just reverse the order
+      // For real data, we would sort by date field
       result = [...result].reverse();
     } else if (sortBy === "Most Applied") {
       result = [...result].sort((a, b) => b.applied - a.applied);
     }
 
-    setFilteredJobs(result);
-    setCurrentPage(1); // Reset to first page when filters change
+    return result;
   }, [
+    jobs,
     searchTerm,
     location,
     selectedJobTypes,
@@ -219,6 +410,91 @@ const Jobs = () => {
     selectedSalaryRanges,
     sortBy,
   ]);
+
+  // Update filteredJobs state whenever filteredJobsData changes
+  useEffect(() => {
+    setFilteredJobs(filteredJobsData);
+    setCurrentPage(1); // Reset to first page when filters change
+  }, [filteredJobsData]);
+
+  // Calculate pagination with useMemo 
+  const paginationData = useMemo(() => {
+    const indexOfLastJob = currentPage * jobsPerPage;
+    const indexOfFirstJob = indexOfLastJob - jobsPerPage;
+    const currentJobs = filteredJobs.slice(indexOfFirstJob, indexOfLastJob);
+    const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
+
+    return {
+      currentJobs,
+      totalPages
+    };
+  }, [filteredJobs, currentPage, jobsPerPage]);
+
+  const { currentJobs, totalPages } = paginationData;
+
+  // Add logging for UI rendering data
+  console.log("Rendering - Filtered Jobs Length:", filteredJobs.length);
+  console.log("Rendering - Current Jobs:", currentJobs);
+  console.log("Rendering - Total Pages:", totalPages);
+
+  // Update current page if it's out of bounds for the current filtered jobs
+  useEffect(() => {
+    // If we have filtered jobs but current page would be empty
+    if (filteredJobs.length > 0 && currentPage > totalPages) {
+      console.log("Current page exceeds total pages - resetting to page 1");
+      setCurrentPage(1);
+    }
+  }, [filteredJobs.length, currentPage, totalPages]);
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="flex flex-col min-h-screen">
+        <div className="flex flex-row flex-grow">
+          <div className="h-screen sticky top-0">
+            <Sidebar />
+          </div>
+          <div className="flex-grow transition-all">
+            <Header />
+            <div className="flex justify-center items-center h-64">
+              <div className="text-center">
+                <Loader className="h-8 w-8 animate-spin text-blue-500 mx-auto" />
+                <p className="mt-2 text-gray-600">Loading jobs...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state with fallback data
+  if (error && filteredJobs.length === 0) {
+    return (
+      <div className="flex flex-col min-h-screen">
+        <div className="flex flex-row flex-grow">
+          <div className="h-screen sticky top-0">
+            <Sidebar />
+          </div>
+          <div className="flex-grow transition-all">
+            <Header />
+            <div className="flex justify-center items-center h-64">
+              <div className="text-center p-6 bg-red-50 rounded-lg max-w-lg">
+                <h3 className="text-lg font-semibold text-red-700 mb-2">Error Loading Jobs</h3>
+                <p className="text-red-600 mb-4">{error}</p>
+                <button 
+                  className="bg-blue-500 text-white px-4 py-2 rounded"
+                  onClick={() => window.location.reload()}
+                >
+                  Retry
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // Handle job type checkbox changes
   const handleJobTypeChange = (type) => {
@@ -274,11 +550,6 @@ const Jobs = () => {
     // The search is applied through the useEffect
   };
 
-  const indexOfLastJob = currentPage * jobsPerPage;
-  const indexOfFirstJob = indexOfLastJob - jobsPerPage;
-  const currentJobs = filteredJobs.slice(indexOfFirstJob, indexOfLastJob);
-  const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
-
   return (
     <div className="flex flex-col min-h-screen">
       <div className="flex flex-row flex-grow">
@@ -314,6 +585,7 @@ const Jobs = () => {
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
                     onClick={() => setDropdownOpen(!dropdownOpen)}
+                    placeholder="Select a location (optional)"
                     className="w-full outline-none text-gray-700 cursor-pointer py-2 text-base"
                   />
                   <ChevronDown
@@ -322,6 +594,15 @@ const Jobs = () => {
                   />
                   {dropdownOpen && (
                     <ul className="absolute top-full left-0 w-full bg-white border border-gray-200 shadow-md mt-1 rounded-md overflow-hidden z-20">
+                      <li
+                        className="p-2 hover:bg-gray-100 cursor-pointer text-sm font-medium text-blue-600"
+                        onClick={() => {
+                          setLocation("");
+                          setDropdownOpen(false);
+                        }}
+                      >
+                        Show All Locations
+                      </li>
                       {locations.map((loc, index) => (
                         <li
                           key={index}
@@ -521,6 +802,16 @@ const Jobs = () => {
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
+                    <button
+                      className="text-xs bg-gray-100 px-2 py-1 rounded text-gray-700 hover:bg-gray-200"
+                      onClick={() => {
+                        console.log("Raw jobs data:", jobs);
+                        console.log("Filtered jobs:", filteredJobs);
+                        console.log("Current page jobs:", currentJobs);
+                      }}
+                    >
+                      Debug Data
+                    </button>
                     <div className="relative">
                       <button
                         className="text-gray-600 font-semibold text-sm flex items-center cursor-pointer"
@@ -574,18 +865,30 @@ const Jobs = () => {
                 {/* List View */}
                 {view === "list" && (
                   <div className="mt-3 space-y-3">
-                    {currentJobs.length > 0 ? (
+                    {currentJobs && currentJobs.length > 0 ? (
                       currentJobs.map((job, index) => (
                         <div
                           key={index}
                           className="bg-white p-3 shadow-md rounded-sm flex justify-between items-center border border-gray-200"
                         >
                           <div className="flex items-center gap-3">
-                            <img
-                              src={job.logo}
-                              alt={job.company}
-                              className="w-8 h-8 rounded-full"
-                            />
+                            <div className="w-8 h-8 rounded-full flex items-center justify-center overflow-hidden bg-gray-100">
+                              {job.logo && job.logo !== 'https://via.placeholder.com/40' ? (
+                                <img
+                                  src={job.logo}
+                                  alt={job.company}
+                                  className="w-full h-full object-cover"
+                                  onError={(e) => {
+                                    e.target.onerror = null;
+                                    e.target.style.display = 'none';
+                                  }}
+                                />
+                              ) : (
+                                <span className="text-blue-600 font-bold text-xs">
+                                  {job.company.charAt(0)}
+                                </span>
+                              )}
+                            </div>
                             <div>
                               <h3 className="text-base font-bold">
                                 {job.title}
@@ -596,21 +899,21 @@ const Jobs = () => {
                               <div className="flex gap-1 mt-1 flex-wrap">
                                 <span
                                   className={`text-xs px-2 py-0.5 rounded-full font-semibold border ${
-                                    job.jobType === "Full-Time"
+                                    job.type === "Full-Time"
                                       ? "bg-green-100 text-green-600 border-green-300"
-                                      : job.jobType === "Remote"
-                                      ? "bg-indigo-100 text-indigo-600 border-indigo-300"
-                                      : job.jobType === "Part-Time"
-                                      ? "bg-orange-100 text-orange-600 border-orange-300"
-                                      : "bg-gray-200 text-gray-600 border-gray-400"
+                                      : job.type === "Remote"
+                                      ? "bg-blue-100 text-blue-600 border-blue-300"
+                                      : job.type === "Part-Time"
+                                      ? "bg-yellow-100 text-yellow-600 border-yellow-300"
+                                      : "bg-gray-100 text-gray-600 border-gray-300"
                                   }`}
                                 >
-                                  {job.jobType}
+                                  {job.type}
                                 </span>
                                 <div className="border-r border-gray-300 text-transparent">
                                   .
                                 </div>
-                                {job.categories.map((cat, i) => (
+                                {job.category.map((cat, i) => (
                                   <span
                                     key={i}
                                     className={`text-xs px-2 py-0.5 rounded-full font-semibold border ${
@@ -633,8 +936,10 @@ const Jobs = () => {
                             className="text-center"
                             style={{ width: "120px" }}
                           >
-                            <Link to="/description">
-                              <button className="bg-blue-500 text-white px-3 py-1 rounded-sm w-full cursor-pointer text-sm">
+                            <Link to={`/description?jobId=${job.id}`}>
+                              <button className="bg-blue-500 text-white px-3 py-1 rounded-sm w-full cursor-pointer text-sm"
+                                data-job-id={job.id}
+                              >
                                 Apply
                               </button>
                             </Link>
@@ -662,6 +967,12 @@ const Jobs = () => {
                         <p className="text-gray-500 text-sm">
                           No jobs found matching your criteria
                         </p>
+                        <p className="text-xs text-gray-400 mt-2">
+                          {filteredJobs.length > 0 ? 
+                            `There are ${filteredJobs.length} filtered jobs, but none on the current page.` : 
+                            "No jobs in the filtered results."
+                          }
+                        </p>
                       </div>
                     )}
                   </div>
@@ -670,18 +981,30 @@ const Jobs = () => {
                 {/* Grid View */}
                 {view === "grid" && (
                   <div className="mt-3 grid grid-cols-2 gap-3">
-                    {currentJobs.length > 0 ? (
+                    {currentJobs && currentJobs.length > 0 ? (
                       currentJobs.map((job, index) => (
                         <div
                           key={index}
                           className="bg-white p-3 shadow-md rounded-sm border border-gray-200 flex flex-col"
                         >
                           <div className="flex items-center gap-2 mb-2">
-                            <img
-                              src={job.logo}
-                              alt={job.company}
-                              className="w-7 h-7 rounded-full"
-                            />
+                            <div className="w-7 h-7 rounded-full flex items-center justify-center overflow-hidden bg-gray-100">
+                              {job.logo && job.logo !== 'https://via.placeholder.com/40' ? (
+                                <img
+                                  src={job.logo}
+                                  alt={job.company}
+                                  className="w-full h-full object-cover"
+                                  onError={(e) => {
+                                    e.target.onerror = null;
+                                    e.target.style.display = 'none';
+                                  }}
+                                />
+                              ) : (
+                                <span className="text-blue-600 font-bold text-xs">
+                                  {job.company.charAt(0)}
+                                </span>
+                              )}
+                            </div>
                             <div>
                               <h3 className="text-sm font-bold">{job.title}</h3>
                               <p className="text-gray-500 text-xs">
@@ -698,18 +1021,18 @@ const Jobs = () => {
                           <div className="flex flex-wrap gap-1 mb-2">
                             <span
                               className={`text-xs px-2 py-0.5 rounded-full font-semibold border ${
-                                job.jobType === "Full-Time"
+                                job.type === "Full-Time"
                                   ? "bg-green-100 text-green-600 border-green-300"
-                                  : job.jobType === "Remote"
-                                  ? "bg-indigo-100 text-indigo-600 border-indigo-300"
-                                  : job.jobType === "Part-Time"
-                                  ? "bg-orange-100 text-orange-600 border-orange-300"
-                                  : "bg-gray-200 text-gray-600 border-gray-400"
+                                  : job.type === "Remote"
+                                  ? "bg-blue-100 text-blue-600 border-blue-300"
+                                  : job.type === "Part-Time"
+                                  ? "bg-yellow-100 text-yellow-600 border-yellow-300"
+                                  : "bg-gray-100 text-gray-600 border-gray-300"
                               }`}
                             >
-                              {job.jobType}
+                              {job.type}
                             </span>
-                            {job.categories.map((cat, i) => (
+                            {job.category.map((cat, i) => (
                               <span
                                 key={i}
                                 className={`text-xs px-2 py-0.5 rounded-full font-semibold border ${
@@ -728,15 +1051,17 @@ const Jobs = () => {
                           </div>
 
                           <div className="mt-auto">
-                            <Link
-                              to="/description"
+                            <Link 
+                              to={`/description?jobId=${job.id}`}
                               style={{
                                 display: "block",
                                 width: "100px",
                                 margin: "0 auto",
                               }}
                             >
-                              <button className="bg-blue-500 text-white px-3 py-1 rounded-sm w-full cursor-pointer mb-1 text-xs">
+                              <button className="bg-blue-500 text-white px-3 py-1 rounded-sm w-full cursor-pointer mb-1 text-xs"
+                                data-job-id={job.id}
+                              >
                                 Apply
                               </button>
                             </Link>
@@ -763,6 +1088,12 @@ const Jobs = () => {
                       <div className="text-center py-6 col-span-2 bg-white shadow-md rounded-sm">
                         <p className="text-gray-500 text-sm">
                           No jobs found matching your criteria
+                        </p>
+                        <p className="text-xs text-gray-400 mt-2">
+                          {filteredJobs.length > 0 ? 
+                            `There are ${filteredJobs.length} filtered jobs, but none on the current page.` : 
+                            "No jobs in the filtered results."
+                          }
                         </p>
                       </div>
                     )}
