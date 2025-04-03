@@ -9,266 +9,103 @@ import {
   ChevronUp,
   List,
   Grid,
+  Loader,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import axios from "axios";
+import { API_URL } from "../../App";
 
-// Expanded sample data for better filtering demonstration
-const allJobs = [
+// Fallback company data for when API fails
+const fallbackCompanies = [
   {
-    id: 1,
-    company: "Stripe",
+    _id: "fallback1",
+    companyName: "Stripe",
     description:
       "Stripe is a software platform for starting and running internet businesses. Millions of businesses rely on Stripe's software tools...",
-    tags: ["Business", "Payment gateway"],
-    logo: "https://upload.wikimedia.org/wikipedia/commons/6/6f/Stripe_Logo%2C_revised_2016.svg",
-    jobCount: "7",
+    techStack: ["Business", "Payment gateway"],
+    companyLogo: "https://upload.wikimedia.org/wikipedia/commons/6/6f/Stripe_Logo%2C_revised_2016.svg",
+    jobOpen: 7,
     industry: "Fintech",
-    companySize: "501-1000",
+    employees: 750,
   },
   {
-    id: 2,
-    company: "Square",
+    _id: "fallback2",
+    companyName: "Square",
     description:
       "Square builds common business tools in unconventional ways so more people can start, run, and grow their businesses...",
-    tags: ["Business", "Blockchain"],
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Square%2C_Inc._logo.svg/512px-Square%2C_Inc._logo.svg.png",
-    jobCount: "5",
+    techStack: ["Business", "Blockchain"],
+    companyLogo: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Square%2C_Inc._logo.svg/512px-Square%2C_Inc._logo.svg.png",
+    jobOpen: 5,
     industry: "Fintech",
-    companySize: "251-500",
+    employees: 400,
   },
   {
-    id: 3,
-    company: "Coinbase",
+    _id: "fallback3",
+    companyName: "Coinbase",
     description:
       "Coinbase is a digital currency wallet and platform where merchants and consumers can transact with new digital currencies...",
-    tags: ["Business", "Blockchain"],
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Coinbase.svg/512px-Coinbase.svg.png",
-    jobCount: "9",
+    techStack: ["Business", "Blockchain"],
+    companyLogo: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Coinbase.svg/512px-Coinbase.svg.png",
+    jobOpen: 9,
     industry: "Blockchain",
-    companySize: "501-1000",
-  },
-  {
-    id: 4,
-    company: "Shopify",
-    description:
-      "Shopify is a commerce platform that allows anyone to set up an online store and sell their products...",
-    tags: ["E-commerce", "Business"],
-    logo: "",
-    jobCount: "12",
-    industry: "E-commerce",
-    companySize: "1000 - above",
-  },
-  {
-    id: 5,
-    company: "Udemy",
-    description:
-      "Udemy is an online learning platform aimed at professional adults and students...",
-    tags: ["Education", "E-Learning"],
-    logo: "",
-    jobCount: "8",
-    industry: "Education",
-    companySize: "501-1000",
-  },
-  {
-    id: 6,
-    company: "Twitch",
-    description:
-      "Twitch is an interactive livestreaming service for content spanning gaming, entertainment, sports, music, and more...",
-    tags: ["Media", "Entertainment"],
-    logo: "",
-    jobCount: "15",
-    industry: "Media",
-    companySize: "1000 - above",
-  },
-  {
-    id: 7,
-    company: "Unity",
-    description:
-      "Unity is a cross-platform game engine developed by Unity Technologies, first announced and released in June 2005...",
-    tags: ["Gaming", "Software"],
-    logo: "",
-    jobCount: "11",
-    industry: "Gaming",
-    companySize: "1000 - above",
-  },
-  {
-    id: 8,
-    company: "Zoom",
-    description:
-      "Zoom is a communications technology company that provides videotelephony and online chat services...",
-    tags: ["Software", "Communication"],
-    logo: "",
-    jobCount: "6",
-    industry: "Cloud",
-    companySize: "1000 - above",
-  },
-  {
-    id: 9,
-    company: "Coursera",
-    description:
-      "Coursera is an online learning platform that offers courses, specializations, and degrees...",
-    tags: ["Education", "E-Learning"],
-    logo: "",
-    jobCount: "4",
-    industry: "Education",
-    companySize: "501-1000",
-  },
-  {
-    id: 10,
-    company: "MasterCard",
-    description:
-      "Mastercard Incorporated is an American multinational financial services corporation...",
-    tags: ["Finance", "Payment gateway"],
-    logo: "",
-    jobCount: "14",
-    industry: "Fintech",
-    companySize: "1000 - above",
-  },
-  {
-    id: 11,
-    company: "Adobe",
-    description:
-      "Adobe Inc. is an American multinational computer software company focusing on creative software products for content creation and publishing...",
-    tags: ["Software", "Design"],
-    logo: "",
-    jobCount: "23",
-    industry: "Consumer Tech",
-    companySize: "1000 - above",
-  },
-  {
-    id: 12,
-    company: "Figma",
-    description:
-      "Figma is a cloud-based design tool that is similar to Sketch in functionality and features, but with big differences that make Figma better for team collaboration...",
-    tags: ["Design", "Software"],
-    logo: "",
-    jobCount: "8",
-    industry: "Consumer Tech",
-    companySize: "251-500",
-  },
-  {
-    id: 13,
-    company: "Notion",
-    description:
-      "Notion is an all-in-one workspace for your notes, tasks, wikis, and databases. It's a new tool that blends your everyday work apps into one...",
-    tags: ["Productivity", "Software"],
-    logo: "",
-    jobCount: "6",
-    industry: "Consumer Tech",
-    companySize: "151-250",
-  },
-  {
-    id: 14,
-    company: "Zendesk",
-    description:
-      "Zendesk is a service-first CRM company that builds software designed to improve customer relationships...",
-    tags: ["CRM", "Support"],
-    logo: "",
-    jobCount: "17",
-    industry: "Business Service",
-    companySize: "1000 - above",
-  },
-  {
-    id: 15,
-    company: "Slack",
-    description:
-      "Slack is a messaging app for business that connects people to the information they need. By bringing people together to work as one unified team...",
-    tags: ["Communication", "Software"],
-    logo: "",
-    jobCount: "12",
-    industry: "Business Service",
-    companySize: "1000 - above",
-  },
-  {
-    id: 16,
-    company: "Hubspot",
-    description:
-      "HubSpot is a developer and marketer of software products for inbound marketing, sales, and customer service...",
-    tags: ["Marketing", "CRM"],
-    logo: "",
-    jobCount: "19",
-    industry: "Business Service",
-    companySize: "1000 - above",
-  },
-  {
-    id: 17,
-    company: "Canva",
-    description:
-      "Canva is an online design and publishing tool with a mission to empower everyone in the world to design anything and publish anywhere...",
-    tags: ["Design", "Software"],
-    logo: "",
-    jobCount: "10",
-    industry: "Consumer Tech",
-    companySize: "501-1000",
-  },
-  {
-    id: 18,
-    company: "Spotify",
-    description:
-      "Spotify is a digital music, podcast, and video service that gives you access to millions of songs and other content from creators all over the world...",
-    tags: ["Media", "Entertainment"],
-    logo: "",
-    jobCount: "21",
-    industry: "Media",
-    companySize: "1000 - above",
-  },
-  {
-    id: 19,
-    company: "Netflix",
-    description:
-      "Netflix is an American content platform and production company that offers a library of films and television series through distribution deals as well as its own productions...",
-    tags: ["Media", "Entertainment"],
-    logo: "",
-    jobCount: "25",
-    industry: "Media",
-    companySize: "1000 - above",
-  },
-  {
-    id: 20,
-    company: "Khan Academy",
-    description:
-      "Khan Academy is an American non-profit educational organization that creates short lessons in the form of videos to help students learn various subjects...",
-    tags: ["Education", "Non-profit"],
-    logo: "",
-    jobCount: "7",
-    industry: "Education",
-    companySize: "251-500",
+    employees: 750,
   },
 ];
 
-const JobCardGrid = ({ job }) => {
+// Default industry options to show if API doesn't return enough data
+const defaultIndustries = [
+  { name: "Advertising", count: 2 },
+  { name: "Business Service", count: 3 },
+  { name: "Blockchain", count: 2 },
+  { name: "Cloud", count: 2 },
+  { name: "Consumer Tech", count: 3 },
+  { name: "Education", count: 2 },
+  { name: "Fintech", count: 3 },
+  { name: "Gaming", count: 2 },
+  { name: "Food & Beverage", count: 1 },
+  { name: "Healthcare", count: 2 },
+  { name: "Hosting", count: 1 },
+  { name: "Media", count: 3 },
+  { name: "E-commerce", count: 2 },
+];
+
+const JobCardGrid = ({ company }) => {
   return (
     <div className="border border-gray-200 shadow-sm p-4 bg-white w-[260px] h-[180px] flex flex-col justify-between relative cursor-pointer hover:shadow-md transition-shadow">
       <div className="absolute top-4 right-4 text-blue-500 text-xs font-medium bg-[#F8F8FD] px-1 py-0.5 rounded">
-        {job.jobCount || "7"} Jobs
+        {company.jobOpen || 0} Jobs
       </div>
 
       <div className="flex flex-col space-y-0.5">
         {/* Logo and company name */}
         <div className="flex flex-col space-y-1">
           <div className="bg-gradient-to-r from-purple-500 to-blue-500 w-6 h-6 rounded flex items-center justify-center text-white text-xs font-bold">
-            {job.logo ? (
+            {company.companyLogo ? (
               <img
-                src={job.logo}
-                alt={job.company}
+                src={company.companyLogo}
+                alt={company.companyName}
                 className="w-full h-full rounded object-cover"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.style.display = 'none';
+                }}
               />
             ) : (
-              job.company.charAt(0)
+              company.companyName.charAt(0)
             )}
           </div>
-          <h2 className="text-xs font-semibold text-gray-900">{job.company}</h2>
+          <h2 className="text-xs font-semibold text-gray-900">{company.companyName}</h2>
         </div>
 
         {/* Description text */}
         <p className="text-gray-600 text-xs leading-tight line-clamp-2">
-          {job.description || "A software platform for businesses worldwide."}
+          {company.description || "A software platform for businesses worldwide."}
         </p>
       </div>
 
       {/* Tags at the bottom */}
       <div className="mt-1 flex flex-wrap gap-0.5">
-        {(job.tags || ["Business", "Payment"]).map((tag, index) => (
+        {(company.techStack || ["Business"]).map((tag, index) => (
           <span
             key={index}
             className={`text-[10px] px-1.5 py-0.5 rounded-full ${
@@ -285,39 +122,43 @@ const JobCardGrid = ({ job }) => {
   );
 };
 
-const JobCardList = ({ job }) => {
+const JobCardList = ({ company }) => {
   return (
     <div className="border border-gray-200 shadow-sm p-2 bg-white w-full flex items-start gap-2 relative cursor-pointer hover:shadow-md transition-shadow">
       {/* Logo */}
       <div className="bg-gradient-to-r from-purple-500 to-blue-500 w-8 h-8 rounded flex items-center justify-center text-white text-xs font-bold">
-        {job.logo ? (
+        {company.companyLogo ? (
           <img
-            src={job.logo}
-            alt={job.company}
+            src={company.companyLogo}
+            alt={company.companyName}
             className="w-full h-full rounded object-cover"
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.style.display = 'none';
+            }}
           />
         ) : (
-          job.company.charAt(0)
+          company.companyName.charAt(0)
         )}
       </div>
 
       {/* Content */}
       <div className="flex-1">
         <div className="flex justify-between items-center">
-          <h2 className="text-xs font-semibold text-gray-900">{job.company}</h2>
+          <h2 className="text-xs font-semibold text-gray-900">{company.companyName}</h2>
           <div className="text-blue-500 text-xs font-medium bg-[#F8F8FD] px-1.5 py-0.5 rounded">
-            {job.jobCount || "7"} Jobs
+            {company.jobOpen || 0} Jobs
           </div>
         </div>
 
         <p className="text-gray-600 text-xs leading-tight mt-0.5 mb-1 line-clamp-2">
-          {job.description ||
+          {company.description ||
             "A software platform for starting and running businesses."}
         </p>
 
         {/* Tags */}
         <div className="flex flex-wrap gap-0.5">
-          {(job.tags || ["Business", "Payment"]).map((tag, index) => (
+          {(company.techStack || ["Business"]).map((tag, index) => (
             <span
               key={index}
               className={`text-[10px] px-1.5 py-0.5 rounded-full ${
@@ -338,11 +179,18 @@ const JobCardList = ({ job }) => {
 const Companies = () => {
   // State for search and filters
   const [searchTerm, setSearchTerm] = useState("");
-  const [location, setLocation] = useState("Delhi, India");
+  const [location, setLocation] = useState("");
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [selectedIndustries, setSelectedIndustries] = useState([]);
   const [selectedSizes, setSelectedSizes] = useState([]);
-  const [filteredJobs, setFilteredJobs] = useState(allJobs);
+  
+  // State for API data
+  const [companies, setCompanies] = useState([]);
+  const [filteredCompanies, setFilteredCompanies] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [industries, setIndustries] = useState([]);
+  const [companySizes, setCompanySizes] = useState([]);
 
   // UI state
   const [isIndustryOpen, setIsIndustryOpen] = useState(true);
@@ -365,76 +213,215 @@ const Companies = () => {
 
   const popularJobs = ["UI Designer", "UX Researcher", "Android", "Admin"];
 
-  const industries = [
-    { name: "Advertising", count: 43 },
-    { name: "Business Service", count: 4 },
-    { name: "Blockchain", count: 5 },
-    { name: "Cloud", count: 15 },
-    { name: "Consumer Tech", count: 5 },
-    { name: "Education", count: 34 },
-    { name: "Fintech", count: 45 },
-    { name: "Gaming", count: 33 },
-    { name: "Food & Beverage", count: 5 },
-    { name: "Healthcare", count: 3 },
-    { name: "Hosting", count: 5 },
-    { name: "Media", count: 4 },
-    { name: "E-commerce", count: 20 },
-  ];
+  // Helper function to count occurrences
+  const countOccurrences = (array, key = null) => {
+    const counts = {};
+    array.forEach(item => {
+      const value = key ? item[key] : item;
+      if (value) { // Skip null or undefined values
+        counts[value] = (counts[value] || 0) + 1;
+      }
+    });
+    return counts;
+  };
 
-  const companySizes = [
-    { size: "1-50", count: 25 },
-    { size: "51-150", count: 57 },
-    { size: "151-250", count: 45 },
-    { size: "251-500", count: 4 },
-    { size: "501-1000", count: 43 },
-    { size: "1000 - above", count: 23 },
-  ];
+  // Fetch companies from backend
+  useEffect(() => {
+    const fetchCompanies = async () => {
+      try {
+        setLoading(true);
+        console.log("Fetching companies from:", `${API_URL}/company/get-company`);
+        
+        const response = await axios.get(`${API_URL}/company/get-company`, {
+          withCredentials: true
+        });
+        
+        console.log("API Response:", response.data);
+        
+        if (response.data.ok) {
+          const companiesData = response.data.data || [];
+          
+          // Transform company data if needed
+          const transformedCompanies = companiesData.map(company => {
+            return {
+              ...company,
+              // Add any transformations if needed
+            };
+          });
+          
+          console.log("Transformed companies:", transformedCompanies);
+          
+          setCompanies(transformedCompanies);
+          setFilteredCompanies(transformedCompanies);
+          
+          // Create industry categories from the data
+          const industriesWithCount = countOccurrences(transformedCompanies, 'industry');
+          const industriesFromData = Object.keys(industriesWithCount).map(name => ({
+            name,
+            count: industriesWithCount[name]
+          }));
+          
+          // Merge with defaults to get better categories
+          const mergedIndustries = [...industriesFromData];
+          defaultIndustries.forEach(defaultIndustry => {
+            if (!mergedIndustries.some(ind => ind.name === defaultIndustry.name)) {
+              mergedIndustries.push(defaultIndustry);
+            }
+          });
+          setIndustries(mergedIndustries);
+          
+          // Create company size categories
+          const sizeRanges = {
+            "1-50": { min: 1, max: 50 },
+            "51-150": { min: 51, max: 150 },
+            "151-250": { min: 151, max: 250 },
+            "251-500": { min: 251, max: 500 },
+            "501-1000": { min: 501, max: 1000 },
+            "1000 - above": { min: 1001, max: Infinity }
+          };
+          
+          // Count companies in each size range
+          const sizeCounts = {};
+          Object.keys(sizeRanges).forEach(range => {
+            sizeCounts[range] = transformedCompanies.filter(
+              company => 
+                company.employees >= sizeRanges[range].min && 
+                company.employees <= sizeRanges[range].max
+            ).length;
+          });
+          
+          setCompanySizes(Object.keys(sizeCounts).map(size => ({
+            size,
+            count: sizeCounts[size]
+          })));
+          
+        } else {
+          console.error("API returned error:", response.data);
+          setError(`Failed to fetch companies: ${response.data.message || "Unknown error"}`);
+          
+          // Use fallback data
+          setCompanies(fallbackCompanies);
+          setFilteredCompanies(fallbackCompanies);
+          createFilterCategories(fallbackCompanies);
+        }
+      } catch (err) {
+        console.error("Error fetching companies:", err);
+        setError(`Error fetching companies: ${err.message}`);
+        
+        // Use fallback data
+        setCompanies(fallbackCompanies);
+        setFilteredCompanies(fallbackCompanies);
+        createFilterCategories(fallbackCompanies);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    // Helper function to create filter categories from fallback data
+    const createFilterCategories = (data) => {
+      // Industries
+      const industriesWithCount = countOccurrences(data, 'industry');
+      const industriesFromData = Object.keys(industriesWithCount).map(name => ({
+        name,
+        count: industriesWithCount[name]
+      }));
+      
+      // Merge with defaults to get better categories
+      const mergedIndustries = [...industriesFromData];
+      defaultIndustries.forEach(defaultIndustry => {
+        if (!mergedIndustries.some(ind => ind.name === defaultIndustry.name)) {
+          mergedIndustries.push(defaultIndustry);
+        }
+      });
+      setIndustries(mergedIndustries);
+      
+      // Company sizes
+      const sizeRanges = {
+        "1-50": { min: 1, max: 50 },
+        "51-150": { min: 51, max: 150 },
+        "151-250": { min: 151, max: 250 },
+        "251-500": { min: 251, max: 500 },
+        "501-1000": { min: 501, max: 1000 },
+        "1000 - above": { min: 1001, max: Infinity }
+      };
+      
+      // Count companies in each size range
+      const sizeCounts = {};
+      Object.keys(sizeRanges).forEach(range => {
+        sizeCounts[range] = data.filter(
+          company => 
+            company.employees >= sizeRanges[range].min && 
+            company.employees <= sizeRanges[range].max
+        ).length;
+      });
+      
+      setCompanySizes(Object.keys(sizeCounts).map(size => ({
+        size,
+        count: sizeCounts[size]
+      })));
+    };
+    
+    fetchCompanies();
+  }, []);
 
   // Apply filters whenever search term, selected industries, or sizes change
   useEffect(() => {
     applyFilters();
     setCurrentPage(1); // Reset to first page whenever filters change
-  }, [searchTerm, selectedIndustries, selectedSizes, sortBy]);
+  }, [searchTerm, selectedIndustries, selectedSizes, sortBy, companies]);
 
-  // Filter and sort jobs
+  // Filter and sort companies
   const applyFilters = () => {
-    let results = [...allJobs];
+    if (companies.length === 0) return;
+    
+    let results = [...companies];
 
     // Apply search term filter
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
       results = results.filter(
-        (job) =>
-          job.company.toLowerCase().includes(term) ||
-          job.description.toLowerCase().includes(term) ||
-          job.tags.some((tag) => tag.toLowerCase().includes(term))
+        (company) =>
+          company.companyName?.toLowerCase().includes(term) ||
+          company.description?.toLowerCase().includes(term) ||
+          (Array.isArray(company.techStack) && company.techStack.some(tag => tag.toLowerCase().includes(term)))
       );
     }
 
     // Apply industry filters
     if (selectedIndustries.length > 0) {
-      results = results.filter((job) =>
-        selectedIndustries.includes(job.industry)
+      results = results.filter((company) =>
+        company.industry && selectedIndustries.includes(company.industry)
       );
     }
 
     // Apply company size filters
     if (selectedSizes.length > 0) {
-      results = results.filter((job) =>
-        selectedSizes.includes(job.companySize)
-      );
+      results = results.filter((company) => {
+        // Map employee count to size range
+        let companySize = '';
+        const employeeCount = company.employees || 0;
+        
+        if (employeeCount <= 50) companySize = "1-50";
+        else if (employeeCount <= 150) companySize = "51-150";
+        else if (employeeCount <= 250) companySize = "151-250";
+        else if (employeeCount <= 500) companySize = "251-500";
+        else if (employeeCount <= 1000) companySize = "501-1000";
+        else companySize = "1000 - above";
+        
+        return selectedSizes.includes(companySize);
+      });
     }
 
     // Apply sorting
     if (sortBy === "Newest") {
-      // Sort by ID in descending order (assuming newer jobs have higher IDs)
-      results.sort((a, b) => b.id - a.id);
+      // Sort by createdAt in descending order
+      results.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
     } else if (sortBy === "Most Applied") {
       // Sort by job count in descending order
-      results.sort((a, b) => parseInt(b.jobCount) - parseInt(a.jobCount));
+      results.sort((a, b) => (b.jobOpen || 0) - (a.jobOpen || 0));
     }
 
-    setFilteredJobs(results);
+    setFilteredCompanies(results);
   };
 
   // Handle industry checkbox changes
@@ -459,20 +446,75 @@ const Companies = () => {
     });
   };
 
+  // Handle popular job click
+  const handlePopularJobClick = (job) => {
+    setSearchTerm(job);
+  };
+
   // Handle search button click
   const handleSearch = () => {
     applyFilters();
   };
 
-  // Get current page of jobs
-  const indexOfLastJob = currentPage * jobsPerPage;
-  const indexOfFirstJob = indexOfLastJob - jobsPerPage;
-  const currentJobs = filteredJobs.slice(indexOfFirstJob, indexOfLastJob);
-  const totalPages = Math.ceil(filteredJobs.length / jobsPerPage);
+  // Get current page of companies
+  const indexOfLastCompany = currentPage * jobsPerPage;
+  const indexOfFirstCompany = indexOfLastCompany - jobsPerPage;
+  const currentCompanies = filteredCompanies.slice(indexOfFirstCompany, indexOfLastCompany);
+  const totalPages = Math.ceil(filteredCompanies.length / jobsPerPage);
 
-  // Calculate displayed jobs range for showing X-Y of Z results
-  const startRange = filteredJobs.length === 0 ? 0 : indexOfFirstJob + 1;
-  const endRange = Math.min(indexOfLastJob, filteredJobs.length);
+  // Calculate displayed companies range for showing X-Y of Z results
+  const startRange = filteredCompanies.length === 0 ? 0 : indexOfFirstCompany + 1;
+  const endRange = Math.min(indexOfLastCompany, filteredCompanies.length);
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="flex flex-col min-h-screen">
+        <div className="flex flex-row flex-grow">
+          <div className="h-screen sticky top-0">
+            <Sidebar />
+          </div>
+          <div className="flex-grow transition-all">
+            <Header />
+            <div className="flex justify-center items-center h-64">
+              <div className="text-center">
+                <Loader className="h-8 w-8 animate-spin text-blue-500 mx-auto" />
+                <p className="mt-2 text-gray-600">Loading companies...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state with fallback data
+  if (error && filteredCompanies.length === 0) {
+    return (
+      <div className="flex flex-col min-h-screen">
+        <div className="flex flex-row flex-grow">
+          <div className="h-screen sticky top-0">
+            <Sidebar />
+          </div>
+          <div className="flex-grow transition-all">
+            <Header />
+            <div className="flex justify-center items-center h-64">
+              <div className="text-center p-6 bg-red-50 rounded-lg max-w-lg">
+                <h3 className="text-lg font-semibold text-red-700 mb-2">Error Loading Companies</h3>
+                <p className="text-red-600 mb-4">{error}</p>
+                <button 
+                  className="bg-blue-500 text-white px-4 py-2 rounded"
+                  onClick={() => window.location.reload()}
+                >
+                  Retry
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -508,6 +550,7 @@ const Companies = () => {
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
                     onClick={() => setDropdownOpen(!dropdownOpen)}
+                    placeholder="Select a location (optional)"
                     className="w-full outline-none text-gray-700 cursor-pointer py-2 text-base"
                   />
                   <ChevronDown
@@ -516,6 +559,15 @@ const Companies = () => {
                   />
                   {dropdownOpen && (
                     <ul className="absolute top-full left-0 w-full bg-white border border-gray-200 shadow-md mt-1 rounded-md overflow-hidden z-20">
+                      <li
+                        className="p-2 hover:bg-gray-100 cursor-pointer text-sm font-medium text-blue-600"
+                        onClick={() => {
+                          setLocation("");
+                          setDropdownOpen(false);
+                        }}
+                      >
+                        Show All Locations
+                      </li>
                       {locations.map((loc, index) => (
                         <li
                           key={index}
@@ -646,8 +698,8 @@ const Companies = () => {
                   <div>
                     <h2 className="text-base font-bold">All Companies</h2>
                     <p className="text-gray-500 text-xs">
-                      {filteredJobs.length > 0
-                        ? `Showing ${startRange}-${endRange} of ${filteredJobs.length} results`
+                      {filteredCompanies.length > 0
+                        ? `Showing ${startRange}-${endRange} of ${filteredCompanies.length} results`
                         : "No results found"}
                     </p>
                   </div>
@@ -699,10 +751,23 @@ const Companies = () => {
                         <List className="w-4 h-4" />
                       </button>
                     </div>
+                    <button
+                      className="text-xs bg-gray-100 px-2 py-1 rounded text-gray-700 hover:bg-gray-200"
+                      onClick={() => {
+                        console.log("Available Industries:", industries);
+                        console.log("Selected Industries:", selectedIndustries);
+                        console.log("Company Industry Data:", companies.map(c => ({ 
+                          name: c.companyName, 
+                          industry: c.industry 
+                        })));
+                      }}
+                    >
+                      Debug Filters
+                    </button>
                   </div>
                 </div>
 
-                {filteredJobs.length === 0 ? (
+                {filteredCompanies.length === 0 ? (
                   <div className="mt-3 text-center p-4 bg-gray-100 rounded">
                     <p className="text-base text-gray-600">
                       No companies match your search criteria.
@@ -716,8 +781,8 @@ const Companies = () => {
                     {/* Grid View */}
                     {view === "grid" && (
                       <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3 justify-center">
-                        {currentJobs.map((job) => (
-                          <JobCardGrid key={job.id} job={job} />
+                        {currentCompanies.map((company) => (
+                          <JobCardGrid key={company._id} company={company} />
                         ))}
                       </div>
                     )}
@@ -725,8 +790,8 @@ const Companies = () => {
                     {/* List View */}
                     {view === "list" && (
                       <div className="mt-3 flex flex-col gap-2">
-                        {currentJobs.map((job) => (
-                          <JobCardList key={job.id} job={job} />
+                        {currentCompanies.map((company) => (
+                          <JobCardList key={company._id} company={company} />
                         ))}
                       </div>
                     )}

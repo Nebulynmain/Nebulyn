@@ -26,6 +26,9 @@ import About from "./components/LandingPage/About";
 import Contact from "./components/LandingPage/Contact";
 import ScrollToTop from "./components/ScrollToTop";
 
+// Backend API URL
+export const API_URL = "http://localhost:8000/api";
+
 function App() {
   const googleClientId =
     "69056251506-h4u9nd77t85ovk87ufa44jkudt6d5ske.apps.googleusercontent.com";

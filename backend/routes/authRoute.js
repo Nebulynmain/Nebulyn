@@ -1,5 +1,5 @@
 import express from 'express'
-import { login, logout, register, updateEmailPassword, updateProfile } from '../controllers/authController.js';
+import { login, logout, register, updateEmailPassword, updateProfile, getProfile } from '../controllers/authController.js';
 import { isAuthenticated } from '../middlewares/authMiddleware.js';
 import multer from 'multer';
 import cloudinary from '../config/cloudinary.js';
@@ -10,6 +10,7 @@ const router = express.Router();
 router.post("/register", register);
 router.post("/login", login);
 router.get("/logout", logout);
+router.get("/profile", isAuthenticated, getProfile);
 router.post("/update-profile", isAuthenticated, updateProfile);
 router.post("/update-email-password", isAuthenticated, updateEmailPassword);
 

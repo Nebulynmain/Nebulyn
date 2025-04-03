@@ -4,135 +4,130 @@ import Sidebar from "./Sidebar";
 import Header from "./Header";
 import { X } from "lucide-react";
 import { Search, Filter } from "lucide-react";
+import axios from "axios";
+import { API_URL } from "../../App";
+import { format, parseISO, startOfMonth, endOfMonth } from "date-fns";
 
 const Application = () => {
   const [notificationVisible, setNotificationVisible] = useState(true);
   const [activeTab, setActiveTab] = useState("all");
+  const [applications, setApplications] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [user, setUser] = useState(null);
+  const [dateRange, setDateRange] = useState("");
 
-  const allApplications = [
-    {
-      id: 1,
-      company: "Nomad",
-      logo: "nomad-logo.png",
-      role: "Social Media Assistant",
-      date: "24 July 2021",
-      status: "In Review",
-      color: " text-yellow-600 border border-yellow-300",
-    },
-    {
-      id: 2,
-      company: "Udacity",
-      logo: "udacity-logo.png",
-      role: "Social Media Assistant",
-      date: "20 July 2021",
-      status: "Shortlisted",
-      color: " text-green-600 border border-green-300",
-    },
-    {
-      id: 3,
-      company: "Packer",
-      logo: "packer-logo.png",
-      role: "Social Media Assistant",
-      date: "16 July 2021",
-      status: "Offered",
-      color: " text-blue-600 border border-blue-300",
-    },
-    {
-      id: 4,
-      company: "Divvy",
-      logo: "divvy-logo.png",
-      role: "Social Media Assistant",
-      date: "14 July 2021",
-      status: "Interviewing",
-      color: " text-yellow-700 border border-yellow-400",
-    },
-    {
-      id: 5,
-      company: "DigitalOcean",
-      logo: "digitalocean-logo.png",
-      role: "Social Media Assistant",
-      date: "10 July 2021",
-      status: "Unsuitable",
-      color: " text-red-600 border border-red-300",
-    },
-    {
-      id: 6,
-      company: "Google",
-      logo: "google-logo.png",
-      role: "Marketing Coordinator",
-      date: "8 July 2021",
-      status: "Assessment",
-      color: " text-purple-600 border border-purple-300",
-    },
-    {
-      id: 7,
-      company: "Amazon",
-      logo: "amazon-logo.png",
-      role: "Content Writer",
-      date: "5 July 2021",
-      status: "Hired",
-      color: " text-green-700 border border-green-400",
-    },
-    {
-      id: 8,
-      company: "Microsoft",
-      logo: "microsoft-logo.png",
-      role: "UI Designer",
-      date: "3 July 2021",
-      status: "In Review",
-      color: " text-yellow-600 border border-yellow-300",
-    },
-    {
-      id: 9,
-      company: "Apple",
-      logo: "apple-logo.png",
-      role: "Product Manager",
-      date: "1 July 2021",
-      status: "Interviewing",
-      color: " text-yellow-700 border border-yellow-400",
-    },
-    {
-      id: 10,
-      company: "Netflix",
-      logo: "netflix-logo.png",
-      role: "Content Creator",
-      date: "28 June 2021",
-      status: "Assessment",
-      color: " text-purple-600 border border-purple-300",
-    },
-  ];
+  // Fetch user data and applications when component mounts
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/auth/profile`, {
+          withCredentials: true
+        });
+        
+        if (response.data.ok) {
+          setUser(response.data.data);
+        } else {
+          setError("Failed to fetch user data");
+        }
+      } catch (err) {
+        console.error("Error fetching user:", err);
+        setError("Error fetching user data");
+      }
+    };
+
+    const fetchApplications = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(`${API_URL}/application/user`, {
+          withCredentials: true
+        });
+        
+        if (response.data.ok) {
+          const appData = response.data.data;
+          // Transform the API data to match our component's expected format
+          const transformedData = appData.map((app, index) => ({
+            id: app._id,
+            company: app.job?.company?.companyName || "Unknown Company",
+            logo: app.job?.company?.companyLogo || "company-logo.png",
+            role: app.job?.jobTitle || "Unknown Position",
+            date: app.appliedAt ? format(new Date(app.appliedAt), 'dd MMM yyyy') : format(new Date(app.createdAt), 'dd MMM yyyy'),
+            status: app.status,
+            color: getStatusColor(app.status),
+            jobLocation: app.job?.location || "Unknown Location",
+            jobType: app.job?.jobType || "Unknown Type",
+            rawData: app // Keep the original data for reference
+          }));
+          
+          setApplications(transformedData);
+          
+          // Set date range
+          if (appData.length > 0) {
+            const now = new Date();
+            const start = startOfMonth(now);
+            const end = endOfMonth(now);
+            setDateRange(`${format(start, 'MMM dd')} - ${format(end, 'MMM dd')}`);
+          }
+        } else {
+          setError("Failed to fetch applications");
+        }
+      } catch (err) {
+        console.error("Error fetching applications:", err);
+        setError("Error fetching application data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+    fetchApplications();
+  }, []);
+
+  // Helper function to get status color
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "In Review":
+        return "text-yellow-600 border border-yellow-300";
+      case "Shortlisted":
+        return "text-green-600 border border-green-300";
+      case "Hired":
+        return "text-green-700 border border-green-400";
+      case "Interview":
+        return "text-yellow-700 border border-yellow-400";
+      case "Rejected":
+        return "text-red-600 border border-red-300";
+      default:
+        return "text-gray-600 border border-gray-300";
+    }
+  };
 
   // Filter applications based on tab selection
   const getTabApplications = () => {
     switch (activeTab) {
       case "in_review":
-        return allApplications.filter((app) => app.status === "In Review");
+        return applications.filter((app) => app.status === "In Review");
       case "interviewing":
-        return allApplications.filter((app) => app.status === "Interviewing");
+        return applications.filter((app) => app.status === "Interview");
       case "assessment":
-        return allApplications.filter((app) => app.status === "Assessment");
+        return applications.filter((app) => app.status === "Shortlisted");
       case "offered":
-        return allApplications.filter((app) => app.status === "Offered");
+        return applications.filter((app) => app.status === "Hired");
       case "hired":
-        return allApplications.filter((app) => app.status === "Hired");
+        return applications.filter((app) => app.status === "Hired");
       default:
-        return allApplications;
+        return applications;
     }
   };
 
   // Calculate tab counts dynamically based on statuses
   const getTabCounts = () => {
     const counts = {
-      all: allApplications.length,
-      in_review: allApplications.filter((app) => app.status === "In Review")
-        .length,
-      interviewing: allApplications.filter(
-        (app) => app.status === "Interviewing"
-      ).length,
-      assessment: allApplications.filter((app) => app.status === "Assessment")
-        .length,
-      offered: allApplications.filter((app) => app.status === "Offered").length,
-      hired: allApplications.filter((app) => app.status === "Hired").length,
+      all: applications.length,
+      in_review: applications.filter((app) => app.status === "In Review").length,
+      interviewing: applications.filter((app) => app.status === "Interview").length,
+      assessment: applications.filter((app) => app.status === "Shortlisted").length,
+      offered: applications.filter((app) => app.status === "Hired").length,
+      hired: applications.filter((app) => app.status === "Hired").length,
     };
     return counts;
   };
@@ -166,9 +161,9 @@ const Application = () => {
     }
   };
 
-  const applications = getTabApplications();
+  const currentApplications = getTabApplications();
 
-  const filteredApplications = applications.filter((item) => {
+  const filteredApplications = currentApplications.filter((item) => {
     const matchesSearch =
       item.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.role.toLowerCase().includes(searchQuery.toLowerCase());
@@ -279,6 +274,26 @@ const Application = () => {
     const paginatedApplications = getPaginatedApplications();
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
 
+    if (loading) {
+      return (
+        <div className="p-3 bg-white rounded-lg">
+          <div className="text-center py-6 bg-gray-50 rounded-lg">
+            <p className="text-gray-500 text-sm">Loading applications...</p>
+          </div>
+        </div>
+      );
+    }
+
+    if (error) {
+      return (
+        <div className="p-3 bg-white rounded-lg">
+          <div className="text-center py-6 bg-red-50 rounded-lg">
+            <p className="text-red-500 text-sm">{error}</p>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="p-3 bg-white rounded-lg">
         <div className="flex justify-between items-center mb-3">
@@ -316,11 +331,9 @@ const Application = () => {
                 <option value="">All Status</option>
                 <option value="In Review">In Review</option>
                 <option value="Shortlisted">Shortlisted</option>
-                <option value="Offered">Offered</option>
-                <option value="Interviewing">Interviewing</option>
-                <option value="Unsuitable">Unsuitable</option>
-                <option value="Assessment">Assessment</option>
                 <option value="Hired">Hired</option>
+                <option value="Interview">Interview</option>
+                <option value="Rejected">Rejected</option>
               </select>
             </div>
           </div>
@@ -348,11 +361,9 @@ const Application = () => {
                   >
                     <td className="p-2">{startIndex + index + 1}</td>
                     <td className="p-2 flex items-center gap-1.5 cursor-pointer">
-                      <img
-                        src={item.logo}
-                        alt={item.company}
-                        className="w-5 h-5 rounded-full"
-                      />
+                      <div className="w-5 h-5 rounded-full bg-blue-100 flex items-center justify-center text-blue-800 text-xs font-bold">
+                        {item.company.charAt(0)}
+                      </div>
                       {item.company}
                     </td>
                     <td className="p-2 cursor-pointer">{item.role}</td>
@@ -452,15 +463,15 @@ const Application = () => {
           <div className="flex justify-between items-center py-4 px-6">
             <div>
               <h1 className="text-2xl font-semibold text-black-900">
-                Keep it up, Jake
+                Keep it up, {user ? user.fullName.split(" ")[0] : "User"}
               </h1>
               <p className="text-gray-500 text-sm">
-                Here is job applications status from July 19 - July 25.
+                Here is job applications status from {dateRange || "this month"}.
               </p>
             </div>
             <div className="flex items-center border border-gray-300 px-3 py-1 cursor-pointer mr-2">
               <span className="text-gray-700 text-sm font-semibold">
-                Jul 19 - Jul 25
+                {dateRange || "This Month"}
               </span>
               <CalendarIcon className="w-3 h-3 text-blue-500 ml-2" />
             </div>

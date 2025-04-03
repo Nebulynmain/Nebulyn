@@ -35,7 +35,12 @@ export const getApplicationsByUser = async (req, res) => {
         const userId  = req.id;
 
         const applications = await Application.find({ applicant: userId })
-            .populate("job")
+            .populate({
+                path: "job",
+                populate: {
+                    path: "company"
+                }
+            })
             .populate("applicant");
 
         if (!applications.length) {
@@ -52,7 +57,14 @@ export const getApplicationsByUser = async (req, res) => {
 
 export const getApplications = async (req, res) => {
     try {
-        const applications = await Application.find().populate("job").populate("applicant");
+        const applications = await Application.find()
+            .populate({
+                path: "job",
+                populate: {
+                    path: "company"
+                }
+            })
+            .populate("applicant");
         res.status(200).json({ ok: true, message: "Applications retrieved successfully", data: applications });
     } catch (error) {
         res.status(500).json({ ok: false, message: "Server Error", data: error.message });
@@ -62,7 +74,14 @@ export const getApplications = async (req, res) => {
 
 export const getApplicationById = async (req, res) => {
     try {
-        const application = await Application.findById(req.params.id).populate("job").populate("applicant");
+        const application = await Application.findById(req.params.id)
+            .populate({
+                path: "job",
+                populate: {
+                    path: "company"
+                }
+            })
+            .populate("applicant");
         if (!application) {
             return res.status(404).json({ ok: false, message: "Application not found", data: null });
         }
