@@ -1,15 +1,40 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaBell } from "react-icons/fa";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ChevronDown } from "lucide-react";
+import axios from "axios";
+import { API_URL } from "../../App";
 
 const Header = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const [companyName, setCompanyName] = useState("Company");
+  const [companyLogo, setCompanyLogo] = useState(null);
+
+  // Fetch company data
+  useEffect(() => {
+    const fetchCompanyData = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/company/get-company-by-user`, {
+          withCredentials: true
+        });
+        
+        if (response.data && response.data.ok && response.data.data && response.data.data.length > 0) {
+          const company = response.data.data[0];
+          setCompanyName(company.companyName || "Company");
+          setCompanyLogo(company.companyLogo || null);
+        }
+      } catch (error) {
+        console.error("Error fetching company data:", error);
+      }
+    };
+    
+    fetchCompanyData();
+  }, []);
 
   // Mapping paths to titles
   const pathToTitle = {
-    "/dashboard": "Dashboard",
+    "/company-dashboard": "Dashboard",
     "/applications": "My Applications",
     "/jobs": "Find Jobs",
     "/companies": "",
@@ -61,12 +86,21 @@ const Header = () => {
       <div className="flex items-center space-x-2">
         {/* Company Icon with fallback background color - reduced size */}
         <div className="w-6 h-6 bg-green-500 rounded-md flex items-center justify-center">
-          <img
-            src="invalid-path.jpg" // Replace with actual company logo URL
-            alt="Company Logo"
-            className="w-full h-full rounded-md"
-            onError={(e) => (e.target.style.display = "none")} // Hide image if not found
-          />
+          {companyLogo ? (
+            <img
+              src={companyLogo}
+              alt="Company Logo"
+              className="w-full h-full rounded-md"
+              onError={(e) => {
+                e.target.style.display = "none";
+                e.target.parentElement.style.backgroundColor = "#10B981"; // fallback color
+              }}
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-white font-bold">
+              {companyName.charAt(0)}
+            </div>
+          )}
         </div>
 
         {/* Company Text - reduced text sizes */}
@@ -74,7 +108,7 @@ const Header = () => {
           <span className="text-sm text-gray-500">Company</span>
           <div className="flex items-center space-x-1">
             <span className="text-lg font-semibold text-gray-900 cursor-pointer">
-              Nomad
+              {companyName}
             </span>
             <ChevronDown className="w-3 h-3 text-gray-500 cursor-pointer" />
           </div>

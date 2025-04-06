@@ -174,37 +174,42 @@ function Profile() {
             availability: userData.availability || fallbackProfile.availability,
             about: {
               title: "About Me",
-              description: userData.about || fallbackProfile.about.description,
+              description: userData.bio || fallbackProfile.about.description,
               experience: userData.experience || fallbackProfile.about.experience,
             },
-            skills: userData.skills || fallbackProfile.skills,
+            skills: Array.isArray(userData.skills) ? userData.skills : fallbackProfile.skills,
             details: {
               email: userData.email || fallbackProfile.details.email,
               phone: userData.phone || fallbackProfile.details.phone,
-              languages: userData.languages || fallbackProfile.details.languages,
+              languages: Array.isArray(userData.languages) ? 
+                userData.languages.join(", ") : 
+                (userData.languages || fallbackProfile.details.languages),
             },
             social: {
-              instagram: userData.instagram || fallbackProfile.social.instagram, 
-              twitter: userData.twitter || fallbackProfile.social.twitter,
-              website: userData.website || fallbackProfile.social.website,
+              instagram: userData.instagramLink || fallbackProfile.social.instagram, 
+              twitter: userData.twitterLink || fallbackProfile.social.twitter,
+              website: userData.websiteLink || fallbackProfile.social.website,
             }
           });
           
           // Also fetch experiences if available
-          if (userData.experiences && Array.isArray(userData.experiences) && userData.experiences.length > 0) {
+          if (userData.experience && Array.isArray(userData.experience) && userData.experience.length > 0) {
             try {
               // Transform experiences data to match our schema
-              const formattedExperiences = userData.experiences.map((exp, index) => ({
+              const formattedExperiences = userData.experience.map((exp, index) => ({
                 id: exp._id || index + 1,
-                title: exp.title || "Job Title",
-                company: exp.company || "Company",
-                type: exp.jobType || "Full-Time",
-                duration: formatDateRange(exp.startDate, exp.endDate) || "",
+                title: exp.role || "Job Title",
+                company: exp.companyName || "Company",
+                type: exp.roleType || "Full-Time",
+                duration: formatDateRange(
+                  exp.duration?.startDate, 
+                  exp.duration?.endDate
+                ) || "",
                 location: exp.location || "Location",
                 description: exp.description || "",
-                logo: exp.logo || `https://logo.clearbit.com/${exp.company?.toLowerCase()?.replace(/\s/g, '')}.com` || "https://via.placeholder.com/40",
-                startDate: exp.startDate,
-                endDate: exp.endDate
+                logo: exp.logo || `https://logo.clearbit.com/${exp.companyName?.toLowerCase()?.replace(/\s/g, '')}.com` || "https://via.placeholder.com/40",
+                startDate: exp.duration?.startDate,
+                endDate: exp.duration?.endDate
               }));
               
               setExperiencesData(formattedExperiences);
@@ -220,14 +225,17 @@ function Profile() {
               // Transform education data to match our schema
               const formattedEducation = userData.education.map((edu, index) => ({
                 id: edu._id || index + 1,
-                school: edu.school || "School Name",
+                school: edu.instituteName || "School Name",
                 degree: edu.degree || "Degree",
-                duration: formatDateRange(edu.startDate, edu.endDate) || "",
+                duration: formatDateRange(
+                  edu.duration?.startDate, 
+                  edu.duration?.endDate
+                ) || "",
                 description: edu.description || "",
                 logo: edu.logo || "https://via.placeholder.com/40",
                 link: edu.link || "#",
-                startDate: edu.startDate,
-                endDate: edu.endDate
+                startDate: edu.duration?.startDate,
+                endDate: edu.duration?.endDate
               }));
               
               setEducationsData(formattedEducation);
@@ -263,16 +271,20 @@ function Profile() {
         title: updatedData.title,
         location: updatedData.location,
         availability: updatedData.availability,
-        about: updatedData.about.description,
-        experience: updatedData.about.experience,
-        skills: updatedData.skills, 
+        bio: updatedData.about.description,
+        skills: Array.isArray(updatedData.skills) ? updatedData.skills : [],
         email: updatedData.details.email,
         phone: updatedData.details.phone,
-        languages: updatedData.details.languages,
-        instagram: updatedData.social.instagram,
-        twitter: updatedData.social.twitter,
-        website: updatedData.social.website
+        languages: updatedData.details.languages ? 
+                  (typeof updatedData.details.languages === 'string' ? 
+                   [updatedData.details.languages] : updatedData.details.languages) : 
+                  [],
+        instagramLink: updatedData.social.instagram,
+        twitterLink: updatedData.social.twitter,
+        websiteLink: updatedData.social.website
       };
+      
+      console.log("Sending data to backend:", apiData);
       
       const response = await axios.post(`${API_URL}/auth/update-profile`, apiData, {
         withCredentials: true
@@ -282,17 +294,18 @@ function Profile() {
       
       if (response.data && response.data.ok) {
         setUserUpdated(true);
+        console.log("Profile updated successfully:", response.data.data);
         
         // Reset notification after 3 seconds
         setTimeout(() => {
           setUserUpdated(false);
         }, 3000);
       } else {
-        throw new Error("Failed to update profile");
+        throw new Error(response.data?.message || "Failed to update profile");
       }
     } catch (err) {
       console.error("Error updating user profile:", err);
-      setSaveError("Failed to save profile changes.");
+      setSaveError(err.message || "Failed to save profile changes.");
     } finally {
       setSaveLoading(false);
     }
@@ -333,15 +346,19 @@ function Profile() {
     try {
       // Format experience for API
       const apiExperience = {
-        title: experience.title,
-        company: experience.company,
-        jobType: experience.type,
-        startDate: experience.startDate,
-        endDate: experience.endDate,
+        role: experience.title,
+        companyName: experience.company,
+        roleType: experience.type,
+        duration: {
+          startDate: experience.startDate,
+          endDate: experience.endDate === "Present" ? null : experience.endDate
+        },
         location: experience.location,
         description: experience.description,
         logo: experience.logo
       };
+      
+      console.log("Saving experience:", apiExperience);
       
       let response;
       if (experience.id && !isAddingExperience && typeof experience.id !== 'number') {
@@ -369,14 +386,18 @@ function Profile() {
     try {
       // Format education for API
       const apiEducation = {
-        school: education.school,
+        instituteName: education.school,
         degree: education.degree,
-        startDate: education.startDate,
-        endDate: education.endDate,
+        duration: {
+          startDate: education.startDate,
+          endDate: education.endDate === "Present" ? null : education.endDate
+        },
         description: education.description,
         logo: education.logo,
         link: education.link
       };
+      
+      console.log("Saving education:", apiEducation);
       
       let response;
       if (education.id && !isAddingEducation && typeof education.id !== 'number') {

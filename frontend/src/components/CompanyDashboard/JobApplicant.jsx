@@ -14,6 +14,8 @@ import {
   Bus,
   Heart,
   X,
+  Loader,
+  AlertTriangle,
 } from "lucide-react";
 import {
   LineChart,
@@ -26,145 +28,42 @@ import {
 } from "recharts";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import axios from "axios";
+import { API_URL } from "../../App";
 
 const JobApplicant = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [view, setView] = useState("table");
-  const candidates = [
-    {
-      id: 1,
-      name: "Jake Gyll",
-      score: 0.0,
-      hiringStage: "Interview",
-      appliedDate: "13 Jul, 2021",
-      jobRole: "Designer",
-      image: "https://randomuser.me/api/portraits/men/1.jpg",
-    },
-    {
-      id: 2,
-      name: "Guy Hawkins",
-      score: 0.0,
-      hiringStage: "Interview",
-      appliedDate: "13 Jul, 2021",
-      jobRole: "JavaScript Dev",
-      image: "https://randomuser.me/api/portraits/men/2.jpg",
-    },
-    {
-      id: 3,
-      name: "Cyndy Lillibridge",
-      score: 4.5,
-      hiringStage: "Shortlisted",
-      appliedDate: "12 Jul, 2021",
-      jobRole: "Golang Dev",
-      image: "https://randomuser.me/api/portraits/women/3.jpg",
-    },
-    {
-      id: 4,
-      name: "Rodolfo Goode",
-      score: 3.75,
-      hiringStage: "Declined",
-      appliedDate: "11 Jul, 2021",
-      jobRole: "NET Dev",
-      image: "https://randomuser.me/api/portraits/men/4.jpg",
-    },
-    {
-      id: 5,
-      name: "Leif Floyd",
-      score: 4.8,
-      hiringStage: "Hired",
-      appliedDate: "11 Jul, 2021",
-      jobRole: "Graphic Design",
-      image: "https://randomuser.me/api/portraits/men/5.jpg",
-    },
-    {
-      id: 6,
-      name: "Jenny Wilson",
-      score: 4.6,
-      hiringStage: "Hired",
-      appliedDate: "9 Jul, 2021",
-      jobRole: "Designer",
-      image: "https://randomuser.me/api/portraits/women/6.jpg",
-    },
-    {
-      id: 7,
-      name: "Jerome Bell",
-      score: 4.0,
-      hiringStage: "Interviewed",
-      appliedDate: "5 Jul, 2021",
-      jobRole: "Designer",
-      image: "https://randomuser.me/api/portraits/men/7.jpg",
-    },
-    {
-      id: 8,
-      name: "Eleanor Pena",
-      score: 3.9,
-      hiringStage: "Declined",
-      appliedDate: "5 Jul, 2021",
-      jobRole: "Designer",
-      image: "https://randomuser.me/api/portraits/women/8.jpg",
-    },
-    {
-      id: 9,
-      name: "Darrell Steward",
-      score: 4.2,
-      hiringStage: "Shortlisted",
-      appliedDate: "3 Jul, 2021",
-      jobRole: "Designer",
-      image: "https://randomuser.me/api/portraits/men/9.jpg",
-    },
-    {
-      id: 10,
-      name: "Floyd Miles",
-      score: 4.1,
-      hiringStage: "Interviewed",
-      appliedDate: "1 Jul, 2021",
-      jobRole: "Designer",
-      image: "https://randomuser.me/api/portraits/men/10.jpg",
-    },
-  ];
-
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [activeTab, setActiveTab] = useState("details");
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [candidates, setCandidates] = useState([]);
+  const [selectedCandidates, setSelectedCandidates] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectAll, setSelectAll] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [applicantsPerPage, setApplicantsPerPage] = useState(10);
   const [jobData, setJobData] = useState({
-    company: "Stripe",
-    position: "Social Media Marketing Expert",
-    description:
-      "Stripe is looking for Social Media Marketing expert to help manage our online networks. You will be responsible for monitoring our social media channels, creating content, finding effective ways to engage the community and incentivize others to engage on our channels.",
-    responsibilities: [
-      "Community engagement to ensure that is supported and actively represented online",
-      "Focus on social media content development and publication",
-      "Marketing and strategy support",
-      "Stay on top of trends on social media platforms, and suggest content ideas to the team",
-      "Engage with online communities",
-    ],
-    whoYouAre: [
-      "You get energy from people and building the ideal work environment",
-      "You have a sense for beautiful spaces and office experiences",
-      "You are a confident office manager, ready for added responsibilities",
-      "You're detail-oriented and creative",
-      "You're a growth marketer and know how to run campaigns",
-    ],
-    niceToHaves: [
-      "Fluent in English",
-      "Project management skills",
-      "Copy editing skills",
-    ],
+    company: "",
+    position: "",
+    description: "",
+    responsibilities: [],
+    whoYouAre: [],
+    niceToHaves: [],
   });
 
   const [sampleJobData, setSampleJobData] = useState({
-    applied: 5,
-    capacity: 10,
-    deadline: "Jul 31, 2021",
-    postedDate: "Jul 1, 2021",
-    jobType: "Full-Time",
-    salary: "$75k-$85k USD",
-    categories: ["Marketing", "Design"],
-    requiredSkills: [
-      "Project Management",
-      "Copywriting",
-      "English",
-      "Social Media Marketing",
-      "Copy Editing",
-    ],
+    applied: 0,
+    capacity: 1,
+    deadline: "",
+    postedDate: "",
+    jobType: "",
+    salary: "",
+    categories: [],
+    requiredSkills: [],
   });
 
   const perksData = [
@@ -212,61 +111,175 @@ const JobApplicant = () => {
     { name: "Other", value: 5, color: "#4ECDC4" },
   ];
 
-  const [selectedCandidates, setSelectedCandidates] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectAll, setSelectAll] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [applicantsPerPage, setApplicantsPerPage] = useState(10);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [editedJobData, setEditedJobData] = useState(jobData);
-  const [editedSampleData, setEditedSampleData] = useState(sampleJobData);
-  const [activeTab, setActiveTab] = useState("Applicants");
   const [isHovering, setIsHovering] = useState(false);
   const [hoverSegment, setHoverSegment] = useState(null);
   const [hoveredPoint, setHoveredPoint] = useState(null);
 
+  useEffect(() => {
+    const fetchJobAndApplicants = async () => {
+      setLoading(true);
+      setError(null);
+      
+      try {
+        // Get job ID either from location state or from URL params
+        let jobId;
+        if (location.state && location.state.jobData && location.state.jobData.id) {
+          jobId = location.state.jobData.id;
+        } else {
+          // If not available in state, try to extract from URL
+          const pathParts = location.pathname.split('/');
+          jobId = pathParts[pathParts.length - 1];
+        }
+        
+        if (!jobId) {
+          throw new Error("Job ID not found");
+        }
+        
+        // Fetch job details
+        const jobResponse = await axios.get(`${API_URL}/job/get-job/${jobId}`, {
+          withCredentials: true
+        });
+        
+        if (jobResponse.data && jobResponse.data.ok && jobResponse.data.data) {
+          const job = jobResponse.data.data;
+          
+          // Format job data for the UI
+          setJobData({
+            company: job.company ? job.company.companyName : "",
+            position: job.jobTitle,
+            description: job.jobDescription,
+            responsibilities: job.responsibilities || [],
+            whoYouAre: job.whoYouAre || [],
+            niceToHaves: job.niceToHave || [],
+          });
+          
+          // Format sample job data
+          const postedDate = new Date(job.createdAt);
+          const formattedPostedDate = `${postedDate.toLocaleString('default', { month: 'short' })} ${postedDate.getDate()}, ${postedDate.getFullYear()}`;
+          
+          // Calculate due date (30 days after posting for demo purposes)
+          const dueDate = new Date(postedDate);
+          dueDate.setDate(dueDate.getDate() + 30);
+          const formattedDueDate = `${dueDate.toLocaleString('default', { month: 'short' })} ${dueDate.getDate()}, ${dueDate.getFullYear()}`;
+          
+          setSampleJobData({
+            applied: job.applications ? job.applications.length : 0,
+            capacity: 1, // Default to 1, could be updated with actual data
+            deadline: formattedDueDate,
+            postedDate: formattedPostedDate,
+            jobType: job.jobType,
+            salary: job.salary ? `$${job.salary.toLocaleString()} USD` : "",
+            categories: job.categories || [],
+            requiredSkills: job.skillsRequired || [],
+          });
+          
+          // If job has populated applications, extract and format them
+          if (job.applications && job.applications.length > 0) {
+            // Format candidate data from applications
+            const formattedCandidates = job.applications.map(app => {
+              // Map application status to UI hiringStage
+              let hiringStage;
+              switch(app.status) {
+                case "Shortlisted": hiringStage = "Shortlisted"; break;
+                case "Interview": hiringStage = "Interview"; break;
+                case "Hired": hiringStage = "Hired"; break;
+                case "Rejected": hiringStage = "Declined"; break;
+                case "In Review": hiringStage = "Interviewed"; break;
+                default: hiringStage = "Shortlisted";
+              }
+              
+              // Format date
+              const appliedDate = new Date(app.appliedAt || app.createdAt);
+              const formattedDate = `${appliedDate.getDate()} ${appliedDate.toLocaleString('default', { month: 'short' })}, ${appliedDate.getFullYear()}`;
+              
+              // If the applicant data is nested and populated
+              if (app.applicant) {
+                return {
+                  id: app._id,
+                  name: app.applicant.fullName || app.applicant.userName,
+                  score: app.score || 0,
+                  hiringStage: hiringStage,
+                  appliedDate: formattedDate,
+                  jobRole: job.jobTitle,
+                  image: app.applicant.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(app.applicant.fullName || app.applicant.userName)}&background=random`
+                };
+              }
+              
+              // If applicant data isn't nested/populated, try to fetch it separately
+              return {
+                id: app._id,
+                name: "Applicant",
+                score: app.score || 0,
+                hiringStage: hiringStage,
+                appliedDate: formattedDate,
+                jobRole: job.jobTitle,
+                image: `https://ui-avatars.com/api/?name=Applicant&background=random`
+              };
+            });
+            
+            setCandidates(formattedCandidates);
+          } else {
+            // If no applications yet, set empty array
+            setCandidates([]);
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching job and applicants:", err);
+        setError(err.message || "Failed to load job data. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchJobAndApplicants();
+  }, [location]);
+
   const handleSelectAll = () => {
-    setSelectedCandidates(selectAll ? [] : candidates.map((c) => c.id));
+    if (selectAll) {
+      setSelectedCandidates([]);
+    } else {
+      setSelectedCandidates(candidates.map((candidate) => candidate.id));
+    }
     setSelectAll(!selectAll);
   };
 
   const handleSelect = (id) => {
-    setSelectedCandidates(
-      selectedCandidates.includes(id)
-        ? selectedCandidates.filter((cid) => cid !== id)
-        : [...selectedCandidates, id]
-    );
+    if (selectedCandidates.includes(id)) {
+      setSelectedCandidates(selectedCandidates.filter((cid) => cid !== id));
+    } else {
+      setSelectedCandidates([...selectedCandidates, id]);
+    }
   };
 
   const handleJobDataChange = (field, value) => {
-    setEditedJobData((prev) => ({ ...prev, [field]: value }));
+    setJobData((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleSampleDataChange = (field, value) => {
-    setEditedSampleData((prev) => ({ ...prev, [field]: value }));
+    setSampleJobData((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleArrayFieldChange = (field, index, value) => {
-    setEditedJobData((prev) => ({
+    setJobData((prev) => ({
       ...prev,
       [field]: prev[field].map((item, i) => (i === index ? value : item)),
     }));
   };
 
   const handleAddArrayItem = (field) => {
-    setEditedJobData((prev) => ({ ...prev, [field]: [...prev[field], ""] }));
+    setJobData((prev) => ({ ...prev, [field]: [...prev[field], ""] }));
   };
 
   const handleRemoveArrayItem = (field, index) => {
-    setEditedJobData((prev) => ({
+    setJobData((prev) => ({
       ...prev,
       [field]: prev[field].filter((_, i) => i !== index),
     }));
   };
 
   const handleSaveChanges = () => {
-    setJobData(editedJobData);
-    setSampleJobData(editedSampleData);
+    setJobData(jobData);
+    setSampleJobData(sampleJobData);
     setIsEditModalOpen(false);
   };
 
@@ -282,7 +295,6 @@ const JobApplicant = () => {
   );
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
   const totalPages = Math.ceil(filteredCandidates.length / applicantsPerPage);
 
   const stageOrder = [
@@ -520,7 +532,7 @@ const JobApplicant = () => {
                   </label>
                   <input
                     type="text"
-                    value={editedSampleData.position}
+                    value={sampleJobData.position}
                     onChange={(e) =>
                       handleSampleDataChange("position", e.target.value)
                     }
@@ -532,7 +544,7 @@ const JobApplicant = () => {
                     Description
                   </label>
                   <textarea
-                    value={editedJobData.description}
+                    value={jobData.description}
                     onChange={(e) =>
                       handleJobDataChange("description", e.target.value)
                     }
@@ -551,7 +563,7 @@ const JobApplicant = () => {
                   </label>
                   <input
                     type="text"
-                    value={editedSampleData.jobType}
+                    value={sampleJobData.jobType}
                     onChange={(e) =>
                       handleSampleDataChange("jobType", e.target.value)
                     }
@@ -564,7 +576,7 @@ const JobApplicant = () => {
                   </label>
                   <input
                     type="text"
-                    value={editedSampleData.salary}
+                    value={sampleJobData.salary}
                     onChange={(e) =>
                       handleSampleDataChange("salary", e.target.value)
                     }
@@ -577,7 +589,7 @@ const JobApplicant = () => {
                   </label>
                   <input
                     type="text"
-                    value={editedSampleData.deadline}
+                    value={sampleJobData.deadline}
                     onChange={(e) =>
                       handleSampleDataChange("deadline", e.target.value)
                     }
@@ -590,7 +602,7 @@ const JobApplicant = () => {
                   </label>
                   <input
                     type="number"
-                    value={editedSampleData.capacity}
+                    value={sampleJobData.capacity}
                     onChange={(e) =>
                       handleSampleDataChange(
                         "capacity",
@@ -606,7 +618,7 @@ const JobApplicant = () => {
             <div className="mb-4">
               <h3 className="text-lg font-semibold mb-2">Responsibilities</h3>
               <div className="space-y-2">
-                {editedJobData.responsibilities.map((responsibility, index) => (
+                {jobData.responsibilities.map((responsibility, index) => (
                   <div key={index} className="flex gap-2">
                     <input
                       type="text"
@@ -642,7 +654,7 @@ const JobApplicant = () => {
             <div className="mb-4">
               <h3 className="text-lg font-semibold mb-2">Who You Are</h3>
               <div className="space-y-2">
-                {editedJobData.whoYouAre.map((trait, index) => (
+                {jobData.whoYouAre.map((trait, index) => (
                   <div key={index} className="flex gap-2">
                     <input
                       type="text"
@@ -676,7 +688,7 @@ const JobApplicant = () => {
             <div className="mb-4">
               <h3 className="text-lg font-semibold mb-2">Nice-To-Haves</h3>
               <div className="space-y-2">
-                {editedJobData.niceToHaves.map((item, index) => (
+                {jobData.niceToHaves.map((item, index) => (
                   <div key={index} className="flex gap-2">
                     <input
                       type="text"
@@ -1506,99 +1518,125 @@ const JobApplicant = () => {
         </div>
         <div className="flex-grow transition-all">
           <Header />
-          <div className="">
-            <div className="flex justify-between items-center py-3 px-4">
-              <div className="flex items-center space-x-1">
-                <button
-                  className="text-gray-700 text-2xl font-bold cursor-pointer"
-                  onClick={() => navigate("/job-listing")}
-                >
-                  ←
-                </button>
-                <h1
-                  className="text-xl cursor-pointer"
-                  onClick={() => navigate("/job-listing")}
-                >
-                  <span className="font-bold">Social Media Assistant</span>
-                  <p className="text-gray-600 text-xs mt-1">
-                    Design • Full-Time •
-                    <span className="font-semibold"> 4</span> /
-                    <span className="text-gray-400"> 11 Hired</span>
-                  </p>
-                </h1>
+
+          {loading ? (
+            <div className="flex items-center justify-center h-[calc(100vh-64px)]">
+              <div className="flex flex-col items-center">
+                <Loader className="w-8 h-8 text-blue-500 animate-spin" />
+                <p className="mt-2 text-gray-600">Loading job data...</p>
               </div>
-
-              <button className="border border-blue-500 text-blue-500 px-2 py-1 rounded text-xs flex items-center space-x-0.5">
-                <ChevronDown size={12} />
-                <span>More Action</span>
-              </button>
             </div>
+          ) : error ? (
+            <div className="flex items-center justify-center h-[calc(100vh-64px)]">
+              <div className="text-center bg-red-50 p-4 rounded-lg max-w-lg">
+                <AlertTriangle className="w-8 h-8 text-red-500 mx-auto mb-2" />
+                <h3 className="text-red-800 font-medium">Error</h3>
+                <p className="text-red-600 mt-1">{error}</p>
+                <button 
+                  onClick={() => navigate("/job-listing")}
+                  className="mt-3 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                >
+                  Back to Job Listings
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="p-4">
+              <div className="flex flex-col">
+                <div className="flex justify-between items-center mb-4">
+                  <h1 className="text-2xl font-semibold">{jobData.position}</h1>
+                  <button
+                    onClick={() => setIsEditModalOpen(true)}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm"
+                  >
+                    Edit Job
+                  </button>
+                </div>
 
-            <div className="bg-white p-3 font-sans">
-              <div className="border-b border-gray-200">
-                <div className="flex space-x-4">
-                  <div
-                    className={`pb-1 cursor-pointer ${
-                      activeTab === "Applicants"
-                        ? "border-b-2 border-blue-500"
-                        : ""
-                    }`}
-                    onClick={() => setActiveTab("Applicants")}
-                  >
-                    <span
-                      className={
-                        activeTab === "Applicants"
-                          ? "text-blue-500 font-medium"
-                          : "text-gray-500"
-                      }
-                    >
-                      Applicants
-                    </span>
+                <div className="flex flex-col space-y-4 mb-6">
+                  <div className="flex flex-wrap gap-4">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2.5 h-2.5 rounded-full bg-blue-500"></div>
+                      <span className="text-sm text-gray-600">Company:</span>
+                      <span className="text-sm font-medium">{jobData.company}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-2.5 h-2.5 rounded-full bg-green-500"></div>
+                      <span className="text-sm text-gray-600">Type:</span>
+                      <span className="text-sm font-medium">{sampleJobData.jobType}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-2.5 h-2.5 rounded-full bg-yellow-500"></div>
+                      <span className="text-sm text-gray-600">Salary:</span>
+                      <span className="text-sm font-medium">{sampleJobData.salary}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-2.5 h-2.5 rounded-full bg-purple-500"></div>
+                      <span className="text-sm text-gray-600">Posted:</span>
+                      <span className="text-sm font-medium">{sampleJobData.postedDate}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-2.5 h-2.5 rounded-full bg-red-500"></div>
+                      <span className="text-sm text-gray-600">Deadline:</span>
+                      <span className="text-sm font-medium">{sampleJobData.deadline}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-2.5 h-2.5 rounded-full bg-indigo-500"></div>
+                      <span className="text-sm text-gray-600">Applicants:</span>
+                      <span className="text-sm font-medium">
+                        {sampleJobData.applied} / {sampleJobData.capacity}
+                      </span>
+                    </div>
                   </div>
-                  <div
-                    className={`pb-1 cursor-pointer ${
-                      activeTab === "Job Details"
-                        ? "border-b-2 border-blue-500"
-                        : ""
-                    }`}
-                    onClick={() => setActiveTab("Job Details")}
-                  >
-                    <span
-                      className={
-                        activeTab === "Job Details"
-                          ? "text-blue-500 font-medium"
-                          : "text-gray-500"
-                      }
-                    >
-                      Job Details
-                    </span>
+                </div>
+
+                <div className="bg-white border border-gray-200 rounded-lg mb-6">
+                  <div className="border-b border-gray-200">
+                    <nav className="flex flex-wrap">
+                      <button
+                        onClick={() => setActiveTab("Job Details")}
+                        className={`px-4 py-3 text-sm font-medium ${
+                          activeTab === "Job Details"
+                            ? "text-blue-600 border-b-2 border-blue-600"
+                            : "text-gray-500 hover:text-gray-700"
+                        }`}
+                      >
+                        Job Details
+                      </button>
+                      <button
+                        onClick={() => setActiveTab("Applicants")}
+                        className={`px-4 py-3 text-sm font-medium ${
+                          activeTab === "Applicants"
+                            ? "text-blue-600 border-b-2 border-blue-600"
+                            : "text-gray-500 hover:text-gray-700"
+                        }`}
+                      >
+                        Applicants
+                      </button>
+                      <button
+                        onClick={() => setActiveTab("Analytics")}
+                        className={`px-4 py-3 text-sm font-medium ${
+                          activeTab === "Analytics"
+                            ? "text-blue-600 border-b-2 border-blue-600"
+                            : "text-gray-500 hover:text-gray-700"
+                        }`}
+                      >
+                        Analytics
+                      </button>
+                    </nav>
                   </div>
-                  <div
-                    className={`pb-1 cursor-pointer ${
-                      activeTab === "Analytics"
-                        ? "border-b-2 border-blue-500"
-                        : ""
-                    }`}
-                    onClick={() => setActiveTab("Analytics")}
-                  >
-                    <span
-                      className={
-                        activeTab === "Analytics"
-                          ? "text-blue-500 font-medium"
-                          : "text-gray-500"
-                      }
-                    >
-                      Analytics
-                    </span>
+
+                  <div className="p-4">
+                    {activeTab === "Job Details" && renderJobDetailsTab()}
+                    {activeTab === "Applicants" && renderApplicantsTab()}
+                    {activeTab === "Analytics" && renderAnalyticsTab()}
                   </div>
                 </div>
               </div>
 
-              {activeTab === "Applicants" && renderApplicantsTab()}
-              {activeTab === "Job Details" && renderJobDetailsTab()}
-              {activeTab === "Analytics" && renderAnalyticsTab()}
+              {isEditModalOpen && <EditJobModal />}
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

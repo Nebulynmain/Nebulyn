@@ -1,105 +1,97 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
-import { Search, Filter, Star, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, Filter, Star, ChevronLeft, ChevronRight, Loader, AlertTriangle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { API_URL } from "../../App";
 
 const Applicant = () => {
   const navigate = useNavigate();
   const [view, setView] = useState("table");
-  const candidates = [
-    {
-      id: 1,
-      name: "Jake Gyll",
-      score: 0.0,
-      hiringStage: "Interview",
-      appliedDate: "13 July, 2021",
-      jobRole: "Designer",
-      image: "https://randomuser.me/api/portraits/men/1.jpg",
-    },
-    {
-      id: 2,
-      name: "Guy Hawkins",
-      score: 0.0,
-      hiringStage: "Interview",
-      appliedDate: "13 July, 2021",
-      jobRole: "JavaScript Dev",
-      image: "https://randomuser.me/api/portraits/men/2.jpg",
-    },
-    {
-      id: 3,
-      name: "Cyndy Lillibridge",
-      score: 4.5,
-      hiringStage: "Shortlisted",
-      appliedDate: "12 July, 2021",
-      jobRole: "Golang Dev",
-      image: "https://randomuser.me/api/portraits/women/3.jpg",
-    },
-    {
-      id: 4,
-      name: "Rodolfo Goode",
-      score: 3.75,
-      hiringStage: "Declined",
-      appliedDate: "11 July, 2021",
-      jobRole: "NET Dev",
-      image: "https://randomuser.me/api/portraits/men/4.jpg",
-    },
-    {
-      id: 5,
-      name: "Leif Floyd",
-      score: 4.8,
-      hiringStage: "Hired",
-      appliedDate: "11 July, 2021",
-      jobRole: "Graphic Design",
-      image: "https://randomuser.me/api/portraits/men/5.jpg",
-    },
-    {
-      id: 6,
-      name: "Jenny Wilson",
-      score: 4.6,
-      hiringStage: "Hired",
-      appliedDate: "9 July, 2021",
-      jobRole: "Designer",
-      image: "https://randomuser.me/api/portraits/women/6.jpg",
-    },
-    {
-      id: 7,
-      name: "Jerome Bell",
-      score: 4.0,
-      hiringStage: "Interviewed",
-      appliedDate: "5 July, 2021",
-      jobRole: "Designer",
-      image: "https://randomuser.me/api/portraits/men/7.jpg",
-    },
-    {
-      id: 8,
-      name: "Eleanor Pena",
-      score: 3.9,
-      hiringStage: "Declined",
-      appliedDate: "5 July, 2021",
-      jobRole: "Designer",
-      image: "https://randomuser.me/api/portraits/women/8.jpg",
-    },
-    {
-      id: 9,
-      name: "Darrell Steward",
-      score: 4.2,
-      hiringStage: "Shortlisted",
-      appliedDate: "3 July, 2021",
-      jobRole: "Designer",
-      image: "https://randomuser.me/api/portraits/men/9.jpg",
-    },
-    {
-      id: 10,
-      name: "Floyd Miles",
-      score: 4.1,
-      hiringStage: "Interviewed",
-      appliedDate: "1 July, 2021",
-      jobRole: "Designer",
-      image: "https://randomuser.me/api/portraits/men/10.jpg",
-    },
-  ];
+  const [candidates, setCandidates] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [companyId, setCompanyId] = useState(null);
 
+  // Fetch company data and then applicants
+  useEffect(() => {
+    const fetchCompanyData = async () => {
+      setLoading(true);
+      setError(null);
+      
+      try {
+        // First get the company info
+        const companyResponse = await axios.get(`${API_URL}/company/get-company-by-user`, {
+          withCredentials: true
+        });
+        
+        if (companyResponse.data && companyResponse.data.ok && companyResponse.data.data && companyResponse.data.data.length > 0) {
+          const company = companyResponse.data.data[0];
+          setCompanyId(company._id);
+          
+          // Fetch jobs for this company
+          const jobsResponse = await axios.get(`${API_URL}/company/dashboard-stats`, {
+            withCredentials: true
+          });
+          
+          if (jobsResponse.data && jobsResponse.data.ok && jobsResponse.data.data) {
+            const jobIds = jobsResponse.data.data.jobs.list.map(job => job.id);
+            
+            // Fetch all applications
+            const applicationsResponse = await axios.get(`${API_URL}/application/get-application`, {
+              withCredentials: true
+            });
+            
+            if (applicationsResponse.data && applicationsResponse.data.ok) {
+              // Filter applications for company's jobs
+              const companyApplications = applicationsResponse.data.data.filter(app => 
+                jobIds.includes(app.job._id)
+              );
+              
+              // Format applicant data to match the existing UI
+              const formattedCandidates = companyApplications.map(app => {
+                // Map backend status to UI hiringStage
+                let hiringStage;
+                switch(app.status) {
+                  case "Shortlisted": hiringStage = "Shortlisted"; break;
+                  case "Interview": hiringStage = "Interview"; break;
+                  case "Hired": hiringStage = "Hired"; break;
+                  case "Rejected": hiringStage = "Declined"; break;
+                  case "In Review": hiringStage = "Interviewed"; break;
+                  default: hiringStage = "Shortlisted";
+                }
+                
+                // Format date
+                const appliedDate = new Date(app.appliedAt || app.createdAt);
+                const formattedDate = `${appliedDate.getDate()} ${appliedDate.toLocaleString('default', { month: 'long' })}, ${appliedDate.getFullYear()}`;
+                
+                return {
+                  id: app._id,
+                  name: app.applicant.fullName || app.applicant.userName,
+                  score: app.score || 0,
+                  hiringStage: hiringStage,
+                  appliedDate: formattedDate,
+                  jobRole: app.job.jobTitle,
+                  image: app.applicant.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(app.applicant.fullName || app.applicant.userName)}&background=random`
+                };
+              });
+              
+              setCandidates(formattedCandidates);
+            }
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching applicant data:", err);
+        setError("Failed to load applicant data. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchCompanyData();
+  }, []);
+  
   const [selectedCandidates, setSelectedCandidates] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectAll, setSelectAll] = useState(false);
@@ -249,297 +241,265 @@ const Applicant = () => {
         </div>
         <div className="flex-grow transition-all w-full">
           <Header />
-          <div className="container mx-auto">
-            <div className="flex flex-col md:flex-row md:justify-between md:items-center p-2 md:p-3">
-              <h2 className="text-lg md:text-xl font-semibold text-gray-800 mb-2 md:mb-0">
-                Applicants:{" "}
-                <span className="font-bold">{filteredCandidates.length}</span>
-              </h2>
-              <div className="flex flex-col md:flex-row items-start md:items-center gap-2">
-                <div className="relative w-full md:w-40">
-                  <Search className="absolute left-2 top-2 h-3.5 w-3.5 text-gray-400" />
-                  <input
-                    type="text"
-                    placeholder="Search"
-                    className="w-full pl-7 pr-2 py-1.5 text-xs border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-text"
-                    value={searchTerm}
-                    onChange={(e) => {
-                      setSearchTerm(e.target.value);
-                      setCurrentPage(1);
-                    }}
-                  />
+          
+          {loading ? (
+            <div className="flex items-center justify-center h-[calc(100vh-64px)]">
+              <div className="flex flex-col items-center">
+                <Loader className="w-8 h-8 text-blue-500 animate-spin" />
+                <p className="mt-2 text-gray-600">Loading applicants...</p>
+              </div>
+            </div>
+          ) : error ? (
+            <div className="flex items-center justify-center h-[calc(100vh-64px)]">
+              <div className="text-center bg-red-50 p-4 rounded-lg max-w-lg">
+                <AlertTriangle className="w-8 h-8 text-red-500 mx-auto mb-2" />
+                <h3 className="text-red-800 font-medium">Error</h3>
+                <p className="text-red-600 mt-1">{error}</p>
+                <button 
+                  onClick={() => window.location.reload()}
+                  className="mt-3 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+                >
+                  Try Again
+                </button>
+              </div>
+            </div>
+          ) : (
+            <>
+              <div className="px-4 py-5">
+                <h1 className="text-2xl font-bold text-gray-900">Applicants</h1>
+                <div className="my-4 flex justify-between gap-2 flex-wrap">
+                  <div className="relative flex w-full md:w-72">
+                    <input
+                      type="text"
+                      placeholder="Search applicants..."
+                      className="focus:outline-none pl-9 pr-4 py-2 border border-gray-300 rounded-md placeholder-gray-500 w-full"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                    <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
+                  </div>
                 </div>
 
-                <button className="flex items-center gap-1 px-2 py-1.5 border rounded-md hover:bg-gray-100 text-xs cursor-pointer">
-                  <Filter className="h-3.5 w-3.5" /> Filter
-                </button>
-
-                <div className="hidden md:block border-l h-5 mx-1"></div>
-
-                <div className="flex bg-blue-100 p-0.5 rounded-md">
+                <div className="flex gap-4 mb-4">
                   <button
-                    className={`w-28 h-7 px-2 py-0.5 rounded-sm text-blue-600 text-xs cursor-pointer ${
-                      view === "pipeline"
-                        ? "bg-white shadow-sm"
-                        : "hover:bg-blue-200"
-                    }`}
-                    onClick={() => setView("pipeline")}
-                  >
-                    Pipeline
-                  </button>
-                  <button
-                    className={`w-28 h-7 px-2 py-0.5 rounded-sm text-blue-600 text-xs cursor-pointer ${
-                      view === "table"
-                        ? "bg-white shadow-sm"
-                        : "hover:bg-blue-200"
+                    className={`px-4 py-2 rounded-md ${
+                      view === "table" ? "bg-blue-50 text-blue-700" : "bg-white"
                     }`}
                     onClick={() => setView("table")}
                   >
-                    Table
+                    Table View
+                  </button>
+                  <button
+                    className={`px-4 py-2 rounded-md ${
+                      view === "kanban" ? "bg-blue-50 text-blue-700" : "bg-white"
+                    }`}
+                    onClick={() => setView("kanban")}
+                  >
+                    Kanban View
                   </button>
                 </div>
-              </div>
-            </div>
 
-            {view === "table" && (
-              <div className="overflow-x-auto px-3 md:px-4">
-                <table className="min-w-full border-collapse border border-gray-200 rounded-md overflow-hidden text-sm">
-                  <thead className="bg-white text-gray-600 uppercase border-b border-gray-200">
-                    <tr>
-                      <th className="p-2 text-left">
-                        <input
-                          type="checkbox"
-                          className="form-checkbox text-blue-500 border-gray-300 rounded cursor-pointer h-4 w-4"
-                          checked={selectAll}
-                          onChange={handleSelectAll}
-                        />
-                      </th>
-                      {[
-                        "Name",
-                        "Score",
-                        "Stage",
-                        "Applied",
-                        "Role",
-                        "Action",
-                      ].map((header) => (
-                        <th
-                          key={header}
-                          className="p-2 text-left font-medium cursor-pointer hover:bg-gray-50"
-                        >
-                          <div className="flex items-center space-x-1">
-                            <span>{header}</span>
-                            <span className="text-xs opacity-50">▲▼</span>
-                          </div>
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-
-                  <tbody>
-                    {currentApplicants.length > 0 ? (
-                      currentApplicants.map((candidate) => (
-                        <tr
-                          key={candidate.id}
-                          className="border-t hover:bg-gray-50 cursor-pointer"
-                          onClick={() => navigate("/applicant-detail")}
-                        >
-                          <td
-                            className="p-2"
-                            onClick={(e) => e.stopPropagation()}
-                          >
+                {candidates.length === 0 ? (
+                  <div className="text-center py-10">
+                    <p className="text-gray-500">No applicants found.</p>
+                  </div>
+                ) : view === "table" ? (
+                  // Table View
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full bg-white divide-y divide-gray-200 shadow-sm border border-gray-200 rounded-md">
+                      <thead>
+                        <tr className="bg-gray-50">
+                          <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-10">
                             <input
                               type="checkbox"
-                              className="form-checkbox text-blue-500 cursor-pointer h-4 w-4"
-                              checked={selectedCandidates.includes(
-                                candidate.id
-                              )}
-                              onChange={() => handleSelect(candidate.id)}
+                              className="rounded text-blue-600 focus:ring-blue-500 h-4 w-4"
+                              checked={selectAll}
+                              onChange={handleSelectAll}
                             />
-                          </td>
-                          <td className="p-2">
-                            <div className="flex items-center space-x-2">
-                              <img
-                                src={candidate.image}
-                                alt={candidate.name}
-                                className="w-6 h-6 rounded-full border object-cover"
-                              />
-                              <span className="font-medium text-gray-900">
-                                {candidate.name}
-                              </span>
-                            </div>
-                          </td>
-                          <td className="p-2">
-                            <div className="flex items-center space-x-1">
-                              <Star
-                                className={`${getStarColor(
-                                  candidate.score
-                                )} h-4 w-4`}
-                                fill={candidate.score > 0 ? "#FACC15" : "none"}
-                              />
-                              <span>{candidate.score}</span>
-                            </div>
-                          </td>
-                          <td className="p-2">
-                            <span
-                              className={`px-2 py-1 rounded-full text-xs font-medium 
-                      ${getStageTextColor(candidate.hiringStage)} 
-                      ${getStageColor(candidate.hiringStage)}`}
-                            >
-                              {candidate.hiringStage}
-                            </span>
-                          </td>
-                          <td className="p-2 text-gray-600">
-                            {candidate.appliedDate}
-                          </td>
-                          <td className="p-2 text-gray-600">
-                            {candidate.jobRole}
-                          </td>
-                          <td className="p-2">
-                            <button
-                              className="px-2 py-1 text-xs border border-blue-500 bg-[#E9EBFD] text-blue-500 rounded cursor-pointer hover:bg-blue-100"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                navigate("/applicant-detail");
-                              }}
-                            >
-                              View
-                            </button>
-                          </td>
-                          <td className="p-2 text-gray-600 cursor-pointer hover:bg-gray-100 rounded">
-                            ...
-                          </td>
+                          </th>
+                          <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Name
+                          </th>
+                          <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Score
+                          </th>
+                          <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Hiring Stage
+                          </th>
+                          <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Job
+                          </th>
+                          <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Applied
+                          </th>
+                          <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Action
+                          </th>
                         </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td
-                          colSpan="7"
-                          className="p-3 text-center text-gray-500 text-sm"
-                        >
-                          No matching applicants found
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            )}
-
-            {view === "pipeline" && (
-              <div className="p-2">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-2">
-                  {stageOrder.map((stage) => (
-                    <div key={stage} className="bg-white rounded-md shadow-sm">
-                      <div
-                        className={`p-1.5 rounded-t-md ${getStageColor(stage)}`}
-                      >
-                        <div className="flex justify-between items-center">
-                          <h3
-                            className={`text-xs font-medium ${getStageTextColor(
-                              stage
-                            )}`}
+                      </thead>
+                      <tbody className="divide-y divide-gray-200">
+                        {currentApplicants.map((candidate) => (
+                          <tr
+                            key={candidate.id}
+                            className="hover:bg-gray-50 cursor-pointer"
+                            onClick={() => navigate(`/applicant-detail/${candidate.id}`)}
                           >
-                            {stage}
-                          </h3>
-                          <span className="bg-white px-1 py-0.5 rounded-full text-[0.65rem] font-medium text-gray-700">
-                            {stageGroups[stage].length}
-                          </span>
+                            <td className="px-3 py-2">
+                              <input
+                                type="checkbox"
+                                className="rounded text-blue-600 focus:ring-blue-500 h-4 w-4"
+                                checked={selectedCandidates.includes(candidate.id)}
+                                onChange={(e) => {
+                                  e.stopPropagation();
+                                  handleSelect(candidate.id);
+                                }}
+                              />
+                            </td>
+                            <td className="px-3 py-2">
+                              <div className="flex items-center">
+                                <div className="flex-shrink-0 h-8 w-8">
+                                  <img
+                                    className="h-8 w-8 rounded-full object-cover"
+                                    src={candidate.image}
+                                    alt={candidate.name}
+                                    onError={(e) => {
+                                      e.target.onerror = null;
+                                      e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(candidate.name)}&background=random`;
+                                    }}
+                                  />
+                                </div>
+                                <div className="ml-3">
+                                  <p className="text-sm font-medium text-gray-900">
+                                    {candidate.name}
+                                  </p>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="px-3 py-2">
+                              <div className="flex items-center">
+                                <Star
+                                  className={`${getStarColor(
+                                    candidate.score
+                                  )} h-4 w-4`}
+                                  fill={candidate.score > 0 ? "#FACC15" : "none"}
+                                />
+                                <span className="ml-1 text-sm">
+                                  {candidate.score}
+                                </span>
+                              </div>
+                            </td>
+                            <td className="px-3 py-2">
+                              <span
+                                className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStageColor(
+                                  candidate.hiringStage
+                                )} ${getStageTextColor(candidate.hiringStage)}`}
+                              >
+                                {candidate.hiringStage}
+                              </span>
+                            </td>
+                            <td className="px-3 py-2 text-sm text-gray-900">
+                              {candidate.jobRole}
+                            </td>
+                            <td className="px-3 py-2 text-sm text-gray-500">
+                              {candidate.appliedDate}
+                            </td>
+                            <td className="px-3 py-2 text-sm">
+                              <button
+                                className="text-blue-600 hover:text-blue-800 text-xs"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  navigate(`/applicant-detail/${candidate.id}`);
+                                }}
+                              >
+                                View
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                    
+                    {/* Pagination */}
+                    {totalPages > 1 && (
+                      <div className="flex justify-between items-center mt-4 px-2">
+                        <div className="text-sm text-gray-700">
+                          Showing {indexOfFirstApplicant + 1} to{" "}
+                          {Math.min(indexOfLastApplicant, filteredCandidates.length)} of{" "}
+                          {filteredCandidates.length} results
+                        </div>
+                        <div className="inline-flex gap-1">
+                          <button
+                            onClick={() => paginate(Math.max(1, currentPage - 1))}
+                            className="px-2 py-1 border border-gray-300 rounded-md text-sm"
+                            disabled={currentPage === 1}
+                          >
+                            <ChevronLeft size={16} />
+                          </button>
+                          {Array.from({ length: totalPages }, (_, i) => i + 1)
+                            .filter(
+                              (number) =>
+                                number === 1 ||
+                                number === totalPages ||
+                                Math.abs(number - currentPage) <= 1
+                            )
+                            .map((number, index, array) => (
+                              <React.Fragment key={number}>
+                                {index > 0 && array[index - 1] !== number - 1 && (
+                                  <span className="px-2 py-1 border border-gray-300 rounded-md text-sm">
+                                    ...
+                                  </span>
+                                )}
+                                <button
+                                  onClick={() => paginate(number)}
+                                  className={`px-3 py-1 border rounded-md text-sm ${
+                                    currentPage === number
+                                      ? "bg-blue-600 text-white border-blue-600"
+                                      : "border-gray-300"
+                                  }`}
+                                >
+                                  {number}
+                                </button>
+                              </React.Fragment>
+                            ))}
+                          <button
+                            onClick={() => paginate(Math.min(totalPages, currentPage + 1))}
+                            className="px-2 py-1 border border-gray-300 rounded-md text-sm"
+                            disabled={currentPage === totalPages}
+                          >
+                            <ChevronRight size={16} />
+                          </button>
                         </div>
                       </div>
-                      <div className="p-1.5 max-h-[calc(100vh-250px)] overflow-y-auto">
-                        {stageGroups[stage].length > 0 ? (
-                          stageGroups[stage].map((candidate) => (
-                            <CandidateCard
-                              key={candidate.id}
-                              candidate={candidate}
-                            />
-                          ))
-                        ) : (
-                          <div className="text-center py-3 text-gray-500 text-[0.65rem]">
-                            No candidates
-                          </div>
-                        )}
+                    )}
+                  </div>
+                ) : (
+                  // Kanban View
+                  <div className="flex flex-col md:flex-row gap-4 overflow-x-auto pb-4">
+                    {stageOrder.map((stage) => (
+                      <div key={stage} className="flex-1 min-w-[250px]">
+                        <h3 className="font-medium mb-2 flex items-center gap-2">
+                          <span
+                            className={`inline-block w-2 h-2 rounded-full ${getStageColor(
+                              stage
+                            ).replace("bg-", "bg-")}`}
+                          ></span>
+                          {stage}{" "}
+                          <span className="text-gray-500 text-sm">
+                            ({stageGroups[stage]?.length || 0})
+                          </span>
+                        </h3>
+                        <div className="space-y-2">
+                          {stageGroups[stage]?.map((candidate) => (
+                            <CandidateCard key={candidate.id} candidate={candidate} />
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </div>
-            )}
-
-            {view === "table" && (
-              <div className="flex flex-col md:flex-row justify-between items-center p-2 md:p-3 text-xs">
-                <div className="flex items-center space-x-1.5 mb-2 md:mb-0">
-                  <span>Show</span>
-                  <select
-                    value={applicantsPerPage}
-                    onChange={(e) => {
-                      setApplicantsPerPage(Number(e.target.value));
-                      setCurrentPage(1);
-                    }}
-                    className="border rounded px-1 py-0.5 cursor-pointer"
-                  >
-                    <option value={10}>10</option>
-                    <option value={20}>20</option>
-                    <option value={50}>50</option>
-                  </select>
-                  <span>per page</span>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <button
-                    onClick={() =>
-                      setCurrentPage((prev) => Math.max(prev - 1, 1))
-                    }
-                    disabled={currentPage === 1}
-                    className={`p-1 border rounded ${
-                      currentPage === 1
-                        ? "text-gray-300 cursor-not-allowed"
-                        : "hover:bg-gray-100 cursor-pointer"
-                    }`}
-                  >
-                    <ChevronLeft size={12} />
-                  </button>
-                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                    let pageNum;
-                    if (totalPages <= 5) {
-                      pageNum = i + 1;
-                    } else if (currentPage <= 3) {
-                      pageNum = i + 1;
-                    } else if (currentPage >= totalPages - 2) {
-                      pageNum = totalPages - 4 + i;
-                    } else {
-                      pageNum = currentPage - 2 + i;
-                    }
-                    return (
-                      <button
-                        key={pageNum}
-                        onClick={() => paginate(pageNum)}
-                        className={`px-2 py-0.5 border rounded ${
-                          currentPage === pageNum
-                            ? "bg-blue-500 text-white"
-                            : "hover:bg-gray-100 cursor-pointer"
-                        }`}
-                      >
-                        {pageNum}
-                      </button>
-                    );
-                  })}
-                  <button
-                    onClick={() =>
-                      setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                    }
-                    disabled={currentPage === totalPages}
-                    className={`p-1 border rounded ${
-                      currentPage === totalPages
-                        ? "text-gray-300 cursor-not-allowed"
-                        : "hover:bg-gray-100 cursor-pointer"
-                    }`}
-                  >
-                    <ChevronRight size={12} />
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
+            </>
+          )}
         </div>
       </div>
     </div>

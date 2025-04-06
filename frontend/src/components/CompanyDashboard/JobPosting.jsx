@@ -3,6 +3,8 @@ import Sidebar from "./Sidebar";
 import Header from "./Header";
 import { useNavigate } from "react-router-dom";
 import { Range } from "react-range";
+import axios from "axios";
+import { API_URL } from "../../App";
 
 const jobCategories = [
   "Software Engineer",
@@ -13,8 +15,8 @@ const jobCategories = [
   "Sales",
 ];
 
-const RichTextEditor = () => {
-  const [description, setDescription] = useState("");
+const RichTextEditor = ({ value, onChange, placeholder }) => {
+  const [description, setDescription] = useState(value || "");
   const editorRef = useRef(null);
   const [charCount, setCharCount] = useState(0);
   const maxChars = 500;
@@ -24,6 +26,13 @@ const RichTextEditor = () => {
   const [linkText, setLinkText] = useState("");
 
   const emojis = ["😀", "😊", "👍", "🎉", "❤️", "🔥", "✅", "🚀", "💡", "📊"];
+
+  useEffect(() => {
+    // Update the editor content when the value prop changes
+    if (editorRef.current && value !== undefined && editorRef.current.innerHTML !== value) {
+      editorRef.current.innerHTML = value;
+    }
+  }, [value]);
 
   useEffect(() => {
     if (editorRef.current) {
@@ -36,6 +45,10 @@ const RichTextEditor = () => {
     if (editorRef.current) {
       const content = editorRef.current.innerHTML;
       setDescription(content);
+      // Call the parent's onChange handler
+      if (onChange) {
+        onChange(content);
+      }
     }
   };
 
@@ -129,6 +142,17 @@ const RichTextEditor = () => {
         style={{
           minHeight: "6rem",
           listStylePosition: "inside",
+        }}
+        data-placeholder={placeholder}
+        onFocus={(e) => {
+          if (e.target.innerHTML === placeholder) {
+            e.target.innerHTML = '';
+          }
+        }}
+        onBlur={(e) => {
+          if (e.target.innerHTML === '') {
+            e.target.innerHTML = placeholder ? `<span class="text-gray-400">${placeholder}</span>` : '';
+          }
         }}
       />
       <div className="border-t border-gray-200 pt-2 px-2 flex items-center justify-between">
@@ -260,6 +284,33 @@ const JobPosting = () => {
   const [jobTitle, setJobTitle] = useState("");
   const [selectedEmploymentTypes, setSelectedEmploymentTypes] = useState([]);
   const [highestVisitedTab, setHighestVisitedTab] = useState(1);
+  const [location, setLocation] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [companyId, setCompanyId] = useState("");
+
+  useEffect(() => {
+    // Fetch company ID when component mounts
+    const fetchCompanyId = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/company/get-company-by-user`, {
+          withCredentials: true
+        });
+        
+        if (response.data && response.data.ok && response.data.data && response.data.data.length > 0) {
+          setCompanyId(response.data.data[0]._id);
+        } else {
+          setError("No company found. Please create a company profile first.");
+        }
+      } catch (err) {
+        console.error("Error fetching company:", err);
+        setError("Failed to fetch company details. Please try again later.");
+      }
+    };
+    
+    fetchCompanyId();
+  }, []);
 
   useEffect(() => {
     if (activeTab > highestVisitedTab) {
@@ -418,6 +469,105 @@ const JobPosting = () => {
     }
   };
 
+  const handleSubmit = async () => {
+    if (!companyId) {
+      setError("No company found. Please create a company profile first.");
+      return;
+    }
+
+    if (!jobTitle.trim()) {
+      setError("Job title is required");
+      return;
+    }
+
+    if (selectedEmploymentTypes.length === 0) {
+      setError("Please select at least one employment type");
+      return;
+    }
+    
+    if (!jobDescription || jobDescription.trim() === '') {
+      setError("Job description is required");
+      return;
+    }
+
+    // Calculate min and max salary from the range
+    const minSalary = Math.min(...salary);
+    const maxSalary = Math.max(...salary);
+    const avgSalary = Math.floor((minSalary + maxSalary) / 2);
+
+    setIsSubmitting(true);
+    setError("");
+
+    try {
+      // Format benefits properly
+      const perksAndBenefitsList = benefits.map(benefit => benefit.title);
+      
+      // Extract actual content from HTML for responsibilities, qualifications, etc.
+      const extractTextFromHTML = (html) => {
+        if (!html) return [];
+        // Simple HTML to text conversion and splitting by line breaks
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = html;
+        const text = tempDiv.textContent || tempDiv.innerText || '';
+        return text.split('\n').filter(item => item.trim());
+      };
+      
+      // Determine job type from selected employment types
+      const jobType = selectedEmploymentTypes.length > 0 ? selectedEmploymentTypes[0] : "Full-time";
+
+      // For debugging - log what we're sending
+      console.log("Sending job data:", {
+        company: companyId,
+        jobTitle,
+        jobType,
+        location,
+        salary: avgSalary
+      });
+
+      const jobData = {
+        company: companyId,
+        jobTitle: jobTitle,
+        jobDescription: jobDescription,
+        jobType: jobType,
+        location: location,
+        salary: avgSalary,
+        skillsRequired: skills,
+        responsibilities: extractTextFromHTML(responsibilities),
+        whoYouAre: extractTextFromHTML(qualifications),
+        niceToHave: extractTextFromHTML(niceToHaves),
+        perksAndBenefits: perksAndBenefitsList,
+        status: "Live"
+      };
+
+      const response = await axios.post(`${API_URL}/job/create-job`, jobData, {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.data && response.data.ok) {
+        setSuccess("Job posted successfully!");
+        // Navigate to job listing page after a brief delay
+        setTimeout(() => {
+          navigate("/job-listing");
+        }, 1500);
+      } else {
+        setError(response.data?.message || "Failed to post job. Please try again.");
+      }
+    } catch (err) {
+      console.error("Error posting job:", err);
+      if (err.response && err.response.data) {
+        console.error("Server error details:", err.response.data);
+        setError(err.response.data.message || "Failed to post job. Please try again.");
+      } else {
+        setError("Network error or server unavailable. Please try again later.");
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="flex flex-col min-h-screen">
       <div className="flex flex-row flex-grow">
@@ -445,6 +595,18 @@ const JobPosting = () => {
             </div>
 
             <div className="px-6 pb-8">
+              {/* Error and success messages */}
+              {error && (
+                <div className="bg-red-50 text-red-700 p-3 rounded-md mb-4">
+                  {error}
+                </div>
+              )}
+              {success && (
+                <div className="bg-green-50 text-green-700 p-3 rounded-md mb-4">
+                  {success}
+                </div>
+              )}
+              
               <div className="flex border border-gray-200 rounded-md mb-4">
                 <div
                   className={`flex items-center p-2 flex-1 border-r border-gray-200 cursor-pointer`}
@@ -580,13 +742,11 @@ const JobPosting = () => {
               </div>
 
               {activeTab === 1 && (
-                <div className="">
+                <div>
                   <div className="mb-4 border-b border-gray-300 pb-2">
-                    <h2 className="text-lg font-semibold mb-1">
-                      Basic Information
-                    </h2>
+                    <h2 className="text-lg font-semibold mb-1">Basic Information</h2>
                     <p className="text-sm text-gray-500">
-                      This information will be displayed publicly
+                      Will be displayed on the job listings page
                     </p>
                   </div>
                   <div className="flex border-b border-gray-300 pb-3">
@@ -599,47 +759,87 @@ const JobPosting = () => {
                     <div className="w-3/4">
                       <input
                         type="text"
-                        className="w-64 p-1.5 border border-gray-300 rounded text-sm"
-                        placeholder="e.g. Software Engineer"
+                        placeholder="e.g. Senior Product Designer"
+                        className="w-full border border-gray-300 rounded-md px-3 py-2 outline-none"
                         value={jobTitle}
                         onChange={(e) => setJobTitle(e.target.value)}
                       />
-                      <p className="text-xs text-gray-500 mt-1">
-                        At least 30 characters
+                      <p className="text-xs text-gray-400 mt-1">
+                        Job titles should be 60 characters or less
                       </p>
                     </div>
                   </div>
                   <div className="flex border-b border-gray-300 mt-4 pb-3">
                     <div className="w-1/4">
-                      <h2 className="text-lg font-semibold">
-                        Types of Employment
-                      </h2>
+                      <h2 className="text-lg font-semibold">Employment Type</h2>
                       <p className="text-sm text-gray-500">
-                        You can select multiple types of employment
+                        What type of employment are you offering?
+                      </p>
+                    </div>
+                    <div className="w-3/4 grid grid-cols-2 gap-3">
+                      {[
+                        "Full-time",
+                        "Part-time",
+                        "Remote",
+                        "Internship",
+                        "Contract",
+                      ].map((type) => (
+                        <div
+                          key={type}
+                          onClick={() => handleEmploymentTypeChange(type)}
+                          className={`border ${
+                            selectedEmploymentTypes.includes(type)
+                              ? "border-blue-500 bg-[#E9EBFD]"
+                              : "border-gray-300"
+                          } rounded-md p-4 cursor-pointer transition-all`}
+                        >
+                          <div className="flex justify-between items-center">
+                            <span>{type}</span>
+                            <div
+                              className={`w-5 h-5 flex items-center justify-center rounded-full ${
+                                selectedEmploymentTypes.includes(type)
+                                  ? "bg-blue-500"
+                                  : "border-2 border-gray-300"
+                              }`}
+                            >
+                              {selectedEmploymentTypes.includes(type) && (
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  className="h-3 w-3 text-white"
+                                  viewBox="0 0 20 20"
+                                  fill="currentColor"
+                                >
+                                  <path
+                                    fillRule="evenodd"
+                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                    clipRule="evenodd"
+                                  />
+                                </svg>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="flex border-b border-gray-300 mt-4 pb-3">
+                    <div className="w-1/4">
+                      <h2 className="text-lg font-semibold">Location</h2>
+                      <p className="text-sm text-gray-500">
+                        Where is this job located?
                       </p>
                     </div>
                     <div className="w-3/4">
-                      <div className="space-y-1">
-                        {[
-                          "Full-Time",
-                          "Part-Time",
-                          "Remote",
-                          "Internship",
-                          "Contract",
-                        ].map((type) => (
-                          <div key={type} className="flex items-center">
-                            <input
-                              type="checkbox"
-                              className="h-4 w-4 text-blue-500 border-gray-300 rounded cursor-pointer"
-                              checked={selectedEmploymentTypes.includes(type)}
-                              onChange={() => handleEmploymentTypeChange(type)}
-                            />
-                            <label className="ml-2 text-sm text-gray-700 cursor-pointer">
-                              {type}
-                            </label>
-                          </div>
-                        ))}
-                      </div>
+                      <input
+                        type="text"
+                        placeholder="e.g. New York, NY or Remote"
+                        className="w-full border border-gray-300 rounded-md px-3 py-2 outline-none"
+                        value={location}
+                        onChange={(e) => setLocation(e.target.value)}
+                      />
+                      <p className="text-xs text-gray-400 mt-1">
+                        Enter city, state, or 'Remote' if applicable
+                      </p>
                     </div>
                   </div>
                   <div className="flex border-b border-gray-300 mt-4 pb-3">
@@ -1019,13 +1219,31 @@ const JobPosting = () => {
               )}
 
               <div className="flex justify-between mt-6">
-                <button
-                  className="px-3 py-1 bg-blue-500 text-white rounded-md text-sm cursor-pointer"
-                  onClick={() => setActiveTab(Math.min(3, activeTab + 1))}
-                  disabled={activeTab === 3}
-                >
-                  Next Step
-                </button>
+                {activeTab > 1 && (
+                  <button
+                    className="px-3 py-1 border border-gray-300 text-gray-700 rounded-md text-sm cursor-pointer"
+                    onClick={() => setActiveTab(Math.max(1, activeTab - 1))}
+                  >
+                    Previous Step
+                  </button>
+                )}
+                
+                {activeTab < 3 ? (
+                  <button
+                    className="px-3 py-1 bg-blue-500 text-white rounded-md text-sm cursor-pointer"
+                    onClick={() => setActiveTab(Math.min(3, activeTab + 1))}
+                  >
+                    Next Step
+                  </button>
+                ) : (
+                  <button
+                    className={`px-4 py-2 bg-blue-600 text-white rounded-md text-sm cursor-pointer ${isSubmitting ? 'opacity-75 cursor-not-allowed' : 'hover:bg-blue-700'}`}
+                    onClick={handleSubmit}
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? 'Posting Job...' : 'Post Job'}
+                  </button>
+                )}
               </div>
             </div>
           </div>
