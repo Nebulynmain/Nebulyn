@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Instagram, Linkedin, Twitter, Github, Facebook } from "lucide-react";
+import axios from "axios";
+import { API_URL } from "../../App";
 import {
   Heart,
   Waves,
@@ -24,6 +26,9 @@ import {
   Trash,
   X,
   Check,
+  Loader,
+  AlertTriangle,
+  Link
 } from "lucide-react";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
@@ -221,130 +226,218 @@ const BenefitIcons = {
   Bike: <Bike size={28} strokeWidth={1.5} className="text-blue-500" />,
 };
 
+// Toast Notification Component
+const Toast = ({ message, type, onClose }) => {
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      onClose();
+    }, 3000);
+    
+    return () => clearTimeout(timer);
+  }, [onClose]);
+  
+  const bgColor = type === 'success' ? 'bg-green-500' : 'bg-red-500';
+  
+  return (
+    <div className={`fixed top-4 right-4 flex items-center ${bgColor} text-white px-4 py-2 rounded-md shadow-lg z-50`}>
+      {type === 'success' ? (
+        <Check className="w-5 h-5 mr-2" />
+      ) : (
+        <AlertTriangle className="w-5 h-5 mr-2" />
+      )}
+      <p>{message}</p>
+      <button 
+        onClick={onClose} 
+        className="ml-3 text-white hover:text-gray-200"
+      >
+        <X className="w-4 h-4" />
+      </button>
+    </div>
+  );
+};
+
 const Profile = () => {
+  // API-related states
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [company, setCompany] = useState(null);
+  const [companyId, setCompanyId] = useState(null);
+  
+  // Toast notification state
+  const [toast, setToast] = useState({ visible: false, message: '', type: 'success' });
+  
+  // Show toast function
+  const showToast = (message, type = 'success') => {
+    setToast({ visible: true, message, type });
+  };
+  
+  // Hide toast function
+  const hideToast = () => {
+    setToast({ ...toast, visible: false });
+  };
+  
   // State for editable content
   const [companyInfo, setCompanyInfo] = useState({
-    name: "Nomad",
-    website: "https://nomad.com",
-    founded: "July 31, 2011",
-    employees: "4000+",
-    location: "20 countries",
-    industry: "Social & Non-Profit",
-    description:
-      "Nomad is a software platform for starting and running internet businesses. Millions of businesses rely on Stripe's software tools to accept payments, expand globally, and manage their businesses online. Stripe has been at the forefront of expanding internet commerce, powering new business models, and supporting the latest platforms, from marketplaces to mobile commerce sites.",
+    name: "",
+    website: "",
+    founded: "",
+    employees: "",
+    location: "",
+    industry: "",
+    description: "",
   });
 
   const [socialLinks, setSocialLinks] = useState({
-    twitter: "twitter.com/Nomad",
-    facebook: "facebook.com/NomadHQ",
-    linkedin: "linkedin.com/company/nomad",
-    email: "nomad@gmail.com",
+    twitter: "",
+    facebook: "",
+    linkedin: "",
+    email: "",
   });
 
-  const [techItems, setTechItems] = useState([
-    { name: "HTML 5", color: "#E44D26", logo: "H5" },
-    { name: "CSS 3", color: "#1572B6", logo: "C3" },
-    { name: "JavaScript", color: "#F7DF1E", logo: "JS" },
-    { name: "Ruby", color: "#CC342D", logo: "Rb" },
-    { name: "Mixpanel", color: "#7B68EE", logo: "..." },
-    { name: "Framer", color: "#000000", logo: "F" },
-  ]);
+  const [techItems, setTechItems] = useState([]);
+  const [locations, setLocations] = useState([]);
+  const [benefits, setBenefits] = useState([]);
+  const [teamMembers, setTeamMembers] = useState([]);
+  const [jobs, setJobs] = useState([]);
 
-  const [locations, setLocations] = useState([
-    { name: "United States", logo: "https://flagcdn.com/w40/us.png" },
-    { name: "England", logo: "https://flagcdn.com/w40/gb.png" },
-    { name: "Japan", logo: "https://flagcdn.com/w40/jp.png" },
-    { name: "Australia", logo: "https://flagcdn.com/w40/au.png" },
-    { name: "China", logo: "https://flagcdn.com/w40/cn.png" },
-  ]);
-
-  const [benefits, setBenefits] = useState([
-    {
-      icon: <Heart size={28} strokeWidth={1.5} className="text-blue-500" />,
-      title: "Full Healthcare",
-      description:
-        "We believe in thriving communities and that starts with our team being happy and healthy.",
-    },
-    {
-      icon: <Waves size={28} strokeWidth={1.5} className="text-blue-500" />,
-      title: "Unlimited Vacation",
-      description:
-        "We believe you should have a flexible schedule that makes space for family, wellness, and fun.",
-    },
-    {
-      icon: <BookOpen size={28} strokeWidth={1.5} className="text-blue-500" />,
-      title: "Skill Development",
-      description:
-        "We believe in always learning and leveling up our skills. Whether it's a conference or online course.",
-    },
-    {
-      icon: <Users size={28} strokeWidth={1.5} className="text-blue-500" />,
-      title: "Team Summits",
-      description:
-        "Every 6 months we have a full team summit where we have fun, reflect, and plan for the upcoming quarter.",
-    },
-    {
-      icon: <Coffee size={28} strokeWidth={1.5} className="text-blue-500" />,
-      title: "Remote Working",
-      description:
-        "You know how you perform best. Work from home, coffee shop, or anywhere when you feel like it.",
-    },
-    {
-      icon: <Bus size={28} strokeWidth={1.5} className="text-blue-500" />,
-      title: "Commuter Benefits",
-      description:
-        "We're grateful for all the time and energy each team member puts into getting to work every day.",
-    },
-  ]);
-
-  const [teamMembers, setTeamMembers] = useState([
-    {
-      name: "Célestin Gardinier",
-      role: "CEO & Co-Founder",
-      image: "https://source.unsplash.com/100x100/?man",
-      socialLinks: [
-        { platform: "LinkedIn", url: "https://linkedin.com/in/celestin" },
-        { platform: "Twitter", url: "https://twitter.com/celestin" },
-      ],
-    },
-    {
-      name: "Reynaud Colbert",
-      role: "Co-Founder",
-      image: "https://source.unsplash.com/100x100/?businessman",
-      socialLinks: [
-        { platform: "Instagram", url: "https://instagram.com/reynaud" },
-        { platform: "Facebook", url: "https://facebook.com/reynaud" },
-      ],
-    },
-    {
-      name: "Arienne Lyon",
-      role: "Managing Director",
-      image: "https://source.unsplash.com/100x100/?woman",
-      socialLinks: [
-        { platform: "LinkedIn", url: "https://linkedin.com/in/arienne" },
-        { platform: "GitHub", url: "https://github.com/arienne" },
-      ],
-    },
-  ]);
-
-  const [jobs, setJobs] = useState([
-    {
-      title: "Social Media Assistant",
-      company: "Nomad",
-      location: "Paris, France",
-      jobType: "Full-Time",
-      categories: ["Marketing", "Design"],
-      logo: "https://via.placeholder.com/40",
-    },
-    {
-      title: "Brand Designer",
-      company: "Dropbox",
-      location: "San Francisco, USA",
-      jobType: "Part-Time",
-      categories: ["Design"],
-      logo: "https://via.placeholder.com/40",
-    },
-  ]);
+  // Fetch company data
+  useEffect(() => {
+    const fetchCompanyData = async () => {
+      setLoading(true);
+      setError(null);
+      
+      try {
+        // Get company data
+        const response = await axios.get(`${API_URL}/company/get-company-by-user`, {
+          withCredentials: true
+        });
+        
+        if (response.data && response.data.ok && response.data.data && response.data.data.length > 0) {
+          const companyData = response.data.data[0];
+          setCompany(companyData);
+          setCompanyId(companyData._id);
+          
+          // Set logo if available
+          if (companyData.companyLogo) {
+            setLogoImage(companyData.companyLogo);
+          }
+          
+          // Update company info
+          setCompanyInfo({
+            name: companyData.companyName || "",
+            website: companyData.websiteLink || "",
+            founded: companyData.foundedOn ? new Date(companyData.foundedOn).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            }) : "",
+            employees: companyData.employees ? companyData.employees.toString() : "",
+            location: companyData.locations && companyData.locations.length > 0 
+              ? companyData.locations.join(', ') : "",
+            industry: companyData.industry || "",
+            description: companyData.description || "",
+          });
+          
+          // Update tech stack
+          if (companyData.techStack && companyData.techStack.length > 0) {
+            const tech = companyData.techStack.map((item, index) => {
+              // Generate a random color for the tech
+              const randomColor = "#" + Math.floor(Math.random()*16777215).toString(16);
+              return {
+                name: item,
+                color: randomColor,
+                logo: item.substring(0, 2).toUpperCase()
+              };
+            });
+            setTechItems(tech);
+          }
+          
+          // Update locations
+          if (companyData.locations && companyData.locations.length > 0) {
+            const locs = companyData.locations.map(loc => ({
+              name: loc,
+              logo: getFlagURL(loc)
+            }));
+            setLocations(locs);
+          }
+          
+          // Update benefits
+          if (companyData.benefits && companyData.benefits.length > 0) {
+            const benefitsData = companyData.benefits.map((benefit, index) => {
+              // Get a random icon from BenefitIcons
+              const iconKeys = Object.keys(BenefitIcons);
+              const randomIcon = BenefitIcons[iconKeys[index % iconKeys.length]];
+              
+              return {
+                icon: randomIcon,
+                title: benefit.title || "",
+                description: benefit.description || "",
+              };
+            });
+            setBenefits(benefitsData);
+          }
+          
+          // Update team members
+          if (companyData.teamMembers && companyData.teamMembers.length > 0) {
+            const team = companyData.teamMembers.map(member => {
+              const socialLinks = [];
+              
+              if (member.linkedInLink) {
+                socialLinks.push({ platform: "LinkedIn", url: member.linkedInLink });
+              }
+              
+              if (member.instagramLink) {
+                socialLinks.push({ platform: "Instagram", url: member.instagramLink });
+              }
+              
+              return {
+                name: member.name || "",
+                role: member.role || "",
+                image: member.pic || "https://source.unsplash.com/100x100/?person",
+                socialLinks: socialLinks
+              };
+            });
+            setTeamMembers(team);
+          }
+          
+          // Get jobs from dashboard stats API
+          try {
+            const statsResponse = await axios.get(`${API_URL}/company/dashboard-stats`, {
+              withCredentials: true
+            });
+            
+            if (statsResponse.data && statsResponse.data.ok && statsResponse.data.data) {
+              const jobsData = statsResponse.data.data.jobs.list || [];
+              
+              // Format jobs data for display
+              const formattedJobs = jobsData.map(job => ({
+                title: job.title,
+                company: companyData.companyName,
+                location: companyData.locations && companyData.locations.length > 0 
+                  ? companyData.locations[0] : "Main Office",
+                jobType: job.jobType,
+                categories: [job.jobType],
+                logo: companyData.companyLogo || "https://via.placeholder.com/40",
+              }));
+              
+              setJobs(formattedJobs);
+            }
+          } catch (jobsError) {
+            console.error("Error fetching jobs data:", jobsError);
+          }
+        } else {
+          throw new Error(response.data?.message || "No company data found");
+        }
+      } catch (err) {
+        console.error("Error fetching company data:", err);
+        setError(err.message || "Failed to load company data");
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchCompanyData();
+  }, []);
 
   // State for edit modes
   const fileInputRef = useRef(null);
@@ -405,42 +498,59 @@ const Profile = () => {
 
   // Add this state to track if Save was clicked
   const [saveWasClicked, setSaveWasClicked] = useState(false);
-
-  // Save company info
-  const saveCompanyInfo = () => {
-    setSaveWasClicked(true); // Track Save button click
-
-    setCompanyInfo((prev) => ({
-      ...prev,
-      name: companyInfo.name,
-      website: companyInfo.website,
-      founded: companyInfo.founded,
-      employees: companyInfo.employees,
-      location: companyInfo.location,
-      industry: companyInfo.industry,
-      description: companyInfo.description,
-    }));
-
-    setTimeout(() => {
-      setEditModes((prev) => ({
-        ...prev,
-        companyInfo: false, // Close edit mode
-        companyProfile: false,
-      }));
-    }, 100);
-  };
+  const [saving, setSaving] = useState(false);
 
   // Handle image selection
-  const handleImageChange = (e) => {
+  const handleImageChange = async (e) => {
+    if (!companyId) {
+      showToast("Company ID not found. Please refresh the page and try again.", "error");
+      return;
+    }
+    
     const file = e.target.files[0];
-    if (file) {
+    if (!file) return;
+    
+    // Show local preview first
       const reader = new FileReader();
       reader.onload = (event) => {
         setLogoImage(event.target.result);
       };
       reader.readAsDataURL(file);
 
-      // Close edit mode after selecting an image
+    // Set loading state
+    setSaving(true);
+    
+    // Upload to backend
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      
+      console.log("Uploading image for company ID:", companyId);
+      
+      const response = await axios.post(
+        `${API_URL}/company/image/${companyId}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          withCredentials: true
+        }
+      );
+      
+      if (response.data && response.data.ok) {
+        // Update state with new logo URL
+        setLogoImage(response.data.data.companyLogo);
+        showToast("Company logo updated successfully!", "success");
+      } else {
+        throw new Error(response.data?.message || "Failed to upload image");
+      }
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      showToast("Failed to upload image. Please try again.", "error");
+    } finally {
+      // Close edit mode after handling image
+      setSaving(false);
       setEditModes((prev) => ({
         ...prev,
         logo: false,
@@ -448,50 +558,180 @@ const Profile = () => {
     }
   };
 
+  // Save company info
+  const saveCompanyInfo = async () => {
+    if (!companyId) return;
+    
+    setSaveWasClicked(true);
+    setSaving(true);
+    
+    try {
+      // Format the data according to the backend model
+      const updatedData = {
+        companyName: companyInfo.name,
+        websiteLink: companyInfo.website,
+        employees: parseInt(companyInfo.employees) || 1,
+        industry: companyInfo.industry,
+        description: companyInfo.description,
+        // Format foundedOn as a date if it exists
+        ...(companyInfo.founded && { foundedOn: new Date(companyInfo.founded) })
+      };
+      
+      // Update locations from the location string
+      if (companyInfo.location) {
+        updatedData.locations = companyInfo.location.split(',').map(loc => loc.trim());
+      }
+      
+      const response = await axios.post(`${API_URL}/company/update-company/${companyId}`, updatedData, {
+        withCredentials: true
+      });
+      
+      if (response.data && response.data.ok) {
+        // Update local state with the response data
+        setCompany(response.data.data);
+        showToast("Company information saved successfully!", "success");
+      } else {
+        throw new Error(response.data?.message || "Failed to update company info");
+      }
+    } catch (error) {
+      console.error("Error saving company info:", error);
+      showToast("Failed to save company information. Please try again.", "error");
+    } finally {
+      setSaving(false);
+      setEditModes((prev) => ({
+        ...prev,
+        companyInfo: false,
+        companyProfile: false,
+      }));
+    }
+  };
+
   // Handler for adding new items
-  const handleAddItem = (section) => {
-    setEditModes((prev) => ({ ...prev, [section]: true })); // Enter edit mode
+  const handleAddItem = async (section) => {
+    if (!companyId) return;
+    
+    setEditModes((prev) => ({ ...prev, [section]: true }));
 
     switch (section) {
-      case "techStack":
-        setTechItems((prev) => [
-          ...prev,
-          { name: `New Tech ${prev.length + 1}`, color: "#000000", logo: "NT" },
-        ]);
+      case "techStack": {
+        const newTech = { name: `New Tech ${techItems.length + 1}`, color: "#000000", logo: "NT" };
+        setTechItems((prev) => [...prev, newTech]);
+        
+        // Update backend
+        try {
+          const updatedTechStack = [...(company?.techStack || []), newTech.name];
+          
+          const response = await axios.post(
+            `${API_URL}/company/update-company/${companyId}`,
+            { techStack: updatedTechStack },
+            { withCredentials: true }
+          );
+          
+          if (response.data && response.data.ok) {
+            setCompany(response.data.data);
+            showToast("New technology added successfully!", "success");
+          }
+        } catch (error) {
+          console.error("Error updating tech stack:", error);
+          showToast("Failed to add new technology.", "error");
+        }
         break;
+      }
 
-      case "locations":
-        setLocations((prev) => {
-          const newLocationName = `New Location ${prev.length + 1}`;
-          return [
-            ...prev,
-            { name: newLocationName, logo: getFlagURL(newLocationName) },
-          ];
-        });
+      case "locations": {
+        const newLocationName = `New Location ${locations.length + 1}`;
+        const newLocation = { name: newLocationName, logo: getFlagURL(newLocationName) };
+        setLocations((prev) => [...prev, newLocation]);
+        
+        // Update backend
+        try {
+          const updatedLocations = [...(company?.locations || []), newLocationName];
+          
+          const response = await axios.post(
+            `${API_URL}/company/update-company/${companyId}`,
+            { locations: updatedLocations },
+            { withCredentials: true }
+          );
+          
+          if (response.data && response.data.ok) {
+            setCompany(response.data.data);
+            showToast("New location added successfully!", "success");
+          }
+        } catch (error) {
+          console.error("Error updating locations:", error);
+          showToast("Failed to add new location.", "error");
+        }
         break;
+      }
 
-      case "benefits":
-        setBenefits((prev) => [
-          ...prev,
-          {
+      case "benefits": {
+        const newBenefit = {
             icon: getRandomBenefitIcon(),
-            title: `New Benefit ${prev.length + 1}`,
+          title: `New Benefit ${benefits.length + 1}`,
             description: "Description of the new benefit",
-          },
-        ]);
+        };
+        setBenefits((prev) => [...prev, newBenefit]);
+        
+        // Update backend
+        try {
+          const updatedBenefits = [
+            ...(company?.benefits || []),
+            { title: newBenefit.title, description: newBenefit.description }
+          ];
+          
+          const response = await axios.post(
+            `${API_URL}/company/update-company/${companyId}`,
+            { benefits: updatedBenefits },
+            { withCredentials: true }
+          );
+          
+          if (response.data && response.data.ok) {
+            setCompany(response.data.data);
+            showToast("New benefit added successfully!", "success");
+          }
+        } catch (error) {
+          console.error("Error updating benefits:", error);
+          showToast("Failed to add new benefit.", "error");
+        }
         break;
+      }
 
-      case "team":
-        setTeamMembers((prev) => [
-          ...prev,
-          {
-            name: `New Team Member ${prev.length + 1}`,
+      case "team": {
+        const newTeamMember = {
+          name: `New Team Member ${teamMembers.length + 1}`,
             role: "Role",
-            image: "https://via.placeholder.com/100", // Default profile image
-            socialLinks: [], // Start with no social links
-          },
-        ]);
+          image: "https://via.placeholder.com/100",
+          socialLinks: [],
+        };
+        setTeamMembers((prev) => [...prev, newTeamMember]);
+        
+        // Update backend
+        try {
+          const updatedTeamMembers = [
+            ...(company?.teamMembers || []),
+            { 
+              name: newTeamMember.name, 
+              role: newTeamMember.role, 
+              pic: newTeamMember.image 
+            }
+          ];
+          
+          const response = await axios.post(
+            `${API_URL}/company/update-company/${companyId}`,
+            { teamMembers: updatedTeamMembers },
+            { withCredentials: true }
+          );
+          
+          if (response.data && response.data.ok) {
+            setCompany(response.data.data);
+            showToast("New team member added successfully!", "success");
+          }
+        } catch (error) {
+          console.error("Error updating team members:", error);
+          showToast("Failed to add new team member.", "error");
+        }
         break;
+      }
 
       default:
         console.warn(`Unhandled section: ${section}`);
@@ -543,11 +783,41 @@ const Profile = () => {
   const [originalBenefits, setOriginalBenefits] = useState([]);
 
   // Function to save benefits
-  const saveBenefits = () => {
+  const saveBenefits = async () => {
+    if (!companyId) return;
+    
+    setSaveWasClicked(true);
+    setSaving(true);
+    
+    try {
+      // Format the benefits data for the backend
+      const formattedBenefits = benefits.map(benefit => ({
+        title: benefit.title,
+        description: benefit.description
+      }));
+      
+      const response = await axios.post(
+        `${API_URL}/company/update-company/${companyId}`,
+        { benefits: formattedBenefits },
+        { withCredentials: true }
+      );
+      
+      if (response.data && response.data.ok) {
+        setCompany(response.data.data);
+        showToast("Benefits updated successfully!", "success");
+      } else {
+        throw new Error(response.data?.message || "Failed to update benefits");
+      }
+    } catch (error) {
+      console.error("Error saving benefits:", error);
+      showToast("Failed to save benefits. Please try again.", "error");
+    } finally {
+      setSaving(false);
     setEditModes((prev) => ({
       ...prev,
-      benefits: false, // Exit edit mode after saving
+        benefits: false,
     }));
+    }
   };
 
   // Function to get a random benefit icon dynamically
@@ -556,8 +826,38 @@ const Profile = () => {
     return iconsArray[Math.floor(Math.random() * iconsArray.length)]; // Pick a random one
   };
 
-  const handleRemoveBenefit = (index) => {
+  const handleRemoveBenefit = async (index) => {
+    if (!companyId) return;
+    
+    try {
+      // Update local state
     setBenefits((prev) => prev.filter((_, i) => i !== index));
+      
+      // Update backend
+      const updatedBenefits = [...benefits];
+      updatedBenefits.splice(index, 1);
+      
+      const formattedBenefits = updatedBenefits.map(benefit => ({
+        title: benefit.title,
+        description: benefit.description
+      }));
+      
+      const response = await axios.post(
+        `${API_URL}/company/update-company/${companyId}`,
+        { benefits: formattedBenefits },
+        { withCredentials: true }
+      );
+      
+      if (response.data && response.data.ok) {
+        setCompany(response.data.data);
+        showToast("Benefit removed successfully", "success");
+      } else {
+        throw new Error(response.data?.message || "Failed to update benefits");
+      }
+    } catch (error) {
+      console.error("Error removing benefit:", error);
+      showToast("Failed to remove benefit", "error");
+    }
   };
 
   const [originalTeam, setOriginalTeam] = useState([]);
@@ -586,9 +886,13 @@ const Profile = () => {
     });
   };
 
-  const handleImageUpload = (event, index) => {
+  const handleImageUpload = async (event, index) => {
+    if (!companyId) return;
+    
     const file = event.target.files[0];
-    if (file) {
+    if (!file) return;
+    
+    // Show local preview first
       const reader = new FileReader();
       reader.onloadend = () => {
         setTeamMembers((prev) => {
@@ -597,8 +901,9 @@ const Profile = () => {
           return newTeam;
         });
       };
-      reader.readAsDataURL(file); // Convert image to base64
-    }
+    reader.readAsDataURL(file);
+    
+    // Upload to backend would go here, but for team members we'll save all at once
   };
 
   // Add this function to render social icons based on platform name
@@ -620,10 +925,41 @@ const Profile = () => {
   };
 
   // Function to handle removing a team member
-  const handleRemoveTeamMember = (index) => {
+  const handleRemoveTeamMember = async (index) => {
+    if (!companyId) return;
+    
+    try {
+      // Update local state
     const newTeamMembers = [...teamMembers];
     newTeamMembers.splice(index, 1);
     setTeamMembers(newTeamMembers);
+      
+      // Format for backend
+      const formattedTeamMembers = newTeamMembers.map(member => ({
+        name: member.name,
+        role: member.role,
+        pic: member.image,
+        linkedInLink: member.socialLinks.find(link => link.platform === "LinkedIn")?.url || "",
+        instagramLink: member.socialLinks.find(link => link.platform === "Instagram")?.url || ""
+      }));
+      
+      // Update backend
+      const response = await axios.post(
+        `${API_URL}/company/update-company/${companyId}`,
+        { teamMembers: formattedTeamMembers },
+        { withCredentials: true }
+      );
+      
+      if (response.data && response.data.ok) {
+        setCompany(response.data.data);
+        showToast("Team member removed successfully", "success");
+      } else {
+        throw new Error(response.data?.message || "Failed to update team members");
+      }
+    } catch (error) {
+      console.error("Error removing team member:", error);
+      showToast("Failed to remove team member", "error");
+    }
   };
 
   // Function to add a new social link
@@ -644,52 +980,166 @@ const Profile = () => {
   };
 
   // Function to save team members with proper state update
-  const saveTeamMembers = () => {
-    // Set the flag to indicate save was clicked
+  const saveTeamMembers = async () => {
+    if (!companyId) return;
+    
     setSaveWasClicked(true);
-
-    // Create a deep copy to avoid reference issues
-    const teamMembersCopy = JSON.parse(JSON.stringify(teamMembers));
-
-    // Update the original team state to the current team members
-    setOriginalTeam(teamMembersCopy);
-
-    // Here you would typically save to your backend
-    console.log("Saving team members:", teamMembersCopy);
-
-    // Exit edit mode
+    setSaving(true);
+    
+    try {
+      // Format team members for the backend
+      const formattedTeamMembers = teamMembers.map(member => ({
+        name: member.name,
+        role: member.role,
+        pic: member.image,
+        linkedInLink: member.socialLinks.find(link => link.platform === "LinkedIn")?.url || "",
+        instagramLink: member.socialLinks.find(link => link.platform === "Instagram")?.url || ""
+      }));
+      
+      const response = await axios.post(
+        `${API_URL}/company/update-company/${companyId}`,
+        { teamMembers: formattedTeamMembers },
+        { withCredentials: true }
+      );
+      
+      if (response.data && response.data.ok) {
+        setCompany(response.data.data);
+        setOriginalTeam(JSON.parse(JSON.stringify(teamMembers)));
+        showToast("Team members updated successfully!", "success");
+      } else {
+        throw new Error(response.data?.message || "Failed to update team members");
+      }
+    } catch (error) {
+      console.error("Error saving team members:", error);
+      showToast("Failed to save team members. Please try again.", "error");
+    } finally {
+      setSaving(false);
     toggleEditMode("team");
+    }
   };
+
+  // Add this for save buttons to show loading state
+  const SaveButton = ({ onClick, isLoading, text = "Save" }) => (
+    <button
+      onClick={onClick}
+      disabled={isLoading}
+      className={`flex items-center px-3 py-1 rounded-md text-sm ${
+        isLoading ? "bg-gray-300 text-gray-500" : "bg-blue-500 text-white hover:bg-blue-600"
+      } transition-colors`}
+    >
+      {isLoading ? (
+        <>
+          <Loader size={14} className="animate-spin mr-1" />
+          Saving...
+        </>
+      ) : (
+        text
+      )}
+    </button>
+  );
+
+  // Cancel button component for consistency
+  const CancelButton = ({ onClick }) => (
+    <button
+      onClick={onClick}
+      className="border border-gray-300 px-3 py-1 rounded-md text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+    >
+      Cancel
+    </button>
+  );
+
+  // Edit button component for consistency
+  const EditButton = ({ onClick, text = "Edit" }) => (
+    <button
+      onClick={onClick}
+      className="border border-blue-500 px-3 py-1 rounded-md text-sm text-blue-500 hover:bg-blue-50 transition-colors"
+    >
+      {text}
+    </button>
+  );
 
   return (
     <div className="flex flex-col min-h-screen">
+      {/* Toast notification */}
+      {toast.visible && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={hideToast}
+        />
+      )}
+      
       <div className="flex flex-row flex-grow">
         <div className="h-screen sticky top-0">
           <Sidebar />
         </div>
         <div className="flex-grow transition-all">
           <Header />
+          
+          {loading ? (
+            <div className="flex justify-center items-center h-screen">
+              <div className="flex flex-col items-center">
+                <Loader className="w-10 h-10 text-blue-500 animate-spin" />
+                <p className="mt-4 text-gray-600">Loading company profile...</p>
+              </div>
+            </div>
+          ) : error ? (
+            <div className="flex justify-center items-center h-screen">
+              <div className="bg-red-50 p-4 rounded-lg max-w-md">
+                <div className="flex items-center">
+                  <AlertTriangle className="w-6 h-6 text-red-500 mr-2" />
+                  <h3 className="text-red-800 font-medium">Error loading profile</h3>
+                </div>
+                <p className="text-red-600 mt-2">{error}</p>
+                <button 
+                  onClick={() => window.location.reload()}
+                  className="mt-3 bg-white border border-red-500 text-red-500 px-3 py-1 rounded-md hover:bg-red-50"
+                >
+                  Try Again
+                </button>
+              </div>
+            </div>
+          ) : (
           <div className="">
             {/* Company Info Section */}
             <div className="flex justify-between items-center py-4 px-6">
               <div className="flex items-center gap-4 flex-grow">
                 <div className="relative flex-shrink-0">
                   <div className="bg-gray-100 p-2 rounded-xl">
+                      {logoImage ? (
                     <img
                       src={logoImage}
                       alt="Company Logo"
                       className="w-16 h-16 rounded-lg object-cover cursor-pointer"
-                    />
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23ccc'%3E%3Cpath d='M21 13.2V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v9.2zM11 17H7v2h4v-2zm6 0h-4v2h4v-2zm-6-3H7v2h4v-2zm6 0h-4v2h4v-2zm-6-3H7v2h4v-2zm6 0h-4v2h4v-2z'/%3E%3C/svg%3E";
+                          }}
+                        />
+                      ) : (
+                        <div className="w-16 h-16 bg-blue-100 rounded-lg flex items-center justify-center">
+                          <span className="text-blue-500 text-2xl font-bold">
+                            {companyInfo.name.charAt(0)}
+                          </span>
+                        </div>
+                      )}
                   </div>
 
                   <button
                     onClick={() => {
+                        if (!saving) {
                       toggleEditMode("logo");
                       fileInputRef.current.click();
+                        }
                     }}
-                    className="absolute top-0 left-0 bg-white p-1 rounded-md shadow-sm border border-gray-300 hover:bg-gray-200 cursor-pointer"
+                      className={`absolute top-0 left-0 bg-white p-1 rounded-md shadow-sm border border-gray-300 hover:bg-gray-200 cursor-pointer ${saving ? 'opacity-50' : ''}`}
+                      disabled={saving}
                   >
+                      {saving ? (
+                        <Loader size={14} className="text-blue-500 animate-spin" />
+                      ) : (
                     <Edit size={14} className="text-blue-500" />
+                      )}
                   </button>
 
                   {/* Hidden file input for image selection */}
@@ -729,6 +1179,8 @@ const Profile = () => {
                       </h2>
                       <a
                         href={companyInfo.website}
+                          target="_blank"
+                          rel="noopener noreferrer"
                         className="text-blue-500 text-sm cursor-pointer"
                       >
                         {companyInfo.website}
@@ -762,7 +1214,7 @@ const Profile = () => {
                           />
                         ) : (
                           <p className="font-semibold text-sm">
-                            {companyInfo.founded}
+                              {companyInfo.founded || "Not specified"}
                           </p>
                         )}
                       </div>
@@ -787,7 +1239,7 @@ const Profile = () => {
                           />
                         ) : (
                           <p className="font-semibold text-sm">
-                            {companyInfo.employees}
+                              {companyInfo.employees || "Not specified"}
                           </p>
                         )}
                       </div>
@@ -812,7 +1264,7 @@ const Profile = () => {
                           />
                         ) : (
                           <p className="font-semibold text-sm">
-                            {companyInfo.location}
+                              {companyInfo.location || "Not specified"}
                           </p>
                         )}
                       </div>
@@ -837,7 +1289,7 @@ const Profile = () => {
                           />
                         ) : (
                           <p className="font-semibold text-sm">
-                            {companyInfo.industry}
+                              {companyInfo.industry || "Not specified"}
                           </p>
                         )}
                       </div>
@@ -846,33 +1298,43 @@ const Profile = () => {
                 </div>
               </div>
 
-              <div className="flex gap-2">
-                <button className="flex items-center gap-1 h-8 px-3 py-1 text-gray-700 hover:bg-gray-100 text-sm cursor-pointer">
-                  <Eye className="w-4 h-4" /> Public View
-                </button>
+                <div>
+                  {editModes.companyInfo ? (
+                    <div className="flex space-x-2">
+                      <SaveButton onClick={saveCompanyInfo} isLoading={saving} />
+                      <CancelButton onClick={() => toggleEditMode("companyInfo")} />
+                    </div>
+                  ) : (
+                    <EditButton onClick={() => toggleEditMode("companyInfo")} />
+                  )}
+                </div>
+              </div>
 
+              {/* About Section */}
+              <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-5 m-5">
+                <div className="flex justify-between items-center mb-3">
+                  <h2 className="text-xl font-bold text-gray-900">About</h2>
                 {editModes.companyInfo ? (
-                  <div className="flex gap-1">
-                    <button
-                      onClick={() => toggleEditMode("companyInfo")}
-                      className="flex items-center justify-center gap-1 h-8 px-3 py-1 text-black border rounded-sm text-sm hover:bg-gray-200 cursor-pointer"
-                    >
-                      <X className="w-4 h-4" /> Cancel
-                    </button>
-                    <button
-                      onClick={saveCompanyInfo}
-                      className="flex items-center justify-center gap-1 h-8 px-3 py-1 text-white bg-blue-500 border rounded-sm text-sm hover:bg-blue-600 cursor-pointer"
-                    >
-                      <Check className="w-4 h-4" /> Save
-                    </button>
+                    <div className="flex space-x-2">
+                      <SaveButton onClick={saveCompanyInfo} isLoading={saving} />
+                      <CancelButton onClick={() => toggleEditMode("companyInfo")} />
                   </div>
                 ) : (
-                  <button
-                    onClick={() => toggleEditMode("companyInfo")}
-                    className="flex items-center gap-1 h-8 px-3 py-1 text-black border rounded-sm text-sm hover:bg-gray-200 cursor-pointer"
-                  >
-                    <Settings className="w-4 h-4" /> Profile Settings
-                  </button>
+                    <EditButton onClick={() => toggleEditMode("companyInfo")} />
+                  )}
+                </div>
+
+                <div className="text-gray-600">
+                  {editModes.companyInfo ? (
+                    <textarea
+                      value={companyInfo.description}
+                      onChange={(e) =>
+                        handleCompanyInfoUpdate("description", e.target.value)
+                      }
+                      className="w-full min-h-[120px] p-2 text-gray-700 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer"
+                    />
+                  ) : (
+                    <p className="cursor-pointer">{companyInfo.description || "No company description provided. Click Edit to add a description."}</p>
                 )}
               </div>
             </div>
@@ -1049,6 +1511,12 @@ const Profile = () => {
                     <h1 className="font-bold text-xl cursor-pointer">
                       Benefits
                     </h1>
+                      {editModes.benefits ? (
+                        <div className="flex justify-end mt-2 space-x-2">
+                          <SaveButton onClick={saveBenefits} isLoading={saving} />
+                          <CancelButton onClick={() => toggleEditMode("benefits")} />
+                        </div>
+                      ) : (
                     <div className="flex gap-1">
                       <button
                         onClick={() => handleAddItem("benefits")}
@@ -1056,14 +1524,9 @@ const Profile = () => {
                       >
                         <Plus size={16} />
                       </button>
-
-                      <button
-                        onClick={() => toggleEditMode("benefits")}
-                        className="text-blue-500 w-8 h-8 flex items-center justify-center border border-gray-300 rounded-md cursor-pointer"
-                      >
-                        <Edit size={14} />
-                      </button>
+                          <EditButton onClick={() => toggleEditMode("benefits")} text="" />
                     </div>
+                      )}
                   </div>
 
                   <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -1121,23 +1584,13 @@ const Profile = () => {
                       </div>
                     ))}
                   </div>
-
-                  {editModes.benefits && (
-                    <div className="flex justify-end mt-2 space-x-1">
-                      <button
-                        onClick={saveBenefits}
-                        className="flex items-center justify-center gap-1 h-8 px-3 py-1 text-white bg-blue-500 border rounded-sm text-sm hover:bg-blue-600 cursor-pointer"
-                      >
-                        <Check className="w-4 h-4" /> Save
-                      </button>
-                    </div>
-                  )}
                 </section>
 
                 {/* Team Section */}
                 <section>
                   <div className="flex justify-between items-center">
                     <h1 className="font-bold text-xl cursor-pointer">Team</h1>
+                      {!editModes.team ? (
                     <div className="flex gap-1">
                       <button
                         onClick={() => handleAddItem("team")}
@@ -1145,13 +1598,9 @@ const Profile = () => {
                       >
                         <Plus size={16} />
                       </button>
-                      <button
-                        onClick={() => toggleEditMode("team")}
-                        className="text-blue-500 w-8 h-8 flex items-center justify-center border border-gray-300 rounded-md cursor-pointer"
-                      >
-                        <Edit size={14} />
-                      </button>
+                          <EditButton onClick={() => toggleEditMode("team")} text="" />
                     </div>
+                      ) : null}
                   </div>
 
                   <div className="mt-2 grid grid-cols-1 md:grid-cols-3 gap-2">
@@ -1319,14 +1768,9 @@ const Profile = () => {
 
                   {/* Save Button (Only visible in edit mode) */}
                   {editModes.team && (
-                    <div className="flex justify-end mt-4">
-                      <button
-                        onClick={saveTeamMembers}
-                        className="flex items-center justify-center gap-1 h-10 px-4 py-1 text-white bg-blue-500 border rounded-md text-sm font-medium hover:bg-blue-600 transition-colors cursor-pointer"
-                        type="button"
-                      >
-                        <Check className="w-4 h-4" /> Save
-                      </button>
+                      <div className="flex justify-end mt-4 space-x-2">
+                        <SaveButton onClick={saveTeamMembers} isLoading={saving} />
+                        <CancelButton onClick={() => toggleEditMode("team")} />
                     </div>
                   )}
                 </section>
@@ -1534,6 +1978,7 @@ const Profile = () => {
               </div>
             </div>
           </div>
+          )}
         </div>
       </div>
     </div>
@@ -1541,3 +1986,4 @@ const Profile = () => {
 };
 
 export default Profile;
+
