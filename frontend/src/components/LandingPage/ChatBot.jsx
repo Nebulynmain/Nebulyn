@@ -1,0 +1,161 @@
+import { useState, useEffect } from "react";
+import { FiMessageCircle, FiSend, FiX } from "react-icons/fi";
+import axios from "axios";
+import faqData from "./Faq.json";
+
+const API_KEY = "AIzaSyCjeKAivnkXbnP6kFIU736-4k1Hg_cYyfc";
+const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`;
+
+const ChatBot = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [showGreeting, setShowGreeting] = useState(true);
+  const [animate, setAnimate] = useState("animate-bounce");
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowGreeting(false), 3000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    const bounceTimer = setTimeout(() => setAnimate(""), 3000);
+    return () => clearTimeout(bounceTimer);
+  }, []);
+
+  const handleSend = async () => {
+    if (!input.trim()) return;
+
+    const newMessages = [...messages, { text: input, sender: "user" }];
+    setMessages(newMessages);
+    setInput("");
+    setLoading(true);
+
+    // Convert user input to lowercase for case-insensitive comparison
+    const userQuery = input.toLowerCase().replace(/[^\w\s]/g, ""); // Remove special characters
+
+    // Extract keywords (removes common words like "what", "is", "the", etc.)
+    const extractKeywords = (text) => {
+      return text
+        .toLowerCase()
+        .replace(/[^\w\s]/g, "") // Remove punctuation
+        .split(" ") // Split into words
+        .filter((word) => word.length > 2); // Keep words longer than 2 letters
+    };
+
+    const userKeywords = extractKeywords(userQuery);
+
+    if (faqData.faqs && Array.isArray(faqData.faqs)) {
+      let bestMatch = null;
+      let highestMatchCount = 0;
+
+      faqData.faqs.forEach((faq) => {
+        const faqKeywords = extractKeywords(faq.question);
+        const matchCount = faqKeywords.filter((word) =>
+          userKeywords.includes(word)
+        ).length;
+
+        if (matchCount > highestMatchCount) {
+          highestMatchCount = matchCount;
+          bestMatch = faq;
+        }
+      });
+
+      // If we find a good match, respond with it
+      if (bestMatch && highestMatchCount > 0) {
+        setMessages([
+          ...newMessages,
+          { text: bestMatch.answer, sender: "bot" },
+        ]);
+        setLoading(false);
+        return;
+      }
+    }
+
+    // If no good match is found, send a polite fallback message
+    const fallbackMessage =
+      "Sorry, I couldn't answer this. Please contact our support team at +1234567890 or email us at support@example.com.";
+
+    setMessages([...newMessages, { text: fallbackMessage, sender: "bot" }]);
+    setLoading(false);
+  };
+
+  return (
+    <div className="fixed bottom-4 right-4 z-50">
+      {!isOpen && (
+        <div className="relative">
+          <button
+            onClick={() => setIsOpen(true)}
+            className={`bg-[#3B8BEB] text-white cursor-pointer p-3 rounded-full shadow-xl hover:scale-110 transition-transform duration-300 ${animate}`}
+          >
+            <FiMessageCircle size={24} />
+          </button>
+          {showGreeting && (
+            <div className="absolute bottom-full mb-2 right-0 bg-white shadow-lg text-gray-700 p-2 rounded-lg border border-gray-300 w-45 text-sm text-center">
+              <span>How can I help you?</span>
+              <button
+                onClick={() => setShowGreeting(false)}
+                className="ml-3 text-gray-500 hover:text-gray-700"
+              >
+                <FiX size={13} />
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+      {isOpen && (
+        <div className="fixed bottom-4 right-4 w-80 h-96 bg-white shadow-2xl rounded-xl flex flex-col p-3 border border-gray-200">
+          <div className="flex justify-between items-center border-b pb-2 mb-2">
+            <h2 className="text-md font-semibold text-[#3B8BEB]">
+              Nebulyn Assistant
+            </h2>
+            <button
+              onClick={() => setIsOpen(false)}
+              className="text-gray-600 cursor-pointer hover:text-gray-900"
+            >
+              <FiX size={20} />
+            </button>
+          </div>
+          <div className="flex-1 overflow-y-auto p-2 space-y-2 scrollbar-thin scrollbar-thumb-gray-300">
+            {messages.map((msg, index) => (
+              <div
+                key={index}
+                className={`p-2 max-w-[80%] rounded-lg shadow-sm text-sm ${
+                  msg.sender === "user"
+                    ? "bg-[#3B8BEB] text-white self-end ml-auto"
+                    : "bg-gray-100 text-gray-800"
+                }`}
+              >
+                {msg.text}
+              </div>
+            ))}
+            {loading && (
+              <div className="text-gray-500 text-xs">Thinking...</div>
+            )}
+          </div>
+          <div className="flex items-center gap-2 mt-auto border-t pt-2">
+            <input
+              type="text"
+              className="flex-1 border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#3B8BEB] text-sm"
+              placeholder="Type a message..."
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyPress={(e) => e.key === "Enter" && handleSend()}
+              disabled={loading}
+            />
+            <button
+              onClick={handleSend}
+              className="bg-[#3B8BEB] cursor-pointer text-white p-2 rounded-lg hover:scale-105 transition-transform"
+              disabled={loading}
+            >
+              <FiSend size={18} />
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default ChatBot;

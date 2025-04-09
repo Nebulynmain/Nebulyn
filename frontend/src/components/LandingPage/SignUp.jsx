@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaGoogle, FaFacebook, FaLinkedin } from "react-icons/fa";
 import { API_URL } from "../../App";
+import ChatBot from "./ChatBot";
 
 const SignUp = () => {
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -18,7 +19,7 @@ const SignUp = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
-  
+
   const navigate = useNavigate();
 
   // Handle form input changes
@@ -37,7 +38,13 @@ const SignUp = () => {
     setLoading(true);
 
     // Basic validation
-    if (!formData.fullName || !formData.userName || !formData.email || !formData.password || !formData.confirmPassword) {
+    if (
+      !formData.fullName ||
+      !formData.userName ||
+      !formData.email ||
+      !formData.password ||
+      !formData.confirmPassword
+    ) {
       setError("All fields are required");
       setLoading(false);
       return;
@@ -68,10 +75,9 @@ const SignUp = () => {
 
       // Registration successful
       console.log("Registration successful, redirecting to login page");
-      
+
       // Redirect to login
       navigate("/login");
-      
     } catch (error) {
       console.error("Registration error:", error);
       setError("An error occurred during registration. Please try again.");
@@ -188,19 +194,21 @@ const SignUp = () => {
 
                 <div className="flex items-center justify-between mt-3">
                   <label className="flex items-center text-sm text-blue-600">
-                    <input 
+                    <input
                       type="checkbox"
                       checked={rememberMe}
-                      onChange={() => setRememberMe(!rememberMe)} 
-                      className="mr-2" 
-                    /> Remember me
+                      onChange={() => setRememberMe(!rememberMe)}
+                      className="mr-2"
+                    />{" "}
+                    Remember me
                   </label>
                 </div>
 
-                <button 
+                <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-green-500 text-white py-2 mt-3 rounded-md text-md font-medium hover:bg-green-600 disabled:bg-green-300">
+                  className="w-full bg-green-500 text-white py-2 mt-3 rounded-md text-md font-medium hover:bg-green-600 disabled:bg-green-300"
+                >
                   {loading ? "Creating Account..." : "Sign Up"}
                 </button>
               </form>
@@ -241,6 +249,7 @@ const SignUp = () => {
           </div>
         </div>
       </div>
+      <ChatBot />
     </div>
   );
 };

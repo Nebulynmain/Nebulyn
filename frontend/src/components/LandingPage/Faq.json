@@ -1,0 +1,154 @@
+{
+  "faqs": [
+    {
+      "category": "Platform Overview",
+      "question": "What is Nebulyn?",
+      "answer": "Nebulyn is an online platform that connects job seekers with employers offering full-time, part-time, freelance, and remote job opportunities across multiple industries."
+    },
+    {
+      "category": "Platform Overview",
+      "question": "What industries does Nebulyn cater to?",
+      "answer": "Nebulyn supports a wide range of industries including IT, Marketing, Finance, Education, Design, Healthcare, Logistics, and more."
+    },
+    {
+      "category": "Platform Overview",
+      "question": "Does Nebulyn have a mobile app?",
+      "answer": "Yes, Nebulyn offers a mobile app for both Android and iOS for convenient job search and application tracking."
+    },
+    {
+      "category": "Job Seekers - Account & Profile",
+      "question": "How do I create a job seeker account?",
+      "answer": "You can sign up using your email or phone number, verify your details, and then build your profile with educational background, skills, and resume."
+    },
+    {
+      "category": "Job Seekers - Account & Profile",
+      "question": "Can I upload a video resume?",
+      "answer": "Yes, Nebulyn supports video resumes which help you showcase your personality and communication skills to employers."
+    },
+    {
+      "category": "Job Seekers - Applications",
+      "question": "How do I apply for jobs?",
+      "answer": "Search or browse jobs that suit your profile, click 'Apply', and follow the instructions. You can track all applications in your dashboard."
+    },
+    {
+      "category": "Job Seekers - Applications",
+      "question": "What do application statuses like 'Under Review' or 'Shortlisted' mean?",
+      "answer": "'Under Review' means your application is being evaluated. 'Shortlisted' means you're among the selected candidates for the next step."
+    },
+    {
+      "category": "Job Seekers - Preferences",
+      "question": "Can I set job alerts?",
+      "answer": "Yes, you can enable job alerts based on preferred roles, industries, or locations to receive instant notifications."
+    },
+    {
+      "category": "Job Seekers - Skill & Resume",
+      "question": "Does Nebulyn offer resume building tools?",
+      "answer": "Yes, we provide templates, expert tips, and AI-powered tools to help you create a professional resume."
+    },
+    {
+      "category": "Job Seekers - Skill & Resume",
+      "question": "Are there any assessments on Nebulyn?",
+      "answer": "Yes, you can take skill-based assessments to improve your profile credibility and visibility to recruiters."
+    },
+    {
+      "category": "Employers - Job Posting",
+      "question": "How do I post a job on Nebulyn?",
+      "answer": "Create an employer account, choose a posting plan, fill in job details, and publish your job listing."
+    },
+    {
+      "category": "Employers - Job Posting",
+      "question": "Can I edit or delete a job post after publishing?",
+      "answer": "Yes, you can manage your listings from the dashboard including editing or removing job posts."
+    },
+    {
+      "category": "Employers - Hiring Tools",
+      "question": "Can I directly contact applicants?",
+      "answer": "Yes, employers can message candidates or schedule interviews via the built-in communication system."
+    },
+    {
+      "category": "Employers - Plans & Features",
+      "question": "What is included in premium job postings?",
+      "answer": "Premium listings get increased visibility, targeted reach, featured placement, and access to more candidate insights."
+    },
+    {
+      "category": "Payments & Billing",
+      "question": "What payment methods are accepted?",
+      "answer": "We accept credit/debit cards, UPI, net banking, and digital wallets for all transactions."
+    },
+    {
+      "category": "Payments & Billing",
+      "question": "Can I get an invoice for my payment?",
+      "answer": "Yes, invoices are automatically generated and sent to your registered email after successful transactions."
+    },
+    {
+      "category": "Payments & Billing",
+      "question": "Is there a refund policy for employers?",
+      "answer": "Yes, refunds are available in accordance with our refund policy. Please contact support for assistance."
+    },
+    {
+      "category": "Trust & Safety",
+      "question": "How does Nebulyn verify job listings?",
+      "answer": "All job postings go through a verification process. We also allow users to report suspicious or fraudulent listings."
+    },
+    {
+      "category": "Trust & Safety",
+      "question": "Is user data safe on Nebulyn?",
+      "answer": "Yes, we use encryption and strict privacy practices to ensure all personal and professional data is secure."
+    },
+    {
+      "category": "Trust & Safety",
+      "question": "Can I report a scam or fake job?",
+      "answer": "Yes, use the 'Report' button on the job listing or contact our support team with details."
+    },
+    {
+      "category": "Customer Support",
+      "question": "How can I contact Nebulyn support?",
+      "answer": "You can reach us via live chat, email support@nebulyn.com, or through the Help Center on our platform."
+    },
+    {
+      "category": "Customer Support",
+      "question": "When is customer support available?",
+      "answer": "Our support team is available from 9 AM to 9 PM IST, Monday to Saturday."
+    },
+    {
+      "category": "Customer Support",
+      "question": "Where can I give feedback about my experience?",
+      "answer": "You can share feedback through the 'Rate Us' option in your account or write to us directly."
+    },
+    {
+      "category": "Technical Issues",
+      "question": "What should I do if my resume won't upload?",
+      "answer": "Please ensure your file is in PDF or DOC format and under 5MB. If the issue persists, contact support."
+    },
+    {
+      "category": "Technical Issues",
+      "question": "I didn’t receive the OTP during signup. What now?",
+      "answer": "Check your network, wait a few minutes, and try again. If still not received, use the 'Resend OTP' option or contact support."
+    },
+    {
+      "category": "Policies & Data",
+      "question": "How do I delete my Nebulyn account?",
+      "answer": "Go to Settings > Account > Delete Account. Once deleted, your data will be permanently removed."
+    },
+    {
+      "category": "Policies & Data",
+      "question": "What is Nebulyn’s privacy policy?",
+      "answer": "You can read our detailed privacy policy on the website. We are GDPR compliant and prioritize user data protection."
+    },
+    {
+      "category": "Ratings & Reviews",
+      "question": "Can I leave a review for an employer?",
+      "answer": "Yes, after your hiring process concludes, you can rate and review the employer from your dashboard."
+    },
+    {
+      "category": "Career Growth",
+      "question": "Does Nebulyn offer career counseling?",
+      "answer": "Yes, we provide access to certified career coaches and periodic webinars to help job seekers grow professionally."
+    },
+    {
+      "category": "Career Growth",
+      "question": "Are there internships or entry-level jobs on Nebulyn?",
+      "answer": "Absolutely! Nebulyn has a dedicated section for internships, fresher roles, and student opportunities."
+    }
+  ]
+}

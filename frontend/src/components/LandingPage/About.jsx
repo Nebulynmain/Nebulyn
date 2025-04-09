@@ -17,6 +17,7 @@ import {
 import { Link } from "react-router-dom";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
+import ChatBot from "./ChatBot";
 
 const About = () => {
   return (
@@ -68,6 +69,8 @@ const About = () => {
           </div>
         </div>
       </div>
+
+      <ChatBot />
 
       {/* Mission Section - Improved with background accents and better spacing */}
       <div className="container mx-auto px-4 py-24 relative">
