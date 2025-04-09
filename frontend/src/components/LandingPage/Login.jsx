@@ -1,19 +1,18 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "./Navbar";
 import { Link, useNavigate } from "react-router-dom";
-import { FaGoogle, FaFacebook, FaLinkedin } from "react-icons/fa";
+import { FaGoogle, FaFacebook } from "react-icons/fa";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import { googleLogout, useGoogleLogin } from "@react-oauth/google";
-import FacebookLogin from "react-facebook-login-lite";
 import { API_URL } from "../../App";
 import ChatBot from "./ChatBot";
-// import { LinkedIn } from "react-linkedin-login-oauth2";
 
 const Login = () => {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
+    userType: "", // Added userType here
   });
   const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState("");
@@ -37,7 +36,7 @@ const Login = () => {
     setLoading(true);
 
     // Basic validation
-    if (!formData.email || !formData.password) {
+    if (!formData.email || !formData.password || !formData.userType) {
       setError("All fields are required");
       setLoading(false);
       return;
@@ -50,7 +49,7 @@ const Login = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
-        credentials: "include", // Important for cookies
+        credentials: "include",
       });
 
       const data = await response.json();
@@ -61,10 +60,7 @@ const Login = () => {
         return;
       }
 
-      // Login successful - the backend already sets the cookie
       console.log("Login successful, redirecting to dashboard");
-
-      // Redirect to dashboard
       navigate("/dashboard");
     } catch (error) {
       console.error("Login error:", error);
@@ -74,15 +70,10 @@ const Login = () => {
     }
   };
 
-  // Replace these with your actual OAuth Client IDs
   const googleClientId =
     "69056251506-h4u9nd77t85ovk87ufa44jkudt6d5ske.apps.googleusercontent.com";
   const facebookAppId = "1004620114893019";
-  const linkedInClientId = "YOUR_LINKEDIN_CLIENT_ID";
 
-  // Google Sign-In Handler
-
-  // Facebook Sign-In Handler
   useEffect(() => {
     window.fbAsyncInit = function () {
       FB.init({
@@ -104,44 +95,6 @@ const Login = () => {
     })(document, "script", "facebook-jssdk");
   }, []);
 
-  // Facebook Login Handler
-  //   const facebookLogin = () => {
-  //     FB.login(
-  //       (response) => {
-  //         if (response.authResponse) {
-  //           console.log("Facebook User:", response);
-  //           FB.api("/me", { fields: "id,name,email,picture" }, (userInfo) => {
-  //             console.log("User Info:", userInfo);
-  //           });
-  //         } else {
-  //           console.log("User cancelled login or did not fully authorize.");
-  //         }
-  //       },
-  //       { scope: "public_profile,email" }
-  //     );
-  //   };
-  useEffect(() => {
-    window.fbAsyncInit = function () {
-      FB.init({
-        appId: facebookAppId,
-        cookie: true,
-        xfbml: true,
-        version: "v16.0",
-      });
-    };
-
-    (function (d, s, id) {
-      let js,
-        fjs = d.getElementsByTagName(s)[0];
-      if (d.getElementById(id)) return;
-      js = d.createElement(s);
-      js.id = id;
-      js.src = "https://connect.facebook.net/en_US/sdk.js";
-      fjs.parentNode.insertBefore(js, fjs);
-    })(document, "script", "facebook-jssdk");
-  }, []);
-
-  // Facebook Login Handler
   const facebookLogin = () => {
     FB.login(
       (response) => {
@@ -157,10 +110,7 @@ const Login = () => {
       { scope: "public_profile,email" }
     );
   };
-  // LinkedIn Sign-In Handler
-  const handleLinkedInSuccess = (response) => {
-    console.log("LinkedIn User:", response);
-  };
+
   const googleLogin = useGoogleLogin({
     onSuccess: (response) => console.log("Google Login Success:", response),
     onError: () => console.log("Google Login Failed"),
@@ -180,7 +130,7 @@ const Login = () => {
       <ChatBot />
       <div className="flex items-center justify-center">
         <div
-          className="bg-white p-8 rounded-2xl w-full max-w-3xl flex h-[450px] shadow-lg"
+          className="bg-white p-8 rounded-2xl w-full max-w-3xl flex h-[460px] shadow-lg"
           style={{ boxShadow: "0px 8px 16px #C4DBF6" }}
         >
           {/* Left Side (Login Form) */}
@@ -191,6 +141,46 @@ const Login = () => {
               </div>
             )}
             <form onSubmit={handleLogin}>
+              {/* User Type */}
+              <label className="block text-base font-medium text-black-700 mb-1">
+                Login As
+              </label>
+              <div className="flex space-x-6 mb-4 text-sm">
+                <label className="flex items-center space-x-2 px-2 py-1 rounded-md cursor-pointer">
+                  <input
+                    type="radio"
+                    name="userType"
+                    value="student"
+                    className="cursor-pointer"
+                    checked={formData.userType === "student"}
+                    onChange={handleInputChange}
+                  />
+                  <span>Student</span>
+                </label>
+                <label className="flex items-center space-x-2 px-2 py-1 rounded-md cursor-pointer">
+                  <input
+                    type="radio"
+                    name="userType"
+                    value="college"
+                    className="cursor-pointer"
+                    checked={formData.userType === "college"}
+                    onChange={handleInputChange}
+                  />
+                  <span>College</span>
+                </label>
+                <label className="flex items-center space-x-2 px-2 py-1 rounded-md cursor-pointer">
+                  <input
+                    type="radio"
+                    name="userType"
+                    value="employer"
+                    className="cursor-pointer"
+                    checked={formData.userType === "employer"}
+                    onChange={handleInputChange}
+                  />
+                  <span>Employer</span>
+                </label>
+              </div>
+
               <label className="block text-base font-medium text-black-700">
                 Email ID / Username
               </label>
@@ -230,8 +220,8 @@ const Login = () => {
                     type="checkbox"
                     checked={rememberMe}
                     onChange={() => setRememberMe(!rememberMe)}
-                    className="mr-1"
-                  />{" "}
+                    className="mr-1 cursor-pointer"
+                  />
                   Remember me
                 </label>
                 <a href="#" className="text-sm text-black-600 underline">
@@ -255,10 +245,16 @@ const Login = () => {
             </div>
 
             <div className="flex justify-center space-x-3">
-              <button className="p-2 rounded-md shadow bg-white cursor-pointer">
+              <button
+                className="p-2 rounded-md shadow bg-white cursor-pointer"
+                onClick={() => googleLogin()}
+              >
                 <FaGoogle size={18} color="#DB4437" />
               </button>
-              <button className="p-2 rounded-md shadow bg-white cursor-pointer">
+              <button
+                className="p-2 rounded-md shadow bg-white cursor-pointer"
+                onClick={facebookLogin}
+              >
                 <FaFacebook size={18} color="#1877F2" />
               </button>
             </div>
