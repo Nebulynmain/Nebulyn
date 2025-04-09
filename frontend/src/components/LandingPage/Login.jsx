@@ -6,6 +6,7 @@ import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import { googleLogout, useGoogleLogin } from "@react-oauth/google";
 import FacebookLogin from "react-facebook-login-lite";
 import { API_URL } from "../../App";
+import ChatBot from "./ChatBot";
 // import { LinkedIn } from "react-linkedin-login-oauth2";
 
 const Login = () => {
@@ -17,7 +18,7 @@ const Login = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  
+
   const navigate = useNavigate();
 
   // Handle form input changes
@@ -62,10 +63,9 @@ const Login = () => {
 
       // Login successful - the backend already sets the cookie
       console.log("Login successful, redirecting to dashboard");
-      
+
       // Redirect to dashboard
       navigate("/dashboard");
-      
     } catch (error) {
       console.error("Login error:", error);
       setError("An error occurred during login. Please try again.");
@@ -177,6 +177,7 @@ const Login = () => {
           Welcome back! Select the below login methods.
         </p>
       </div>
+      <ChatBot />
       <div className="flex items-center justify-center">
         <div
           className="bg-white p-8 rounded-2xl w-full max-w-3xl flex h-[450px] shadow-lg"
@@ -230,7 +231,8 @@ const Login = () => {
                     checked={rememberMe}
                     onChange={() => setRememberMe(!rememberMe)}
                     className="mr-1"
-                  /> Remember me
+                  />{" "}
+                  Remember me
                 </label>
                 <a href="#" className="text-sm text-black-600 underline">
                   Forgot Password?
@@ -245,7 +247,7 @@ const Login = () => {
                 {loading ? "Logging in..." : "Login"}
               </button>
             </form>
-            
+
             <div className="flex items-center my-4">
               <hr className="flex-grow border-t border-gray-300" />
               <span className="px-2 text-blue-500 text-sm">or login with</span>
