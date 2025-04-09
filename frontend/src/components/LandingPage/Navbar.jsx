@@ -14,7 +14,7 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="flex justify-between items-center px-32 py-5 shadow-md">
+    <nav className="flex justify-between items-center px-32 py-4 shadow-md">
       <div className="flex items-center">
         <img src={logo} alt="Logo" className="h-10 mr-12" />
       </div>
@@ -39,13 +39,13 @@ const Navbar = () => {
       <div className="flex space-x-6">
         <Link
           to="/signup"
-          className="w-[130px] h-[50px] flex items-center justify-center border-2 border-[#007AFF] text-[#007AFF] font-semibold rounded-md"
+          className="w-[130px] h-[48px] flex items-center justify-center border-2 border-[#007AFF] text-[#007AFF] font-semibold rounded-md"
         >
           Sign Up
         </Link>
         <Link
           to="/login"
-          className="w-[130px] h-[50px] flex items-center justify-center border-2 border-[#007AFF] bg-[#007AFF] text-white font-semibold rounded-md"
+          className="w-[130px] h-[48px] flex items-center justify-center border-2 border-[#007AFF] bg-[#007AFF] text-white font-semibold rounded-md"
         >
           Login
         </Link>

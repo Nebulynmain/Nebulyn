@@ -1,15 +1,15 @@
-import React from "react";
-import Navbar from "./Navbar";
-import { useState } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaGoogle, FaFacebook, FaLinkedin } from "react-icons/fa";
-import { API_URL } from "../../App";
+import Navbar from "./Navbar";
 import ChatBot from "./ChatBot";
+import { API_URL } from "../../App";
 
 const SignUp = () => {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
   const [formData, setFormData] = useState({
+    userType: "",
     fullName: "",
     userName: "",
     email: "",
@@ -22,7 +22,6 @@ const SignUp = () => {
 
   const navigate = useNavigate();
 
-  // Handle form input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -31,14 +30,13 @@ const SignUp = () => {
     });
   };
 
-  // Handle signup form submission
   const handleSignUp = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
-    // Basic validation
     if (
+      !formData.userType ||
       !formData.fullName ||
       !formData.userName ||
       !formData.email ||
@@ -73,10 +71,6 @@ const SignUp = () => {
         return;
       }
 
-      // Registration successful
-      console.log("Registration successful, redirecting to login page");
-
-      // Redirect to login
       navigate("/login");
     } catch (error) {
       console.error("Registration error:", error);
@@ -96,17 +90,58 @@ const SignUp = () => {
         </p>
         <div className="flex min-h-screen items-center justify-center">
           <div
-            className="bg-white p-6 rounded-2xl w-full max-w-3xl flex h-[650px] shadow-lg mt-3"
+            className="bg-white p-6 rounded-2xl w-full max-w-3xl flex h-[700px] shadow-lg mt-3"
             style={{ boxShadow: "0px 6px 12px #C4DBF6" }}
           >
-            {/* Left Side (Signup Form) */}
+            {/* Left Side (Form) */}
             <div className="w-[60%] pr-4 p-3 flex flex-col justify-center -ml-2">
               {error && (
                 <div className="bg-red-100 text-red-800 p-2 mb-3 rounded text-sm">
                   {error}
                 </div>
               )}
+
               <form onSubmit={handleSignUp}>
+                {/* User Type */}
+                <label className="block text-md font-medium text-gray-800 mb-1">
+                  Register As
+                </label>
+                <div className="flex space-x-6 mb-4 text-sm">
+                  <label className="flex items-center space-x-2 px-2 py-1 rounded-md cursor-pointer">
+                    <input
+                      type="radio"
+                      name="userType"
+                      value="student"
+                      className="cursor-pointer"
+                      checked={formData.userType === "student"}
+                      onChange={handleInputChange}
+                    />
+                    <span>Student</span>
+                  </label>
+                  <label className="flex items-center space-x-2 px-2 py-1 rounded-md cursor-pointer">
+                    <input
+                      type="radio"
+                      name="userType"
+                      value="college"
+                      className="cursor-pointer"
+                      checked={formData.userType === "college"}
+                      onChange={handleInputChange}
+                    />
+                    <span>College</span>
+                  </label>
+                  <label className="flex items-center space-x-2 px-2 py-1 rounded-md cursor-pointer">
+                    <input
+                      type="radio"
+                      name="userType"
+                      value="employer"
+                      className="cursor-pointer"
+                      checked={formData.userType === "employer"}
+                      onChange={handleInputChange}
+                    />
+                    <span>Employer</span>
+                  </label>
+                </div>
+
                 {/* Full Name */}
                 <label className="block text-md font-medium text-gray-800">
                   Full Name
@@ -192,6 +227,7 @@ const SignUp = () => {
                   </button>
                 </div>
 
+                {/* Remember Me */}
                 <div className="flex items-center justify-between mt-3">
                   <label className="flex items-center text-sm text-blue-600">
                     <input
@@ -204,6 +240,7 @@ const SignUp = () => {
                   </label>
                 </div>
 
+                {/* Submit Button */}
                 <button
                   type="submit"
                   disabled={loading}
@@ -213,6 +250,7 @@ const SignUp = () => {
                 </button>
               </form>
 
+              {/* Social Sign Up */}
               <div className="flex items-center my-3">
                 <hr className="flex-grow border-t border-gray-300" />
                 <span className="px-2 text-blue-500 text-sm">

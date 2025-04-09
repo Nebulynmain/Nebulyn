@@ -21,14 +21,11 @@ import ChatBot from "./ChatBot";
 
 const About = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
+    <div className="min-h-screen ">
       <Navbar />
 
       {/* Hero Section - Enhanced with blue overlay for workspace image */}
       <div className="relative w-full h-[500px] bg-[#007AFF] overflow-hidden">
-        {/* Strong blue overlay - increase opacity for more blue */}
-        <div className="absolute inset-0 bg-[#007AFF] opacity-60 z-10"></div>
-
         {/* Add a gradient on top of blue for depth */}
         <div className="absolute inset-0 bg-gradient-to-r from-[#0055B3] to-[#007AFF] opacity-50 z-20"></div>
 
