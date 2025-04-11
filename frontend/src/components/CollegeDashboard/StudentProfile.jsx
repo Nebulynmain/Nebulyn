@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-const ApplicantDetail = () => {
+const StudentProfile = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("profile");
   const [showReplies, setShowReplies] = useState(false);
@@ -406,15 +406,15 @@ const ApplicantDetail = () => {
               <div className="flex items-center space-x-2">
                 <button
                   className="text-gray-700 text-2xl font-bold cursor-pointer hover:text-blue-600"
-                  onClick={() => navigate("/applicants")}
+                  onClick={() => navigate("/browse-students")}
                 >
                   <ChevronLeft size={24} />
                 </button>
                 <h1
                   className="text-xl font-bold text-gray-900 cursor-pointer hover:text-blue-600"
-                  onClick={() => navigate("/applicants")}
+                  onClick={() => navigate("/browse-students")}
                 >
-                  Applicant Details
+                  Student Details
                 </h1>
               </div>
               <button className="border border-blue-500 text-blue-500 px-3 py-1 rounded-md flex items-center space-x-1 text-sm cursor-pointer hover:bg-blue-50">
@@ -556,7 +556,7 @@ const ApplicantDetail = () => {
               <div className="flex-1 bg-white border border-gray-300 rounded-lg">
                 <div className="flex border-b overflow-x-auto">
                   {[
-                    { id: "profile", label: "Applicant Profile" },
+                    { id: "profile", label: "Student Profile" },
                     { id: "resume", label: "Resume" },
                     { id: "progress", label: "Progress" },
                     { id: "schedule", label: "Schedule" },
@@ -585,4 +585,4 @@ const ApplicantDetail = () => {
   );
 };
 
-export default ApplicantDetail;
+export default StudentProfile;

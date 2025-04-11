@@ -25,6 +25,13 @@ import CompanyHelp from "./components/CompanyDashboard/CompanyHelp";
 import About from "./components/LandingPage/About";
 import Contact from "./components/LandingPage/Contact";
 import ScrollToTop from "./components/ScrollToTop";
+import CollegeDashboard from "./components/CollegeDashboard/Dashboard";
+import Placement from "./components/CollegeDashboard/Placement";
+import BrowseCompanies from "./components/CollegeDashboard/Companies";
+import BrowseStudents from "./components/CollegeDashboard/Students";
+import CompanyDetails from "./components/CollegeDashboard/CompanyProfile";
+import StudentProfile from "./components/CollegeDashboard/StudentProfile";
+import CollegeProfile from "./components/CollegeDashboard/Profile";
 
 // Backend API URL
 export const API_URL = "http://localhost:8000/api";
@@ -62,6 +69,13 @@ function App() {
           <Route path="/company-help" element={<CompanyHelp />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/college-dashboard" element={<CollegeDashboard />} />
+          <Route path="/placement-dashboard" element={<Placement />} />
+          <Route path="/browse-companies" element={<BrowseCompanies />} />
+          <Route path="/browse-students" element={<BrowseStudents />} />
+          <Route path="/company-detail" element={<CompanyDetails />} />
+          <Route path="/student-detail" element={<StudentProfile />} />
+          <Route path="/college-profile" element={<CollegeProfile />} />
         </Routes>
       </Router>
     </GoogleOAuthProvider>
